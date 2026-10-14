@@ -1,37 +1,146 @@
 using System.Text.Json;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using Operion.Api.Data;
-using Operion.Api.Hubs;
-using Operion.Api.Models;
-using Operion.Api.Services;
+using Arqenion.Api.Data;
+using Arqenion.Api.Hubs;
+using Arqenion.Api.Models;
+using Arqenion.Api.Services;
 
-namespace Operion.Api.Controllers;
+namespace Arqenion.Api.Controllers;
 
 [ApiController]
 [Route("api/sessions")]
 public sealed class SessionController : ControllerBase
 {
-    private readonly OperionDbContext _db;
+    private readonly ArqenionDbContext _db;
     private readonly ProcedureStore _store;
     private readonly ProcedureService _procedure;
+    private readonly FlowModelStore _flowModel;
+    private readonly FlowProcedureService _flow;
+    private readonly FlowClinicalText _flowText;
+    private readonly IConfiguration _config;
     private readonly ComplicationEngine _complications;
     private readonly IHubContext<SimulationHub> _hub;
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly ILogger<SessionController> _logger;
 
-    public SessionController(OperionDbContext db, ProcedureStore store, ProcedureService procedure,
+    public SessionController(ArqenionDbContext db, ProcedureStore store, ProcedureService procedure,
+        FlowModelStore flowModel, FlowProcedureService flow, FlowClinicalText flowText, IConfiguration config,
         ComplicationEngine complications, IHubContext<SimulationHub> hub, IServiceScopeFactory scopeFactory,
         ILogger<SessionController> logger)
     {
         _db = db;
         _store = store;
         _procedure = procedure;
+        _flowModel = flowModel;
+        _flow = flow;
+        _flowText = flowText;
+        _config = config;
         _complications = complications;
         _hub = hub;
         _scopeFactory = scopeFactory;
         _logger = logger;
+    }
+
+    // Yeni seansların başlayacağı model: "v2.4" (60 adım, varsayılan) ya da "v1" (eski 25 adım).
+    private string ActiveModel => _config["Procedure:Model"] ?? FlowProcedureService.ModelKey;
+    private static bool IsFlow(SessionRecord s) => s.ProcedureModel == FlowProcedureService.ModelKey;
+    private static bool IsFlowModel(string model) => model == FlowProcedureService.ModelKey;
+
+    // Simülatör/VR istemcisi adım listesini ve malzeme kataloğunu buradan okur; kopya tanım tutmaz.
+    // ?model=v1 ya da ?model=v2.4 ile belirli bir model istenebilir; verilmezse yeni seansların modeli döner.
+    [AllowAnonymous]
+    [HttpGet("/api/procedure")]
+    public ActionResult GetProcedure([FromQuery] string? model = null)
+    {
+        if (IsFlowModel(model ?? ActiveModel))
+            return Ok(FlowProcedure());
+
+        var p = _store.Procedure;
+        return Ok(new
+        {
+            ProcedureModel = "v1",
+            p.ProcedureCode,
+            p.Version,
+            p.Title,
+            Steps = p.Steps.Select(s => new
+            {
+                s.StepId, s.PhaseNo, s.Phase, s.Title, s.ExpectedEvent, s.Target,
+                s.AllowedInstruments, s.RequiredSuture, s.ExpectedCounts, s.ClinicalNote, s.SourceSteps
+            }),
+            PhaseCount = p.Steps.Select(s => s.PhaseNo).Distinct().Count(),
+            p.InstrumentCatalog,
+            p.SutureCatalog,
+            Complications = p.Complications.Select(c => new
+            {
+                c.ComplicationId, c.StepId, c.Title, c.Severity, c.ScrubResolvable,
+                c.TriggerInstruments, c.TriggerSutures, ResolutionCount = c.Resolution.Count
+            })
+        });
+    }
+
+    private object FlowProcedure()
+    {
+        var m = _flowModel;
+        var preview = new FlowState { Parameters = m.DefaultParameters() };
+        return new
+        {
+            ProcedureModel = FlowProcedureService.ModelKey,
+            ProcedureCode = "OPEN_APPENDECTOMY",
+            m.Version,
+            Title = "Açık Apendektomi — Scrub Teknikeri",
+            MainStepCount = m.MainStepCount,
+            PhaseCount = m.Graph.Phases.Count,
+            // Varsayılan hasta parametreleriyle; seansın kendi beklentisi StepView'da (currentStep/nextStep) gelir.
+            Steps = m.PlayableNodes.Select(n => _flow.View(n.Id, preview)),
+            InstrumentCatalog = m.Catalog.Where(c => c.Value.Category != "suture")
+                .Select(c => new { Code = c.Key, c.Value.Name, c.Value.Category, Sterile = true }),
+            SutureCatalog = m.Catalog.Where(c => c.Value.Category == "suture")
+                .Select(c => new { Code = c.Key, c.Value.Name }),
+            Conditions = m.Graph.Conditions.Values.Where(c => c.Source != "OUTCOME")
+                .Select(c => new { c.Code, c.Description, c.Source, c.EvaluatedAt }),
+            // Akış şeması için: her düğümün düz devamı ve karar dalları (koşul → hedef, döngü sınırı).
+            Graph = m.PlayableNodes.Select(n => new
+            {
+                n.Id, n.Kind, n.Label, n.PhaseId, n.SubflowId, n.Next,
+                Branches = n.Branches.Select(b => new { b.When, b.GoTo, b.MaxIterations })
+            }),
+            Complications = Array.Empty<object>()
+        };
+    }
+
+    // Kursiyer yalnız kendi seansını görür; eğitmen hepsini. Başkasının seansı için "bulunamadı" (var olduğu sızmaz).
+    private async Task<SessionRecord?> FindOwnedAsync(string sessionId)
+    {
+        var session = await _db.Sessions.FindAsync(sessionId);
+        return session is not null && (session.UserId == User.UserId() || User.IsInstructor()) ? session : null;
+    }
+
+    private StepView? CurrentView(SessionRecord session)
+        => IsFlow(session)
+            ? _flow.View(session.CurrentNodeId, FlowProcedureService.Load(session))
+            : ProcedureService.MapStep(_store.GetStep(session.CurrentStepId));
+
+    // Seans listesi: eğitmen hepsini, kursiyer kendi seanslarını görür (en yeni önce, en fazla 200).
+    [HttpGet]
+    public async Task<ActionResult> List([FromQuery] int take = 200)
+    {
+        var me = User.UserId();
+        var query = _db.Sessions.AsQueryable();
+        if (!User.IsInstructor()) query = query.Where(s => s.UserId == me);
+        var rows = await query.OrderByDescending(s => s.StartedAt).Take(Math.Clamp(take, 1, 500))
+            .GroupJoin(_db.Users, s => s.UserId, u => u.Id, (s, u) => new { s, u })
+            .SelectMany(x => x.u.DefaultIfEmpty(), (x, u) => new
+            {
+                x.s.Id, x.s.UserId, Username = u != null ? u.Username ?? u.Name : x.s.UserId, x.s.ScenarioId,
+                ProcedureModel = x.s.ProcedureModel ?? "v1", x.s.Status, x.s.Score, x.s.CorrectActions, x.s.WrongActions,
+                x.s.SterileViolations, x.s.HintsUsed, x.s.ComplicationsTriggered, x.s.ComplicationsResolved,
+                x.s.CurrentNodeId, x.s.CurrentStepId, x.s.StartedAt, x.s.CompletedAt
+            })
+            .ToListAsync();
+        return Ok(rows);
     }
 
     [HttpPost]
@@ -45,9 +154,8 @@ public sealed class SessionController : ControllerBase
         if (first is null)
             return StatusCode(500, new { message = "Prosedür adımı tanımlı değil." });
 
-        var userId = string.IsNullOrWhiteSpace(req.UserId) ? Guid.NewGuid().ToString() : req.UserId;
-        if (!await _db.Users.AnyAsync(u => u.Id == userId))
-            _db.Users.Add(new User { Id = userId, Name = userId });
+        // Seans, girişi yapan kullanıcıya aittir; istekteki userId yok sayılır (başkası adına seans açılamaz).
+        var userId = User.UserId()!;
 
         var session = new SessionRecord
         {
@@ -57,8 +165,11 @@ public sealed class SessionController : ControllerBase
             CurrentStepId = first.StepId,
             Score = scenario.StartingScore,
             RawScore = scenario.StartingScore,
-            Status = "IN_PROGRESS"
+            Status = "IN_PROGRESS",
+            ProcedureModel = "v1"
         };
+        if (IsFlowModel(ActiveModel))
+            _flow.Start(session, scenario, req.Seed);
         _db.Sessions.Add(session);
         await _db.SaveChangesAsync();
 
@@ -67,16 +178,17 @@ public sealed class SessionController : ControllerBase
             SessionId = session.Id,
             ScenarioName = scenario.Name,
             ProcedureCode = scenario.ProcedureCode,
-            CurrentStep = ProcedureService.MapStep(first),
+            CurrentStep = CurrentView(session),
             Score = session.Score,
-            Status = session.Status
+            Status = session.Status,
+            ProcedureModel = session.ProcedureModel ?? "v1"
         });
     }
 
     [HttpPost("{sessionId}/events")]
     public async Task<ActionResult<ValidationResponse>> PostEvent(string sessionId, [FromBody] EventRequest ev)
     {
-        var session = await _db.Sessions.FindAsync(sessionId);
+        var session = await FindOwnedAsync(sessionId);
         if (session is null)
             return NotFound(new { message = "Seans bulunamadı." });
         if (session.Status != "IN_PROGRESS")
@@ -91,16 +203,22 @@ public sealed class SessionController : ControllerBase
                 Success = true,
                 CurrentStepId = session.CurrentStepId ?? 0,
                 NextStepId = session.CurrentStepId,
+                CurrentNodeId = session.CurrentNodeId,
+                NextNodeId = session.CurrentNodeId,
                 Score = session.Score,
                 Message = "Bu olay daha önce işlendi (yinelenen).",
-                NextStep = ProcedureService.MapStep(_store.GetStep(session.CurrentStepId))
+                NextStep = CurrentView(session)
             });
         }
 
         _logger.LogInformation("VR→REST | session={SessionId} event={Type} instrument={Instrument} target={Target} suture={Suture}",
             sessionId, ev.EventType, ev.InstrumentCode ?? "-", ev.Target ?? "-", ev.SutureCode ?? "-");
 
-        var outcome = _procedure.Validate(session, ev);
+        // Sözleşmeye uymayan olay entegrasyon hatasıdır: kayda ve puana girmez (docs/vr-events.md).
+        if (IsFlow(session) && _flow.ContractError(ev) is { } contract)
+            return BadRequest(new { message = contract.Message, field = contract.Field, allowed = contract.Allowed });
+
+        var outcome = IsFlow(session) ? _flow.Validate(session, ev) : _procedure.Validate(session, ev);
 
         _db.SessionEvents.Add(new SessionEventRecord
         {
@@ -108,6 +226,7 @@ public sealed class SessionController : ControllerBase
             EventId = ev.EventId,
             EventType = ev.EventType,
             StepId = outcome.CurrentStepId,
+            NodeId = outcome.CurrentNodeId,
             InstrumentCode = ev.InstrumentCode,
             IsSuccess = outcome.Success,
             DeviationType = outcome.Deviation?.DeviationType,
@@ -133,17 +252,23 @@ public sealed class SessionController : ControllerBase
         CumulativeComplicationDto? cumulative = null;
         if (outcome.Deviation is not null)
         {
-            complication = BuildComplication(sessionId, ev.EventId, outcome.CurrentStepId, outcome.Deviation);
+            var table = TableEntry(session, outcome.CurrentStepId, outcome.CurrentNodeId, outcome.Deviation);
+            complication = BuildComplication(sessionId, ev.EventId, outcome.CurrentStepId, outcome.Deviation, table);
 
             var deviations = await _db.SessionEvents
                 .Where(e => e.SessionId == sessionId && e.DeviationType != null)
                 .OrderBy(e => e.CreatedAt)
                 .Select(e => new DeviationSample(e.StepId, e.DeviationType!))
                 .ToListAsync();
-            cumulative = _complications.Build(deviations, session.ConsecutiveErrors);
+            cumulative = IsFlow(session)
+                ? _complications.Build(deviations, session.ConsecutiveErrors, (step, type) => _flowText.Entry(step.ToString(), type, null))
+                : _complications.Build(deviations, session.ConsecutiveErrors);
 
-            var hasAdhesion = _store.GetScenario(session.ScenarioId)?.Patient.HasAdhesion ?? false;
-            QueueAiFeedback(sessionId, sessionEventId, ev.EventId, outcome.CurrentStepId, outcome.Deviation, hasAdhesion);
+            var patient = _store.GetScenario(session.ScenarioId)?.Patient ?? new PatientProfile();
+            // Ameliyat öncesi (ana adım 0): AI'ın kaynak parçası yok; modelin risk metni yeterli, çağrı yapılmaz.
+            if (outcome.CurrentStepId > 0)
+                QueueAiFeedback(sessionId, sessionEventId, ev.EventId, outcome.CurrentStepId, outcome.Deviation, patient,
+                outcome.ActiveComplication, session.ProcedureModel ?? "v1", table);
         }
 
         return Ok(new ValidationResponse
@@ -158,14 +283,19 @@ public sealed class SessionController : ControllerBase
             Completed = outcome.Completed,
             NextStep = outcome.NextStep,
             Complication = complication,
-            CumulativeComplication = cumulative
+            CumulativeComplication = cumulative,
+            ActiveComplication = outcome.ActiveComplication,
+            CurrentNodeId = outcome.CurrentNodeId,
+            NextNodeId = outcome.NextNodeId,
+            Branch = outcome.Branch,
+            Adaptive = outcome.Adaptive
         });
     }
 
     [HttpPost("{sessionId}/complete")]
     public async Task<ActionResult<ReportResponse>> Complete(string sessionId)
     {
-        var session = await _db.Sessions.FindAsync(sessionId);
+        var session = await FindOwnedAsync(sessionId);
         if (session is null)
             return NotFound(new { message = "Seans bulunamadı." });
 
@@ -189,14 +319,16 @@ public sealed class SessionController : ControllerBase
             WrongActions = session.WrongActions,
             SterileViolations = session.SterileViolations,
             HintsUsed = session.HintsUsed,
-            Summary = BuildSummary(session, successRate)
+            ComplicationsTriggered = session.ComplicationsTriggered,
+            ComplicationsResolved = session.ComplicationsResolved,
+            Summary = BuildSummary(session, successRate) + AdaptiveSummary(session)
         });
     }
 
     [HttpGet("{sessionId}")]
     public async Task<ActionResult<StartSessionResponse>> Get(string sessionId)
     {
-        var session = await _db.Sessions.FindAsync(sessionId);
+        var session = await FindOwnedAsync(sessionId);
         if (session is null)
             return NotFound(new { message = "Seans bulunamadı." });
 
@@ -206,21 +338,60 @@ public sealed class SessionController : ControllerBase
             SessionId = session.Id,
             ScenarioName = scenario?.Name ?? session.ScenarioId,
             ProcedureCode = session.ProcedureCode,
-            CurrentStep = ProcedureService.MapStep(_store.GetStep(session.CurrentStepId)),
+            CurrentStep = CurrentView(session),
             Score = session.Score,
-            Status = session.Status
+            Status = session.Status,
+            ActiveComplication = IsFlow(session) ? null : _procedure.MapActive(session),
+            ProcedureModel = session.ProcedureModel ?? "v1"
+        });
+    }
+
+    // 60 adımlık seansın yürüdüğü yol ve kararların girdileri: akış şemasında doğruluğu gözle denetlemek için.
+    [HttpGet("{sessionId}/flow")]
+    public async Task<ActionResult> GetFlow(string sessionId)
+    {
+        var session = await FindOwnedAsync(sessionId);
+        if (session is null)
+            return NotFound(new { message = "Seans bulunamadı." });
+        if (!IsFlow(session))
+            return BadRequest(new { message = "Bu seans eski 25 adımlı modelle çalışıyor; akış şeması yalnızca 60 adımlık modelde var." });
+
+        var state = FlowProcedureService.Load(session);
+        var conditions = _flowModel.Graph.Conditions;
+        return Ok(new
+        {
+            session.ScenarioId,
+            Path = state.Path,
+            session.CurrentNodeId,
+            state.OpenBranch,
+            // Koşul planı: her koşulun ardışık değerlendirmelerde alacağı değer ve şimdiye kadar kaç kez değerlendirildiği.
+            Conditions = conditions.Values.Where(c => c.Source != "OUTCOME").Select(c => new
+            {
+                c.Code, c.Description, c.Source, c.EvaluatedAt,
+                Plan = state.Conditions.GetValueOrDefault(c.Code),
+                Evaluations = state.Evaluations.Where(e => e.Key.EndsWith("|" + c.Code)).Sum(e => e.Value),
+                Taken = state.Taken.Where(e => e.Key.EndsWith("|" + c.Code)).Sum(e => e.Value)
+            }),
+            Parameters = state.Parameters,
+            Counts = new { Recorded = state.RecordedCounts, Table = state.Counts },
+            Requests = state.Requests.ToDictionary(r => r.Key, r => r.Value.Select(_flowModel.InstrumentName).ToList()),
+            state.AdaptiveMode,
+            state.FixedConditions,
+            state.AdaptiveDecisions
         });
     }
 
     [HttpGet("{sessionId}/events")]
     public async Task<ActionResult> GetEvents(string sessionId)
     {
+        if (await FindOwnedAsync(sessionId) is null)
+            return NotFound(new { message = "Seans bulunamadı." });
         var events = await _db.SessionEvents
             .Where(e => e.SessionId == sessionId)
             .OrderBy(e => e.CreatedAt)
             .Select(e => new
             {
-                e.EventId, e.EventType, e.StepId, e.InstrumentCode,
+                e.EventId, e.EventType, e.StepId, e.NodeId, e.InstrumentCode,
                 e.IsSuccess, e.DeviationType, e.ScoreChange, e.CreatedAt, e.PayloadJson
             })
             .ToListAsync();
@@ -230,6 +401,8 @@ public sealed class SessionController : ControllerBase
     [HttpGet("{sessionId}/feedbacks")]
     public async Task<ActionResult> GetFeedbacks(string sessionId)
     {
+        if (await FindOwnedAsync(sessionId) is null)
+            return NotFound(new { message = "Seans bulunamadı." });
         var feedbacks = await _db.AiFeedbacks
             .Where(f => f.SessionId == sessionId)
             .OrderBy(f => f.CreatedAt)
@@ -243,9 +416,20 @@ public sealed class SessionController : ControllerBase
         return Ok(feedbacks);
     }
 
-    private AiFeedbackDto BuildComplication(string sessionId, string eventId, int stepId, DeviationDto dev)
+    // Sapmanın deterministik klinik metni: eski modelde klinik tablo, 60 adımlık modelde adımın onaylı hata senaryoları.
+    private ClinicalKnowledgeEntry? TableEntry(SessionRecord session, int stepId, string? nodeId, DeviationDto dev)
     {
-        var e = _store.GetClinicalEntry(stepId, dev.DeviationType);
+        if (!IsFlow(session))
+            return _store.GetClinicalEntry(stepId, dev.DeviationType);
+        if (dev.DeviationType == "CHECKLIST_INCOMPLETE")
+            return _flowText.Entry(nodeId ?? "", dev.DeviationType, dev.Actual, (dev.Expected ?? "").Split(" / "));
+        var wanted = (dev.Expected ?? "").Split(" / ", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Where(_flowModel.Catalog.ContainsKey).ToList();
+        return _flowText.Entry(nodeId ?? stepId.ToString(), dev.DeviationType, dev.Actual, wanted);
+    }
+
+    private static AiFeedbackDto BuildComplication(string sessionId, string eventId, int stepId, DeviationDto dev, ClinicalKnowledgeEntry? e)
+    {
         return new AiFeedbackDto
         {
             SessionId = sessionId,
@@ -260,6 +444,17 @@ public sealed class SessionController : ControllerBase
         };
     }
 
+    // Hatanın yol açtığı durumlar (60 adımlık model): debrief için rapora eklenir.
+    private string AdaptiveSummary(SessionRecord s)
+    {
+        if (!IsFlow(s)) return "";
+        var decisions = FlowProcedureService.Load(s).AdaptiveDecisions;
+        if (decisions.Count == 0) return "";
+        var parts = decisions.Select(d =>
+            $"{_flowModel.Graph.Conditions.GetValueOrDefault(d.Condition)?.Description ?? d.Condition} (Adım {d.AtNode}{(d.ScenarioId is null ? "" : ", " + d.ScenarioId)})");
+        return $" Hatalarınızın sonucu: {string.Join("; ", parts)}.";
+    }
+
     private static string BuildSummary(SessionRecord s, int successRate)
     {
         var totalActions = s.CorrectActions + s.WrongActions;
@@ -270,12 +465,18 @@ public sealed class SessionController : ControllerBase
                 : successRate >= 50
                     ? "Performans sınırda; prosedür sırası ve alet seçimi geliştirilmeli."
                     : "Performans yetersiz; çok sayıda hata var, prosedür baştan çalışılmalı.";
+        var comp = s.ComplicationsTriggered == 0
+            ? "Komplikasyon gelişmedi."
+            : IsFlow(s)
+                ? $"Komplikasyon/ek durum: {s.ComplicationsTriggered} gelişti, {s.ComplicationsResolved} tanesi akış içinde yönetilip ana akışa dönüldü."
+                : $"Komplikasyon: {s.ComplicationsTriggered} gelişti, {s.ComplicationsResolved} tanesi doğru malzeme zinciriyle giderildi.";
         return $"Toplam {totalActions} aksiyondan {s.CorrectActions} doğru, {s.WrongActions} hatalı (başarı %{successRate}). " +
-               $"Steril alan ihlali: {s.SterileViolations}, kullanılan ipucu: {s.HintsUsed}. Skor: {s.Score}/100. {verdict}";
+               $"Steril alan ihlali: {s.SterileViolations}, kullanılan ipucu: {s.HintsUsed}. {comp} Skor: {s.Score}/100. {verdict}";
     }
 
     private void QueueAiFeedback(string sessionId, string sessionEventId, string eventId,
-        int stepId, DeviationDto deviation, bool hasAdhesion)
+        int stepId, DeviationDto deviation, PatientProfile patient, ActiveComplicationDto? complication,
+        string procedureModel, ClinicalKnowledgeEntry? table)
     {
         _ = Task.Run(async () =>
         {
@@ -283,10 +484,12 @@ public sealed class SessionController : ControllerBase
             {
                 using var scope = _scopeFactory.CreateScope();
                 var ai = scope.ServiceProvider.GetRequiredService<IAiFeedbackService>();
-                var db = scope.ServiceProvider.GetRequiredService<OperionDbContext>();
+                var db = scope.ServiceProvider.GetRequiredService<ArqenionDbContext>();
                 var hub = scope.ServiceProvider.GetRequiredService<IHubContext<SimulationHub>>();
 
-                var result = await ai.GenerateAsync(stepId, deviation, hasAdhesion, CancellationToken.None);
+                var result = await ai.GenerateAsync(
+                    new AiFeedbackRequest(sessionId, eventId, stepId, deviation, patient, complication, procedureModel, table),
+                    CancellationToken.None);
                 if (result is null) return;
 
                 db.AiFeedbacks.Add(new AiFeedbackRecord

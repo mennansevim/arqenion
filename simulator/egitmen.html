@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Arqenion — Eğitmen</title>
+  <link rel="stylesheet" href="styles.css?v=egitmen1" />
+  <style>
+    .admin { max-width: 1200px; margin: 0 auto; padding: 18px 16px 40px; display: grid; gap: 18px; }
+    .admin-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .admin-head h1 { margin: 0; font-size: 20px; }
+    .admin-head .spacer { flex: 1; }
+    .panel { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; display: grid; gap: 12px; min-width: 0; }
+    .panel h2 { margin: 0; font-size: 16px; display: flex; align-items: center; gap: 10px; }
+    .panel h2 .count { color: var(--muted); font-weight: 500; font-size: 13px; }
+    .tbl-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+    th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: .4px; }
+    td.num { text-align: right; font-variant-numeric: tabular-nums; }
+    tr.clickable { cursor: pointer; }
+    tr.clickable:hover td, tr.selected td { background: var(--card-2); }
+    .row-form { display: flex; gap: 8px; flex-wrap: wrap; align-items: end; }
+    .row-form .field { min-width: 160px; }
+    .pill { display: inline-block; padding: 1px 8px; border-radius: 99px; font-size: 11px; border: 1px solid var(--border); }
+    .pill.ok { color: var(--green); border-color: var(--green); }
+    .pill.off { color: var(--muted); }
+    .pill.warn { color: var(--warn); border-color: var(--warn); }
+    .secret { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; padding: 10px 12px; border: 1px solid var(--warn); border-radius: 10px; background: var(--card-2); }
+    .secret code { font-size: 15px; letter-spacing: .5px; user-select: all; }
+    .detail { display: grid; gap: 6px; font-size: 13px; }
+    .detail .path { font-family: ui-monospace, Menlo, monospace; font-size: 12px; color: var(--muted); word-break: break-word; }
+    .issue { display: grid; gap: 6px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; }
+    .issue .meta { color: var(--muted); font-size: 12px; }
+    .muted { color: var(--muted); }
+    .error-text { color: var(--red); font-size: 13px; }
+  </style>
+</head>
+<body>
+  <div class="admin">
+    <header class="admin-head">
+      <h1>Eğitmen</h1>
+      <span id="who" class="muted"></span>
+      <span class="spacer"></span>
+      <a class="btn btn-ghost" href="./">Simülatör</a>
+      <button id="logoutBtn" class="btn btn-ghost hidden" type="button">Çıkış</button>
+    </header>
+
+    <form id="loginForm" class="panel hidden" autocomplete="on">
+      <h2>Eğitmen girişi</h2>
+      <div class="row-form">
+        <label class="field"><span>Kullanıcı adı</span><input id="loginUser" type="text" autocomplete="username" required /></label>
+        <label class="field"><span>Şifre</span><input id="loginPass" type="password" autocomplete="current-password" required /></label>
+        <button class="btn btn-primary" type="submit">Giriş yap</button>
+      </div>
+      <p id="loginError" class="error-text hidden" role="alert"></p>
+    </form>
+
+    <div id="app" class="hidden" style="display:grid;gap:18px">
+      <section class="panel">
+        <h2>Kullanıcılar <span id="userCount" class="count"></span></h2>
+        <form id="addForm" class="row-form">
+          <label class="field"><span>Kullanıcı adı</span><input id="newUsername" type="text" placeholder="ayse.yilmaz" required pattern="[a-z0-9._\-]{3,40}" /></label>
+          <label class="field"><span>Ad soyad</span><input id="newName" type="text" placeholder="Ayşe Yılmaz" /></label>
+          <label class="field"><span>Rol</span>
+            <select id="newRole"><option value="trainee">Kursiyer</option><option value="instructor">Eğitmen</option></select></label>
+          <button class="btn btn-primary" type="submit">Kullanıcı aç</button>
+        </form>
+        <div id="secretBox" class="secret hidden" role="status"></div>
+        <p id="userError" class="error-text hidden" role="alert"></p>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>Kullanıcı</th><th>Ad</th><th>Rol</th><th>Durum</th><th>Açılış</th><th></th></tr></thead>
+          <tbody id="userRows"></tbody>
+        </table></div>
+      </section>
+
+      <section class="panel">
+        <h2>Seanslar <span id="sessionCount" class="count"></span>
+          <button id="refreshSessions" class="btn btn-mini btn-ghost" type="button">Yenile</button></h2>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>Başlangıç</th><th>Kursiyer</th><th>Senaryo</th><th>Model</th><th>Durum</th>
+            <th class="num">Puan</th><th class="num">Doğru</th><th class="num">Hata</th><th class="num">Steril</th><th class="num">Dal</th><th>Adım</th></tr></thead>
+          <tbody id="sessionRows"></tbody>
+        </table></div>
+        <div id="sessionDetail" class="detail hidden"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Açık hata bildirimleri <span id="issueCount" class="count"></span></h2>
+        <div id="issues" class="detail"></div>
+      </section>
+    </div>
+  </div>
+  <script src="egitmen.js?v=egitmen1"></script>
+</body>
+</html>

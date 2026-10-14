@@ -1,6 +1,6 @@
-using Operion.Api.Models;
+using Arqenion.Api.Models;
 
-namespace Operion.Api.Services;
+namespace Arqenion.Api.Services;
 
 public sealed class ValidationOutcome
 {
@@ -13,6 +13,12 @@ public sealed class ValidationOutcome
     public bool Completed { get; set; }
     public int ScoreChange { get; set; }
     public StepView? NextStep { get; set; }
+    // Malzeme seçimiyle tetiklenen komplikasyonun anlık durumu (yeni açıldı, ilerledi veya çözüldü).
+    public ActiveComplicationDto? ActiveComplication { get; set; }
+    public string? CurrentNodeId { get; set; }
+    public string? NextNodeId { get; set; }
+    public FlowBranchDto? Branch { get; set; }
+    public List<AdaptiveTriggerDto>? Adaptive { get; set; }
 }
 
 // Deterministic, fully explainable procedure validation. This is the safety-critical layer:
@@ -42,20 +48,31 @@ public sealed class ProcedureService
             };
         }
 
+        // Açık bir komplikasyon varsa olaylar önce çözüm zincirine yönlenir.
+        var active = _store.GetComplication(session.ActiveComplicationId);
+        if (active is not null && ev.EventType != "hint_requested")
+            return ResolveComplication(session, step, active, ev);
+
         // Hint request: neutral guidance with a small penalty, stays on the same step.
         if (ev.EventType == "hint_requested")
         {
             session.HintsUsed++;
             _scoring.Apply(session, -2);
-            var expected = step.RequiredSuture ?? string.Join(" / ", step.AllowedInstruments);
+            var expected = active is not null
+                ? ExpectedText(active.Resolution[session.ComplicationStepIndex])
+                : step.RequiredSuture ?? string.Join(" / ", step.AllowedInstruments);
+            var title = active is not null
+                ? $"{active.Title} — {active.Resolution[session.ComplicationStepIndex].Title}"
+                : step.Title;
             return new ValidationOutcome
             {
                 Success = false,
                 CurrentStepId = step.StepId,
                 NextStepId = step.StepId,
-                Message = $"İpucu: {step.Title}. Beklenen: {expected}",
+                Message = $"İpucu: {title}. Beklenen: {expected}",
                 AllowRetry = true,
-                ScoreChange = -2
+                ScoreChange = -2,
+                ActiveComplication = active is null ? null : BuildActive(active, session.ComplicationStepIndex, false)
             };
         }
 
@@ -81,22 +98,49 @@ public sealed class ProcedureService
         switch (step.ExpectedEvent)
         {
             case "count_confirmed":
-                if (step.ExpectedCounts is { Count: > 0 } expected && !CountsMatch(expected, ev.Counts))
+                if (step.ExpectedCounts is { Count: > 0 } expectedCounts && !CountsMatch(expectedCounts, ev.Counts))
                 {
-                    return Deviate(session, step, "COUNT_MISMATCH", Format(expected), Format(ev.Counts),
+                    return Deviate(session, step, "COUNT_MISMATCH", Format(expectedCounts), Format(ev.Counts),
                         "Sayım uyuşmazlığı; kapanış öncesi tekrar sayım yapılmalıdır.");
                 }
                 break;
 
             case "instrument_delivered":
             case "instrument_placed":
-                if (string.IsNullOrEmpty(ev.InstrumentCode) || !step.AllowedInstruments.Contains(ev.InstrumentCode))
+                var instrumentOk = !string.IsNullOrEmpty(ev.InstrumentCode)
+                                   && step.AllowedInstruments.Contains(ev.InstrumentCode);
+                var sutureOk = step.RequiredSuture is null || ev.SutureCode == step.RequiredSuture;
+
+                // Yanlış seçim bir senaryo komplikasyonu tetikliyorsa, o komplikasyon genel hata mesajının önüne geçer.
+                if (!instrumentOk || !sutureOk)
+                {
+                    var triggered = _store.MatchComplication(step.StepId,
+                        instrumentOk ? null : ev.InstrumentCode,
+                        sutureOk ? null : ev.SutureCode);
+                    if (triggered is not null)
+                        return TriggerComplication(session, step, triggered, ev);
+                }
+
+                // Cihazların yalnızca steril uçları sahaya verilir; cihaz gövdesi steril alana giremez.
+                // Bu kontrol "yanlış alet"ten önce gelir: hata alet seçimi değil, steril bariyer ihlalidir.
+                if (step.Target == "SURGEON" && !string.IsNullOrEmpty(ev.InstrumentCode)
+                    && _store.GetInstrument(ev.InstrumentCode) is { Sterile: false } nonSterile)
+                {
+                    session.SterileViolations++;
+                    var hint = nonSterile.Category == "Cihaz"
+                        ? " Cihazın yalnızca steril ucu sahaya verilir."
+                        : "";
+                    return Deviate(session, step, "STERILE_VIOLATION",
+                        $"steril malzeme ({string.Join(" / ", step.AllowedInstruments)})", nonSterile.Name,
+                        $"{nonSterile.Name} steril değildir; steril sahaya verilemez.{hint}");
+                }
+                if (!instrumentOk)
                 {
                     return Deviate(session, step, "WRONG_INSTRUMENT",
                         string.Join(" / ", step.AllowedInstruments), ev.InstrumentCode,
                         "Bu aşamada uygun olmayan bir alet kullanıldı.");
                 }
-                if (step.RequiredSuture is not null && ev.SutureCode != step.RequiredSuture)
+                if (!sutureOk)
                 {
                     return Deviate(session, step, "WRONG_INSTRUMENT", step.RequiredSuture, ev.SutureCode,
                         "Bu aşamada yanlış sütür seçildi.");
@@ -130,6 +174,191 @@ public sealed class ProcedureService
             NextStep = MapStep(_store.GetStep(step.NextStepId))
         };
     }
+
+    // Yanlış malzeme seçimi komplikasyonu açar: ceza uygulanır, adım tekrar edilmek üzere açık kalır.
+    private ValidationOutcome TriggerComplication(SessionRecord session, ProcedureStep step,
+        ComplicationDefinition c, EventRequest ev)
+    {
+        session.WrongActions++;
+        session.ConsecutiveErrors++;
+        session.ComplicationsTriggered++;
+        _scoring.Apply(session, -c.Penalty);
+
+        var actual = ev.SutureCode is not null && c.TriggerSutures.Contains(ev.SutureCode)
+            ? ev.SutureCode
+            : ev.InstrumentCode;
+
+        // Teknikerin gideremeyeceği komplikasyon yalnızca kayda geçer; adım doğru malzemeyle tekrarlanır.
+        if (!c.ScrubResolvable || c.Resolution.Count == 0)
+        {
+            return new ValidationOutcome
+            {
+                Success = false,
+                CurrentStepId = step.StepId,
+                NextStepId = step.StepId,
+                Deviation = new DeviationDto
+                {
+                    DeviationType = "CONTAMINATED_TOOL_REUSE",
+                    Expected = step.RequiredSuture ?? string.Join(" / ", step.AllowedInstruments),
+                    Actual = actual,
+                    Severity = c.Severity
+                },
+                Message = $"KOMPLİKASYON — {c.Title}. {c.ResolutionNote}",
+                AllowRetry = true,
+                ScoreChange = -c.Penalty,
+                ActiveComplication = BuildActive(c, 0, resolved: true)
+            };
+        }
+
+        session.ActiveComplicationId = c.ComplicationId;
+        session.ComplicationStepIndex = 0;
+
+        return new ValidationOutcome
+        {
+            Success = false,
+            CurrentStepId = step.StepId,
+            NextStepId = step.StepId,
+            Deviation = new DeviationDto
+            {
+                DeviationType = "WRONG_INSTRUMENT",
+                Expected = step.RequiredSuture ?? string.Join(" / ", step.AllowedInstruments),
+                Actual = actual,
+                Severity = c.Severity
+            },
+            Message = $"KOMPLİKASYON — {c.Title}. Çözüm için gerekli malzemeleri sırayla teslim edin.",
+            AllowRetry = true,
+            ScoreChange = -c.Penalty,
+            ActiveComplication = BuildActive(c, 0, resolved: false)
+        };
+    }
+
+    // Komplikasyon açıkken gelen olaylar çözüm zincirinin sıradaki malzemesine karşı doğrulanır.
+    private ValidationOutcome ResolveComplication(SessionRecord session, ProcedureStep step,
+        ComplicationDefinition c, EventRequest ev)
+    {
+        var index = Math.Clamp(session.ComplicationStepIndex, 0, c.Resolution.Count - 1);
+        var action = c.Resolution[index];
+
+        if (ev.EventType == "sterile_area_violated")
+        {
+            session.SterileViolations++;
+            var outcome = Deviate(session, step, "STERILE_VIOLATION", null, null,
+                "Komplikasyon yönetimi sırasında steril alan ihlali.");
+            outcome.ActiveComplication = BuildActive(c, index, false);
+            return outcome;
+        }
+
+        var matches = ev.EventType == action.ExpectedEvent
+            && !string.IsNullOrEmpty(ev.InstrumentCode)
+            && action.AllowedInstruments.Contains(ev.InstrumentCode)
+            && (action.RequiredSuture is null || ev.SutureCode == action.RequiredSuture)
+            && (action.Target is null || string.IsNullOrEmpty(ev.Target) || ev.Target == action.Target);
+
+        if (!matches)
+        {
+            session.WrongActions++;
+            session.ConsecutiveErrors++;
+            _scoring.Apply(session, -c.MisstepPenalty);
+            return new ValidationOutcome
+            {
+                Success = false,
+                CurrentStepId = step.StepId,
+                NextStepId = step.StepId,
+                Deviation = new DeviationDto
+                {
+                    DeviationType = "COMPLICATION_MISMANAGED",
+                    Expected = ExpectedText(action),
+                    Actual = ev.SutureCode is not null ? $"{ev.InstrumentCode} + {ev.SutureCode}" : ev.InstrumentCode,
+                    Severity = c.Severity
+                },
+                Message = $"Komplikasyon yönetimi hatalı. Beklenen: {action.Title}",
+                AllowRetry = true,
+                ScoreChange = -c.MisstepPenalty,
+                ActiveComplication = BuildActive(c, index, false)
+            };
+        }
+
+        // Doğru malzeme: zincirde bir adım ilerle.
+        session.CorrectActions++;
+        session.ConsecutiveErrors = 0;
+        var next = index + 1;
+
+        if (next < c.Resolution.Count)
+        {
+            session.ComplicationStepIndex = next;
+            return new ValidationOutcome
+            {
+                Success = true,
+                CurrentStepId = step.StepId,
+                NextStepId = step.StepId,
+                Message = $"Komplikasyon yönetimi — {action.Title} tamam ({next}/{c.Resolution.Count}).",
+                AllowRetry = true,
+                ScoreChange = 0,
+                ActiveComplication = BuildActive(c, next, false)
+            };
+        }
+
+        // Zincir tamamlandı: komplikasyon kapanır, asıl adım doğru malzemeyle tekrar edilir.
+        session.ActiveComplicationId = null;
+        session.ComplicationStepIndex = 0;
+        session.ComplicationsResolved++;
+        _scoring.Apply(session, c.ResolutionScore);
+
+        return new ValidationOutcome
+        {
+            Success = true,
+            CurrentStepId = step.StepId,
+            NextStepId = step.StepId,
+            Message = $"Komplikasyon giderildi — {c.Title}. Adıma doğru malzeme ile devam edin: {step.Title}",
+            AllowRetry = true,
+            ScoreChange = c.ResolutionScore,
+            NextStep = MapStep(step),
+            ActiveComplication = BuildActive(c, c.Resolution.Count, resolved: true)
+        };
+    }
+
+    // Seansın kaldığı yerden devam edebilmesi için açık komplikasyonun durumunu döner.
+    public ActiveComplicationDto? MapActive(SessionRecord session)
+    {
+        var c = _store.GetComplication(session.ActiveComplicationId);
+        return c is null ? null : BuildActive(c, session.ComplicationStepIndex, false);
+    }
+
+    private static ActiveComplicationDto BuildActive(ComplicationDefinition c, int index, bool resolved)
+    {
+        var actions = c.Resolution.Select((r, i) => new ResolutionStepView
+        {
+            Order = i + 1,
+            Title = r.Title,
+            ExpectedEvent = r.ExpectedEvent,
+            Target = r.Target,
+            AllowedInstruments = r.AllowedInstruments,
+            RequiredSuture = r.RequiredSuture,
+            Note = r.Note,
+            Done = resolved || i < index
+        }).ToList();
+
+        return new ActiveComplicationDto
+        {
+            ComplicationId = c.ComplicationId,
+            Title = c.Title,
+            Narrative = c.Narrative,
+            ResolutionNote = c.ResolutionNote,
+            Severity = c.Severity,
+            StepId = c.StepId,
+            ScrubResolvable = c.ScrubResolvable,
+            ResolutionIndex = resolved ? c.Resolution.Count : index,
+            ResolutionTotal = c.Resolution.Count,
+            Resolved = resolved,
+            CurrentAction = resolved || index >= actions.Count ? null : actions[index],
+            Actions = actions
+        };
+    }
+
+    private static string ExpectedText(ResolutionStep r)
+        => r.RequiredSuture is null
+            ? string.Join(" / ", r.AllowedInstruments)
+            : $"{string.Join(" / ", r.AllowedInstruments)} + {r.RequiredSuture}";
 
     private ValidationOutcome Deviate(SessionRecord session, ProcedureStep step, string type,
         string? expected, string? actual, string message)
@@ -178,6 +407,7 @@ public sealed class ProcedureService
         "COUNT_MISMATCH" => 20,
         "INSTRUMENT_DROPPED" => 10,
         "CONTAMINATED_TOOL_REUSE" => 12,
+        "COMPLICATION_MISMANAGED" => 8,
         "WRONG_INSTRUMENT" => 8,
         "WRONG_ORDER" => 5,
         _ => 5
@@ -186,9 +416,12 @@ public sealed class ProcedureService
     public static StepView? MapStep(ProcedureStep? step) => step is null ? null : new StepView
     {
         StepId = step.StepId,
+        PhaseNo = step.PhaseNo,
         Title = step.Title,
         Phase = step.Phase,
         ExpectedEvent = step.ExpectedEvent,
-        AllowedInstruments = step.AllowedInstruments
+        AllowedInstruments = step.AllowedInstruments,
+        RequiredSuture = step.RequiredSuture,
+        Target = step.Target
     };
 }

@@ -5,7 +5,10 @@
       "name": "Standart Açık Apendektomi",
       "difficulty": "BEGINNER",
       "procedureCode": "OPEN_APPENDECTOMY",
-      "patient": { "bodyType": "NORMAL", "hasAdhesion": false },
+      "patient": {
+        "bodyType": "NORMAL",
+        "hasAdhesion": false
+      },
       "enabledErrors": [
         "WRONG_INSTRUMENT",
         "STERILE_VIOLATION",
@@ -22,7 +25,10 @@
       "name": "Yapışıklıklı Vaka",
       "difficulty": "INTERMEDIATE",
       "procedureCode": "OPEN_APPENDECTOMY",
-      "patient": { "bodyType": "NORMAL", "hasAdhesion": true },
+      "patient": {
+        "bodyType": "NORMAL",
+        "hasAdhesion": true
+      },
       "enabledErrors": [
         "WRONG_INSTRUMENT",
         "STERILE_VIOLATION",
@@ -33,6 +39,119 @@
       ],
       "startingScore": 100,
       "description": "Geçirilmiş inflamasyona bağlı yapışıklıkların bulunduğu ileri düzey vaka. Çekum ve appendiksin serbestlenmesi için ek keskin ve künt diseksiyon (mayo makası, monopolar koter) gerekir; diseksiyon planları belirsiz olduğundan atravmatik alet seçimi ve dikkatli alet teslimi kritiktir. Doku frajil olduğu için yanlış alet seçimi seroza yaralanması ve kanama riskini artırır."
+    },
+    {
+      "scenarioId": "case-bleeding-01",
+      "name": "Kanamalı Vaka",
+      "difficulty": "INTERMEDIATE",
+      "procedureCode": "OPEN_APPENDECTOMY",
+      "patient": {
+        "bodyType": "NORMAL",
+        "hasAdhesion": false
+      },
+      "enabledErrors": [
+        "WRONG_INSTRUMENT",
+        "STERILE_VIOLATION",
+        "COUNT_MISMATCH",
+        "INSTRUMENT_DROPPED",
+        "CONTAMINATED_TOOL_REUSE",
+        "WRONG_ORDER"
+      ],
+      "startingScore": 100,
+      "conditions": {
+        "BLEEDING_DETECTED": true,
+        "BLEEDING_AFTER_IRRIGATION": [
+          true,
+          false
+        ]
+      },
+      "description": "Spesimen çıkarıldıktan sonra sahada kanama odağı saptanır (Adım 41: hemostaz) ve ilk yıkamadan sonra kanama yeniden görülür (43a: ara hemostaz, ardından tekrar yıkama). Scrub hemostatik klempleri ve koteri doğru sırayla hazırlar. Yalnızca 60 adımlık modelde dallanır."
+    },
+    {
+      "scenarioId": "case-count-01",
+      "name": "Sayım Uyuşmazlığı",
+      "difficulty": "ADVANCED",
+      "procedureCode": "OPEN_APPENDECTOMY",
+      "patient": {
+        "bodyType": "NORMAL",
+        "hasAdhesion": false
+      },
+      "enabledErrors": [
+        "WRONG_INSTRUMENT",
+        "STERILE_VIOLATION",
+        "COUNT_MISMATCH",
+        "INSTRUMENT_DROPPED",
+        "CONTAMINATED_TOOL_REUSE",
+        "WRONG_ORDER"
+      ],
+      "startingScore": 100,
+      "conditions": {
+        "COUNT_MISMATCH": true,
+        "ITEM_FOUND_IN_FIELD": true
+      },
+      "counts": {
+        "COMPRESS": 10,
+        "INSTRUMENT": 20,
+        "NEEDLE": 3
+      },
+      "missingItem": "COMPRESS",
+      "description": "Kapanış öncesi sayımda bir radyopak kompres eksiktir. Scrub masadaki gerçek sayıyı bildirir; doğrulamada uyuşmazlık alt akışı (47a–47c) başlar: tekrar sayım, saha ve atık araması, bulunan kompresin sayıma eklenmesi. Yalnızca 60 adımlık modelde dallanır."
+    },
+    {
+      "scenarioId": "case-obese-01",
+      "name": "Kilolu Hasta, Estetik Kapatma",
+      "difficulty": "ADVANCED",
+      "procedureCode": "OPEN_APPENDECTOMY",
+      "patient": {
+        "bodyType": "OBESE",
+        "hasAdhesion": false
+      },
+      "enabledErrors": [
+        "WRONG_INSTRUMENT",
+        "STERILE_VIOLATION",
+        "COUNT_MISMATCH",
+        "INSTRUMENT_DROPPED",
+        "CONTAMINATED_TOOL_REUSE",
+        "WRONG_ORDER"
+      ],
+      "startingScore": 100,
+      "conditions": {
+        "EXPOSURE_INSUFFICIENT": true,
+        "LIGATURE_NOT_SECURE": true
+      },
+      "parameters": {
+        "SKIN_CLOSURE_TYPE": "AESTHETIC",
+        "MESO_VESSELS": [
+          {
+            "caliber": "SMALL"
+          },
+          {
+            "caliber": "LARGE"
+          }
+        ]
+      },
+      "description": "Kilolu hastada uzun ekartörler gerekir ve görüş yetersiz kaldığı için Roux eklenir (Adım 12). Mezappendikste küçük ve büyük iki damar vardır (mosquito + pean). Kök bağı güvenli bulunmaz ve bir kez yenilenir (29 → 28). Cilt estetik kapatılır (4/0 Monocryl). Yalnızca 60 adımlık modelde dallanır."
+    },
+    {
+      "scenarioId": "case-full-01",
+      "name": "Tam Vaka (ameliyat öncesi dahil)",
+      "difficulty": "INTERMEDIATE",
+      "procedureCode": "OPEN_APPENDECTOMY",
+      "patient": {
+        "bodyType": "NORMAL",
+        "hasAdhesion": false
+      },
+      "enabledErrors": [
+        "WRONG_INSTRUMENT",
+        "STERILE_VIOLATION",
+        "COUNT_MISMATCH",
+        "INSTRUMENT_DROPPED",
+        "CONTAMINATED_TOOL_REUSE",
+        "WRONG_ORDER"
+      ],
+      "startingScore": 100,
+      "includePreop": true,
+      "description": "Hasta doğrulamasından (kimlik, onam formları) başlangıç sayımına kadar 9 ameliyat öncesi bölüm kontrol listesi olarak oynanır, ardından standart 60 adımlık akış. Yalnızca 60 adımlık modelde."
     }
   ]
 }

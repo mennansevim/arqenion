@@ -57,10 +57,19 @@
     {
       "stepId": 1,
       "deviationType": "WRONG_INSTRUMENT",
-      "possibleRisk": "Düzensiz cilt insizyonu ve kontrolsüz kesi",
-      "explanation": "Cilt insizyonu ince ve kontrollü bir kesi gerektirir; No:15 bistüri yerine yanlış kesici alet verilmesi düzensiz insizyona, gereksiz doku travmasına ve derinlik kontrolü kaybına yol açabilir.",
-      "recommendedAction": "No:3 sapa takılı No:15 bistüri (SCALPEL_NO_15) uygun şekilde teslim edilir.",
+      "possibleRisk": "Ciltte penetran kanama ve kontrolsüz kesi",
+      "explanation": "McBurney insizyonu ince ve kontrollü bir kesi gerektirir ve bunun için No:3 sapa takılı 15 numara uç kullanılır. Yanlış bistüri ucu (ör. sivri No:11 veya geniş No:20) kesiyi kontrolsüz derinleştirir; ciltte penetran kanama gelişir ve saha görüşü kaybolur.",
+      "recommendedAction": "No:3 sapa takılı yeni No:15 bistüri ucu (SCALPEL_NO_15) teslim edilir. Kanama gelişmişse monopolar elektrokoter kalemi ile hemostaz sağlanır.",
       "severity": "MEDIUM",
+      "source": "Genel Cerrahi Prosedür Kılavuzu"
+    },
+    {
+      "stepId": 5,
+      "deviationType": "WRONG_INSTRUMENT",
+      "possibleRisk": "Yetersiz ekartasyonla görüş kaybı ve doku travması",
+      "explanation": "Sahanın açık tutulması için uygun ekartör gereklidir; yanlış alet seçimi yetersiz görüş, aşırı çekiş ve doku hasarına neden olabilir.",
+      "recommendedAction": "Hasta yapısına uygun Farabeuf/Langenbeck/Roux ekartör teslim edilir; daha geniş ekartasyon gerekirse Richardson istenir.",
+      "severity": "LOW",
       "source": "Genel Cerrahi Prosedür Kılavuzu"
     },
     {
@@ -82,7 +91,25 @@
       "source": "Genel Cerrahi Prosedür Kılavuzu"
     },
     {
+      "stepId": 8,
+      "deviationType": "WRONG_INSTRUMENT",
+      "possibleRisk": "Yapışıklık diseksiyonunda seroza yaralanması, kanama ve bağırsak perforasyonu",
+      "explanation": "Yapışıklıklarda diseksiyon planları belirsizdir ve doku frajildir; alan Langenbeck ile gerilmeden veya uygunsuz aletle körlemesine çalışılması seroza yırtığına, kanamaya ve bağırsak yaralanmasına yol açar.",
+      "recommendedAction": "Yapışıklık Langenbeck 55x11mm ile gerilir, mayo makası (MAYO_SCISSORS) veya monopolar koter (MONOPOLAR_CAUTERY, cut modu) ile kontrollü ayrılır.",
+      "severity": "HIGH",
+      "source": "Genel Cerrahi Prosedür Kılavuzu"
+    },
+    {
       "stepId": 9,
+      "deviationType": "WRONG_INSTRUMENT",
+      "possibleRisk": "Mezoappendiks damarlarında yetersiz kontrol ve kanama",
+      "explanation": "Mezoappendiks damarları uygun klemp (küçük damar için mosquito, kalın damar için pean) ile güvence altına alınmalıdır; yanlış alet seçimi damarın kaçmasına ve kanamaya yol açabilir.",
+      "recommendedAction": "Damar kalınlığına göre mosquito (MOSQUITO_CLAMP) veya pean (PEAN_CLAMP) ile birlikte portegü hazırlanır; iplik kesimi için metzenbaum makası verilir.",
+      "severity": "HIGH",
+      "source": "Genel Cerrahi Prosedür Kılavuzu"
+    },
+    {
+      "stepId": 10,
       "deviationType": "WRONG_INSTRUMENT",
       "possibleRisk": "Yanlış sütür seçimiyle yetersiz purse-string ve güdük güvenliğinin bozulması",
       "explanation": "Purse-string sütürü için 3/0 ipek gereklidir; yanlış kalınlık veya materyal seçimi güdüğün gömülmesinde yetersiz kalabilir ve kaçak/enfeksiyon riskini artırır.",
@@ -91,16 +118,25 @@
       "source": "Genel Cerrahi Prosedür Kılavuzu"
     },
     {
-      "stepId": 10,
+      "stepId": 11,
       "deviationType": "WRONG_INSTRUMENT",
       "possibleRisk": "Yanlış sütürle appendiks kökünde yetersiz bağ ve güdük kaçağı",
       "explanation": "Appendiks kökü emilebilir 2/0 Vicryl ile güvenli bağlanmalıdır; uygunsuz sütür seçimi bağın gevşemesine, güdük kaçağına ve peritonite yol açabilir.",
-      "recommendedAction": "Portegü ile 2/0 Vicryl (VICRYL_2_0) teslim edilir.",
+      "recommendedAction": "Portegü ile 2/0 Vicryl (VICRYL_2_0) teslim edilir; bağ sağlamlığı kontrol edilir.",
       "severity": "HIGH",
       "source": "Genel Cerrahi Prosedür Kılavuzu"
     },
     {
       "stepId": 12,
+      "deviationType": "WRONG_INSTRUMENT",
+      "possibleRisk": "Kesim hattının işaretlenmemesi ve güdük üzerinde kontrolsüz kesi",
+      "explanation": "Bağın distaline dişsiz bir işaret pensi konarak kesim hattı sabitlenir. Dişli/travmatik bir pens appendiks duvarını ezerek lümen içeriğinin sahaya sızmasına, işaret pensinin hiç konmaması ise güdüğe çok yakın kesiye ve bağın kaçmasına yol açar.",
+      "recommendedAction": "Bağın distaline düz dişsiz işaret pensi (STRAIGHT_CLAMP_ATRAUMATIC) veya atravmatik Babcock teslim edilir.",
+      "severity": "MEDIUM",
+      "source": "Genel Cerrahi Prosedür Kılavuzu"
+    },
+    {
+      "stepId": 13,
       "deviationType": "WRONG_INSTRUMENT",
       "possibleRisk": "Doku travması, ezilme ve appendiks perforasyonu",
       "explanation": "Appendiks kesimi keskin ve kontrollü bir kesi gerektirir; No:15 bistüri yerine uygunsuz alet verilmesi dokuyu ezerek düzensiz kesiye, kontaminasyona ve güdük hasarına yol açabilir.",
@@ -109,16 +145,52 @@
       "source": "Genel Cerrahi Prosedür Kılavuzu"
     },
     {
-      "stepId": 13,
+      "stepId": 14,
       "deviationType": "CONTAMINATED_TOOL_REUSE",
       "possibleRisk": "Lümen içeriğiyle kontamine bistürinin yeniden kullanımı ve cerrahi alan enfeksiyonu",
       "explanation": "Appendiks lümeniyle temas eden bistüri ucu kirli kabul edilir; temizlenmeden veya değiştirilmeden temiz sahada kullanılması bakteriyel içeriği steril dokulara taşır.",
-      "recommendedAction": "Kirli No:15 uç (SCALPEL_NO_15_USED) kirli alana bırakılır; ihtiyaç halinde yeni steril uç takılır.",
+      "recommendedAction": "Kesi yüzeyi Foerster klemp + batikonlu spanç ile silinir; kirli No:15 uç (SCALPEL_NO_15_USED) kirli alana bırakılır ve yeni steril uç takılır.",
       "severity": "HIGH",
       "source": "Steril Teknik Prensipleri"
     },
     {
       "stepId": 15,
+      "deviationType": "WRONG_ORDER",
+      "possibleRisk": "Güdüğün gömülmemesi, purse-string kaçağı ve peritonit",
+      "explanation": "Güdük çekum içine gömülmeden veya önceden konan purse-string sıkılmadan kapanışa geçilmesi, güdükten lümen içeriğinin batına sızmasına ve peritonite yol açar. Bu aşamada yeni sütür verilmez; hazır 3/0 ipek çevre sütürü sıkılır ve düğümlenir.",
+      "recommendedAction": "Portegü + stille penset teslim edilir, purse-string sıkılıp güdük gömülür ve düğümlenir; iplik kesimi için mayo makası hazır tutulur.",
+      "severity": "HIGH",
+      "source": "Genel Cerrahi Prosedür Kılavuzu"
+    },
+    {
+      "stepId": 16,
+      "deviationType": "STERILE_VIOLATION",
+      "possibleRisk": "Spesimen aktarımında sahaya kontaminasyon",
+      "explanation": "Çıkarılan appendiks patoloji kabına aktarılırken kirli kabın veya elin steril sahayla teması kontaminasyona neden olabilir.",
+      "recommendedAction": "Spesimen steril alan dışında, patoloji kabına doğrudan bırakılır; steril saha ile kirli kap teması önlenir ve gerekirse eldiven değiştirilir. Etiketleme steril olmayan tekniker tarafından yapılır.",
+      "severity": "MEDIUM",
+      "source": "Steril Teknik Prensipleri"
+    },
+    {
+      "stepId": 17,
+      "deviationType": "WRONG_INSTRUMENT",
+      "possibleRisk": "Yetersiz hemostaz, postoperatif kanama ve hematom",
+      "explanation": "Kapanış öncesi kanama kontrolü elektrokoterin koagülasyon modu ile sağlanır. Uygunsuz alet verilmesi veya kesici alet ile çalışılması kanamayı durdurmak yerine artırır; kontrol edilmeyen sızıntı hematom ve reoperasyona yol açar.",
+      "recommendedAction": "Monopolar koter (MONOPOLAR_CAUTERY) koagülasyon modunda teslim edilir; saha inspeksiyon ve palpasyonla yeniden kontrol edilir.",
+      "severity": "HIGH",
+      "source": "Genel Cerrahi Prosedür Kılavuzu"
+    },
+    {
+      "stepId": 18,
+      "deviationType": "WRONG_INSTRUMENT",
+      "possibleRisk": "Yetersiz yıkama/aspirasyon ve batın içi apse",
+      "explanation": "Kontamine sıvı ve debris sıcak izotonikle yıkanıp tam aspire edilmelidir. Uygun enjektör/aspiratör verilmemesi sıvının batında kalmasına, apse ve uzamış iyileşmeye yol açar; soğuk sıvı ayrıca hipotermi riski taşır.",
+      "recommendedAction": "Sıcak izotonik 50 ml gavaj enjektörüne (IRRIGATION_SYRINGE) çekilip teslim edilir; sıvı Yankauer uçlu aspiratör (SUCTION_DEVICE) ile çekilir.",
+      "severity": "MEDIUM",
+      "source": "Genel Cerrahi Prosedür Kılavuzu"
+    },
+    {
+      "stepId": 19,
       "deviationType": "COUNT_MISMATCH",
       "possibleRisk": "Kapanış öncesi sayım uyuşmazlığı ve unutulan kompres/alet/iğne",
       "explanation": "Peritonun kapatılmasından önce kompres, alet ve iğne sayımı tam uyuşmalıdır; uyuşmazlık, hasta içinde materyal kaldığını düşündürür ve yabancı cisim komplikasyonu riski taşır.",
@@ -127,16 +199,25 @@
       "source": "Cerrahi Sayım Protokolü"
     },
     {
-      "stepId": 16,
+      "stepId": 20,
       "deviationType": "WRONG_INSTRUMENT",
       "possibleRisk": "Yanlış sütürle periton kapatmasında yetersiz kapanma",
       "explanation": "Periton emilebilir 0/1 Vicryl ile kapatılır; yanlış materyal/kalınlık seçimi tabaka bütünlüğünü zayıflatabilir ve iyileşmeyi olumsuz etkiler.",
-      "recommendedAction": "Portegü ile 0/1 Vicryl (VICRYL_1_0) teslim edilir.",
+      "recommendedAction": "Portegü ile 0/1 Vicryl (VICRYL_1_0) teslim edilir; kenarlar stille penset veya mosquito ile tutulur.",
       "severity": "MEDIUM",
       "source": "Genel Cerrahi Prosedür Kılavuzu"
     },
     {
-      "stepId": 17,
+      "stepId": 21,
+      "deviationType": "WRONG_INSTRUMENT",
+      "possibleRisk": "Kas tabakasında yetersiz yaklaştırma, ölü boşluk ve hematom",
+      "explanation": "Kas tabakası emilebilir 2/0 Vicryl ile yaklaştırılır. Aşırı kalın veya emilmeyen sütür doku nekrozu ve granülom, yetersiz sütür ise ölü boşluk ve hematom oluşumuna zemin hazırlar.",
+      "recommendedAction": "Portegü + stille penset ile 2/0 Vicryl (VICRYL_2_0) teslim edilir.",
+      "severity": "MEDIUM",
+      "source": "Genel Cerrahi Prosedür Kılavuzu"
+    },
+    {
+      "stepId": 22,
       "deviationType": "WRONG_INSTRUMENT",
       "possibleRisk": "Yanlış sütürle fasya kapatmada yara ayrışması ve insizyonel herni",
       "explanation": "Fasya en yük taşıyan tabakadır ve 0 Prolen gibi güçlü sütürle kapatılmalıdır; zayıf veya uygunsuz sütür seçimi fasya ayrışmasına ve insizyonel fıtığa yol açabilir.",
@@ -145,67 +226,67 @@
       "source": "Genel Cerrahi Prosedür Kılavuzu"
     },
     {
-      "stepId": 18,
+      "stepId": 23,
+      "deviationType": "WRONG_INSTRUMENT",
+      "possibleRisk": "Cilt altında ölü boşluk, seroma ve yara yeri enfeksiyonu",
+      "explanation": "Cilt altı önce serum fizyolojik ile yıkanıp 2/0 Vicryl ile tek tek yaklaştırılmalıdır; yıkanmaması veya uygunsuz sütürle geçilmesi ölü boşluk bırakır, seroma ve yüzeyel yara enfeksiyonu riskini artırır.",
+      "recommendedAction": "20 ml enjektörle izotonik yıkama sonrası portegü ile 2/0 Vicryl (VICRYL_2_0) teslim edilir.",
+      "severity": "MEDIUM",
+      "source": "Genel Cerrahi Prosedür Kılavuzu"
+    },
+    {
+      "stepId": 24,
       "deviationType": "WRONG_INSTRUMENT",
       "possibleRisk": "Yanlış sütürle cilt kapatmada kötü skar ve doku reaksiyonu",
       "explanation": "Cilt 4/0 polyamid gibi monofilaman bir sütürle kapatılır; uygunsuz sütür seçimi artmış doku reaksiyonu, kötü kozmetik sonuç ve yara sorunlarına neden olabilir.",
-      "recommendedAction": "Portegü ile 4/0 Polyamid (POLYAMIDE_4_0) teslim edilir.",
+      "recommendedAction": "Portegü ile 4/0 Polyamid (POLYAMIDE_4_0) teslim edilir; kenarlar stille penset ile hizalanır.",
       "severity": "MEDIUM",
       "source": "Genel Cerrahi Prosedür Kılavuzu"
     },
     {
-      "stepId": 3,
-      "deviationType": "WRONG_INSTRUMENT",
-      "possibleRisk": "Kas diseksiyonunda uygunsuz aletle kanama ve doku hasarı",
-      "explanation": "Kas tabakaları künt diseksiyonla ayrılmalıdır; mayo makası yerine uygunsuz alet verilmesi damar yaralanmasına ve gereksiz doku travmasına yol açabilir.",
-      "recommendedAction": "Künt diseksiyon için mayo makası (MAYO_SCISSORS) teslim edilir.",
-      "severity": "MEDIUM",
-      "source": "Genel Cerrahi Prosedür Kılavuzu"
-    },
-    {
-      "stepId": 8,
-      "deviationType": "WRONG_INSTRUMENT",
-      "possibleRisk": "Mezoappendiks damarlarında yetersiz kontrol ve kanama",
-      "explanation": "Mezoappendiks damarları uygun klemp (küçük damar için mosquito, kalın damar için pean) ile güvence altına alınmalıdır; yanlış alet seçimi damarın kaçmasına ve kanamaya yol açabilir.",
-      "recommendedAction": "Damar kalınlığına göre mosquito (MOSQUITO_CLAMP) veya pean (PEAN_CLAMP) ile birlikte portegü hazırlanır.",
-      "severity": "HIGH",
-      "source": "Genel Cerrahi Prosedür Kılavuzu"
-    },
-    {
-      "stepId": 5,
-      "deviationType": "WRONG_INSTRUMENT",
-      "possibleRisk": "Yetersiz ekartasyonla görüş kaybı ve doku travması",
-      "explanation": "Sahanın açık tutulması için uygun ekartör gereklidir; yanlış alet seçimi yetersiz görüş, aşırı çekiş ve doku hasarına neden olabilir.",
-      "recommendedAction": "Hasta yapısına uygun Farabeuf/Langenbeck/Roux ekartör teslim edilir.",
-      "severity": "LOW",
-      "source": "Genel Cerrahi Prosedür Kılavuzu"
-    },
-    {
-      "stepId": 4,
-      "deviationType": "WRONG_INSTRUMENT",
-      "possibleRisk": "Periton açılırken altta yatan bağırsak yaralanması",
-      "explanation": "Periton önce pensle tutulup kaldırılarak güvenli açılmalıdır; uygun penset yerine yanlış alet kullanımı altta yatan bağırsağın yaralanmasına yol açabilir.",
-      "recommendedAction": "Stille (STILLE_FORCEPS) veya DeBakey (DEBAKEY_FORCEPS) penset teslim edilir; periton kaldırılarak açılır.",
-      "severity": "MEDIUM",
-      "source": "Genel Cerrahi Prosedür Kılavuzu"
-    },
-    {
-      "stepId": 14,
+      "stepId": 25,
       "deviationType": "STERILE_VIOLATION",
-      "possibleRisk": "Spesimen aktarımında sahaya kontaminasyon",
-      "explanation": "Çıkarılan appendiks patoloji kabına aktarılırken kirli kabın veya elin steril sahayla teması kontaminasyona neden olabilir.",
-      "recommendedAction": "Spesimen steril alan dışında, patoloji kabına doğrudan bırakılır; steril saha ile kirli kap teması önlenir ve gerekirse eldiven değiştirilir.",
+      "possibleRisk": "Kapatılmış insizyonun pansuman sırasında kontaminasyonu",
+      "explanation": "Taze sütür hattı, steril örtüler kaldırılmadan steril spançla kapatılmalıdır. Steril olmayan malzeme veya elle temas, kapatılmış yaraya doğrudan mikroorganizma taşıyarak yara yeri enfeksiyonuna yol açar.",
+      "recommendedAction": "Saha ıslak kompresle silinir, 10x10 steril spanç (GAUZE_10X10) yerleştirilir ve pansuman ipek flasterle sabitlenir; flaster steril olmayan malzemedir, spanç yerleştikten sonra uygulanır.",
       "severity": "MEDIUM",
       "source": "Steril Teknik Prensipleri"
     },
     {
       "stepId": 2,
       "deviationType": "WRONG_INSTRUMENT",
-      "possibleRisk": "Cilt altı/fasya diseksiyonunda yetersiz hemostaz",
-      "explanation": "Cilt altı ve fasya diseksiyonu için monopolar koter (cut modu) gereklidir; yanlış alet seçimi kanama kontrolünü zorlaştırır ve diseksiyonu geciktirir.",
-      "recommendedAction": "Düz uçlu monopolar koter (MONOPOLAR_CAUTERY) stille pensetle birlikte teslim edilir.",
+      "possibleRisk": "Tabakalar açılırken kontrolsüz kanama ve yetersiz hemostaz",
+      "explanation": "Cilt altı yağ dokusu, Camper/Scarpa fasyaları ve dış oblik aponevrozu düz uçlu monopolar koter (cut modu) ile stille penset eşliğinde açılır. Kesici alet verilmesi küçük damarları koagüle etmeden keser ve sızıntılı bir sahaya yol açar.",
+      "recommendedAction": "Monopolar elektrokoter kalemi (MONOPOLAR_CAUTERY — cihazın steril ucu) stille pensetle birlikte teslim edilir; cihaz gövdesi steril sahaya verilmez.",
       "severity": "MEDIUM",
       "source": "Genel Cerrahi Prosedür Kılavuzu"
+    },
+    {
+      "stepId": 3,
+      "deviationType": "WRONG_INSTRUMENT",
+      "possibleRisk": "Kas liflerinin yırtılması ve kas içi kanama",
+      "explanation": "Kas lifleri kesilmeden künt diseksiyonla ayrılmalıdır; bunun için Metzenbaum makas veya mosquito/Crile klemp kullanılır. Mayo makası gibi ağır kesici bir makas lifleri yırtar, kas içi kanama başlatır ve diseksiyon planını kaybettirir.",
+      "recommendedAction": "Künt diseksiyon için Metzenbaum makası (METZENBAUM_SCISSORS) veya mosquito/Crile klemp teslim edilir; mayo makası bu adımda verilmez.",
+      "severity": "HIGH",
+      "source": "Genel Cerrahi Prosedür Kılavuzu"
+    },
+    {
+      "stepId": 4,
+      "deviationType": "WRONG_INSTRUMENT",
+      "possibleRisk": "Periton açılırken altta yatan bağırsak yaralanması",
+      "explanation": "Periton önce dişsiz bir diseksiyon penseti ile tutulup kaldırılarak güvenli açılmalıdır; dişli veya uygunsuz bir alet altta yatan bağırsağı sıkıştırıp yaralayabilir.",
+      "recommendedAction": "Stille (KD105.15), Semken (KD144.15) veya DeBakey dişsiz diseksiyon penseti teslim edilir; periton kaldırılarak 15 no bistüri ile açılır.",
+      "severity": "MEDIUM",
+      "source": "Genel Cerrahi Prosedür Kılavuzu"
+    },
+    {
+      "stepId": "*",
+      "deviationType": "COMPLICATION_MISMANAGED",
+      "possibleRisk": "Komplikasyonun kontrol altına alınamaması ve tablonun ağırlaşması",
+      "explanation": "Gelişmiş bir komplikasyonda çözüm sırası ve malzemesi bellidir; sırayı bozmak veya yanlış malzeme vermek kanamanın sürmesine, kontaminasyonun yayılmasına ve müdahale süresinin uzamasına yol açar.",
+      "recommendedAction": "Komplikasyon panelindeki çözüm zinciri sırayla izlenir; her basamakta yalnızca o basamağın malzemesi teslim edilir.",
+      "severity": "HIGH",
+      "source": "Ameliyathane Komplikasyon Yönetimi"
     }
   ]
 }

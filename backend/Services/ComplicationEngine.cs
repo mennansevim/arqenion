@@ -1,6 +1,6 @@
-using Operion.Api.Models;
+using Arqenion.Api.Models;
 
-namespace Operion.Api.Services;
+namespace Arqenion.Api.Services;
 
 public readonly record struct DeviationSample(int StepId, string DeviationType);
 
@@ -12,14 +12,17 @@ public sealed class ComplicationEngine
 
     public ComplicationEngine(ProcedureStore store) => _store = store;
 
-    public CumulativeComplicationDto Build(IReadOnlyList<DeviationSample> deviations, int streak)
+    // lookup: sapmanın klinik metni; verilmezse eski modelin klinik tablosu (60 adımlık model kendi metnini verir).
+    public CumulativeComplicationDto Build(IReadOnlyList<DeviationSample> deviations, int streak,
+        Func<int, string, ClinicalKnowledgeEntry?>? lookup = null)
     {
+        lookup ??= _store.GetClinicalEntry;
         var items = deviations
             .GroupBy(d => d.DeviationType)
             .Select(g =>
             {
                 var latest = g.Last();
-                var entry = _store.GetClinicalEntry(latest.StepId, g.Key);
+                var entry = lookup(latest.StepId, g.Key);
                 var occurrences = g.Count();
                 var probability = Math.Clamp(BaseWeight(g.Key) + (occurrences - 1) * 15 + streak * 6, 20, 97);
                 return new ComplicationItemDto

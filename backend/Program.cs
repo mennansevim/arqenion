@@ -1,9 +1,13 @@
+using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.FileProviders;
-using Operion.Api.Data;
-using Operion.Api.Hubs;
-using Operion.Api.Services;
+using Arqenion.Api.Data;
+using Arqenion.Api.Hubs;
+using Arqenion.Api.Services;
 
 // .env dosyasındaki anahtarları (ör. OPENAI_API_KEY) ortam değişkenine yükle.
 LoadDotEnv();
@@ -16,54 +20,126 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpClient();
 
-// Tüm REST trafiğini (yol + gövde) konsola yazarak VR↔backend iletişimini görünür kılar.
+// REST trafiğini konsola yazar. Gövdeler (VR olayları, cevaplar) yalnız geliştirmede; üretimde yöntem, yol ve durum.
 builder.Services.AddHttpLogging(o =>
 {
-    o.LoggingFields = HttpLoggingFields.RequestMethod | HttpLoggingFields.RequestPath
-        | HttpLoggingFields.RequestBody | HttpLoggingFields.ResponseStatusCode | HttpLoggingFields.ResponseBody;
+    o.LoggingFields = HttpLoggingFields.RequestMethod | HttpLoggingFields.RequestPath | HttpLoggingFields.ResponseStatusCode;
+    if (builder.Environment.IsDevelopment())
+        o.LoggingFields |= HttpLoggingFields.RequestBody | HttpLoggingFields.ResponseBody;
     o.RequestBodyLogLimit = 8192;
     o.ResponseBodyLogLimit = 8192;
     o.MediaTypeOptions.AddText("application/json");
 });
 
+// CORS: simülatör backend'in kendisinden (/sim) sunulduğu için çoğu kurulumda gerekmez. Ayrı adresten gelen istemciler
+// (ör. python http.server ile 8000) Auth:AllowedOrigins listesinde olmalı. Jeton başlıkta taşındığı için çerez yok.
+var allowedOrigins = builder.Configuration.GetSection("Auth:AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy => policy
-        .SetIsOriginAllowed(_ => true)
+        .WithOrigins(allowedOrigins)
         .AllowAnyHeader()
         .AllowAnyMethod()
         .AllowCredentials());
 });
 
+// Kimlik doğrulama: JWT (Authorization: Bearer …). SignalR tarayıcıdan başlık gönderemediği için hub'da ?access_token=.
+var authOptions = AuthOptions.FromConfiguration(builder.Configuration, builder.Environment);
+builder.Services.AddSingleton(authOptions);
+builder.Services.AddSingleton<AuthService>();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(o =>
+{
+    o.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidIssuer = AuthOptions.Issuer,
+        ValidAudience = AuthOptions.Audience,
+        IssuerSigningKey = authOptions.SigningKey,
+        ValidateIssuerSigningKey = true,
+        ClockSkew = TimeSpan.FromMinutes(1)
+    };
+    o.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = ctx =>
+        {
+            var token = ctx.Request.Query["access_token"];
+            if (!string.IsNullOrEmpty(token) && ctx.HttpContext.Request.Path.StartsWithSegments("/hubs"))
+                ctx.Token = token;
+            return Task.CompletedTask;
+        },
+        // Pasif yapılan ya da silinen kullanıcının jetonu süresi dolmadan da geçersiz olur.
+        OnTokenValidated = async ctx =>
+        {
+            var db = ctx.HttpContext.RequestServices.GetRequiredService<ArqenionDbContext>();
+            var user = await db.Users.FindAsync(ctx.Principal?.UserId());
+            if (user is null || !user.IsActive) ctx.Fail("Kullanıcı pasif ya da yok.");
+        }
+    };
+});
+// Varsayılan: her uç giriş ister. Açık uçlar [AllowAnonymous] ile işaretlidir (giriş, sağlık, katalog).
+builder.Services.AddAuthorization(o => o.FallbackPolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build());
+// Girişte kaba kuvvet denemesine karşı: IP başına dakikada 10 deneme.
+builder.Services.AddRateLimiter(o =>
+{
+    o.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    o.AddPolicy("login", ctx => RateLimitPartition.GetFixedWindowLimiter(
+        ctx.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+        _ => new FixedWindowRateLimiterOptions { PermitLimit = builder.Configuration.GetValue("Auth:LoginPerMinute", 10), Window = TimeSpan.FromMinutes(1) }));
+});
+
 var provider = builder.Configuration["Database:Provider"] ?? "Postgres";
-builder.Services.AddDbContext<OperionDbContext>(opt =>
+builder.Services.AddDbContext<ArqenionDbContext>(opt =>
 {
     if (provider.Equals("InMemory", StringComparison.OrdinalIgnoreCase))
-        opt.UseInMemoryDatabase("operion");
+        opt.UseInMemoryDatabase("arqenion");
     else
         opt.UseNpgsql(builder.Configuration.GetConnectionString("Postgres"));
 });
 
 builder.Services.AddSingleton<ProcedureStore>();
+// 60 adımlık akış modeli (procedure-model/dist); "Procedure:Model" = "v1" ise yeni seanslar eski 25 adımlı modelle başlar.
+builder.Services.AddSingleton(sp =>
+{
+    var cfg = builder.Configuration.GetSection("Procedure");
+    var root = sp.GetRequiredService<IHostEnvironment>().ContentRootPath;
+    return new FlowModelStore(
+        Path.GetFullPath(Path.Combine(root, cfg["ModelDir"] ?? "../procedure-model/dist")),
+        cfg["ModelVersion"] ?? "2.4",
+        Path.Combine(root, "Procedures", "scoring.json"),
+        Path.Combine(root, "Procedures", "instrument-descriptors.json"),
+        Path.Combine(root, "Procedures", "adaptive-rules.json"));
+});
+builder.Services.AddSingleton<FlowEngine>();
+builder.Services.AddSingleton<FlowClinicalText>();
+builder.Services.AddScoped<FlowProcedureService>();
+builder.Services.AddSingleton<IssueStore>();
 builder.Services.AddSingleton<ComplicationEngine>();
 builder.Services.AddScoped<ScoringService>();
 builder.Services.AddScoped<ProcedureService>();
 builder.Services.AddScoped<IAiFeedbackService, AiFeedbackService>();
+builder.Services.AddSingleton<AiLimiter>();
 
 var app = builder.Build();
 
 // Load procedure/scenario/clinical files eagerly so failures surface at startup.
 app.Services.GetRequiredService<ProcedureStore>();
+app.Services.GetRequiredService<FlowModelStore>();
+app.Services.GetRequiredService<IssueStore>();
 
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<OperionDbContext>();
-    db.Database.EnsureCreated();
+    var db = scope.ServiceProvider.GetRequiredService<ArqenionDbContext>();
+    await DatabaseMigrator.MigrateAsync(db, app.Logger);
+    await scope.ServiceProvider.GetRequiredService<AuthService>()
+        .EnsureBootstrapAdminAsync(db, app.Logger);
 }
 
 app.UseHttpLogging();
-app.UseSwagger();
-app.UseSwaggerUI();
+// API belgesi yalnız geliştirmede açık.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 app.UseCors();
 
 var simulatorPath = Path.GetFullPath(Path.Combine(app.Environment.ContentRootPath, "..", "simulator"));
@@ -78,21 +154,36 @@ if (Directory.Exists(simulatorPath))
     app.UseStaticFiles(new StaticFileOptions
     {
         FileProvider = fp,
-        RequestPath = "/sim"
+        RequestPath = "/sim",
+        // Sayfa her açılışta yeniden doğrulanır; yoksa tarayıcı eski index.html ile eski app.js'i yükler.
+        OnPrepareResponse = ctx =>
+        {
+            if (ctx.File.Name.EndsWith(".html", StringComparison.OrdinalIgnoreCase))
+                ctx.Context.Response.Headers.CacheControl = "no-cache";
+        }
     });
 }
 
+app.UseRateLimiter();
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapControllers();
 app.MapHub<SimulationHub>("/hubs/simulation");
-app.MapGet("/", () => Results.Ok(new { service = "Operion API", status = "ok" }));
+// Kök adres simülatöre yönlenir: tünel linkini paylaşırken "/sim/" eklemeyi unutmak
+// sayfanın bozuk görünmesine yol açıyordu. Servis durumu /api/health altında kaldı.
+app.MapGet("/", () => Results.Redirect("/sim/")).AllowAnonymous();
+app.MapGet("/api/health", () => Results.Ok(new { service = "Arqenion API", status = "ok" })).AllowAnonymous();
 
 app.Run();
 
 static void LoadDotEnv()
 {
+    // Kökten (dotnet run --project backend/…) ya da backend klasöründen başlatılsa da backend/.env okunur.
     var candidates = new[]
     {
         Path.Combine(Directory.GetCurrentDirectory(), ".env"),
+        Path.Combine(Directory.GetCurrentDirectory(), "backend", ".env"),
         Path.Combine(AppContext.BaseDirectory, ".env"),
     };
     foreach (var path in candidates)
@@ -112,3 +203,6 @@ static void LoadDotEnv()
         return;
     }
 }
+
+// Uçtan uca HTTP testleri (WebApplicationFactory) için.
+public partial class Program { }

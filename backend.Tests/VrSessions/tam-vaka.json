@@ -1,0 +1,1414 @@
+{
+ "name": "tam-vaka",
+ "description": "Ameliyat öncesi dahil tam vaka: PRE01'de hasta formlarının kontrolü atlanır (hata, onam riski), sonra liste eksiksiz onaylanır; ardından 60 adım.",
+ "start": {
+  "scenarioId": "case-full-01",
+  "userId": "vr-test",
+  "seed": "vr-tam"
+ },
+ "events": [
+  {
+   "send": {
+    "eventId": "tam-vaka-001",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "checklist_confirmed",
+    "checkedItems": [
+     "PRE01.1",
+     "PRE01.2"
+    ]
+   },
+   "expect": {
+    "status": 200,
+    "success": false,
+    "currentNodeId": "PRE01",
+    "nextNodeId": "PRE01",
+    "deviationType": "CHECKLIST_INCOMPLETE",
+    "score": 90,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-002",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "checklist_confirmed",
+    "checkedItems": [
+     "PRE01.1",
+     "PRE01.2",
+     "PRE01.3",
+     "PRE01.4"
+    ]
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "PRE01",
+    "nextNodeId": "PRE02",
+    "deviationType": null,
+    "score": 90,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-003",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "checklist_confirmed",
+    "checkedItems": [
+     "PRE02.1",
+     "PRE02.2",
+     "PRE02.3",
+     "PRE02.4",
+     "PRE02.5",
+     "PRE02.6"
+    ]
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "PRE02",
+    "nextNodeId": "PRE03",
+    "deviationType": null,
+    "score": 90,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-004",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "checklist_confirmed",
+    "checkedItems": [
+     "PRE03.1",
+     "PRE03.2",
+     "PRE03.3",
+     "PRE03.4"
+    ]
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "PRE03",
+    "nextNodeId": "PRE04",
+    "deviationType": null,
+    "score": 90,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-005",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "SCALPEL_BLADE_10",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": false,
+    "currentNodeId": "PRE04",
+    "nextNodeId": "PRE04",
+    "deviationType": "WRONG_ORDER",
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-006",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "checklist_confirmed",
+    "checkedItems": [
+     "PRE04.1"
+    ]
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "PRE04",
+    "nextNodeId": "PRE05",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-007",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "checklist_confirmed",
+    "checkedItems": [
+     "PRE99.1"
+    ]
+   },
+   "expect": {
+    "status": 400,
+    "field": "checkedItems"
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-008",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "checklist_confirmed",
+    "checkedItems": [
+     "PRE05.1",
+     "PRE05.2",
+     "PRE05.3",
+     "PRE05.4",
+     "PRE05.5",
+     "PRE05.6",
+     "PRE05.7",
+     "PRE05.8"
+    ]
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "PRE05",
+    "nextNodeId": "PRE06",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-009",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "checklist_confirmed",
+    "checkedItems": [
+     "PRE06.1",
+     "PRE06.2",
+     "PRE06.3",
+     "PRE06.4",
+     "PRE06.5",
+     "PRE06.6"
+    ]
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "PRE06",
+    "nextNodeId": "PRE07",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-010",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "checklist_confirmed",
+    "checkedItems": [
+     "PRE07.1",
+     "PRE07.2",
+     "PRE07.3"
+    ]
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "PRE07",
+    "nextNodeId": "PRE08",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-011",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "checklist_confirmed",
+    "checkedItems": [
+     "PRE08.1",
+     "PRE08.2",
+     "PRE08.3",
+     "PRE08.4",
+     "PRE08.5",
+     "PRE08.6",
+     "PRE08.7"
+    ]
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "PRE08",
+    "nextNodeId": "PRE09",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-012",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "checklist_confirmed",
+    "checkedItems": [
+     "PRE09.1",
+     "PRE09.2",
+     "PRE09.3",
+     "PRE09.4",
+     "PRE09.5"
+    ]
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "PRE09",
+    "nextNodeId": "1",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-013",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "SCALPEL_BLADE_15",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "1",
+    "nextNodeId": "2",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-014",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "ESU_MONOPOLAR_PEN",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "2",
+    "nextNodeId": "3",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-015",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "FORCEPS_STILLE_NON_TOOTHED_15",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "3",
+    "nextNodeId": "4",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-016",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "RETRACTOR_ROUX_15",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "4",
+    "nextNodeId": "5",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-017",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "SCALPEL_BLADE_15",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "5",
+    "nextNodeId": "6",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-018",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "CLAMP_CRILE_STRAIGHT_14",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "6",
+    "nextNodeId": "7",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-019",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "CLAMP_CRILE_CURVED_14",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "7",
+    "nextNodeId": "8",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-020",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "CLAMP_CRILE_CURVED_14",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "8",
+    "nextNodeId": "9",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-021",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "SCALPEL_BLADE_15",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "9",
+    "nextNodeId": "10",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-022",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "SCISSORS_METZENBAUM",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "10",
+    "nextNodeId": "11",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-023",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "RETRACTOR_FARABEUF_15_SET",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "11",
+    "nextNodeId": "13",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-024",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "step_confirmed"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "13",
+    "nextNodeId": "14",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-025",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "step_confirmed"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "14",
+    "nextNodeId": "15",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-026",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "CLAMP_BABCOCK_16",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "15",
+    "nextNodeId": "16",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-027",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "step_confirmed"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "16",
+    "nextNodeId": "17",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-028",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "step_confirmed"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "17",
+    "nextNodeId": "18",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-029",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "step_confirmed"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "18",
+    "nextNodeId": "19",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-030",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "step_confirmed"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "19",
+    "nextNodeId": "22",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-031",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "step_confirmed"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "22",
+    "nextNodeId": "23",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-032",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "CLAMP_CRILE_CURVED_14",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "23",
+    "nextNodeId": "23",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-033",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "CLAMP_CRILE_CURVED_14",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "23",
+    "nextNodeId": "24",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-034",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "SCISSORS_METZENBAUM_CURVED",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "24",
+    "nextNodeId": "25",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-035",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "step_confirmed"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "25",
+    "nextNodeId": "26",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-036",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "SUTURE_SILK_3_0",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "26",
+    "nextNodeId": "27",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-037",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "NEEDLE_HOLDER_DEBAKEY_18",
+    "target": "SURGEON",
+    "sutureCode": "SUTURE_SILK_3_0"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "27",
+    "nextNodeId": "28",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-038",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "NEEDLE_HOLDER_DEBAKEY_18",
+    "target": "SURGEON",
+    "sutureCode": "SUTURE_POLYGLACTIN_2_0"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "28",
+    "nextNodeId": "29",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-039",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "step_confirmed"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "29",
+    "nextNodeId": "30",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-040",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "CLAMP_CRILE_STRAIGHT_14",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "30",
+    "nextNodeId": "31",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-041",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "SCALPEL_BLADE_15",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "31",
+    "nextNodeId": "32",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-042",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "step_confirmed"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "32",
+    "nextNodeId": "33",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-043",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "CLAMP_FOERSTER_CURVED_24",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "33",
+    "nextNodeId": "34",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-044",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "SCALPEL_BLADE_15",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "34",
+    "nextNodeId": "35",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-045",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "step_confirmed"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "35",
+    "nextNodeId": "36",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-046",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "CLAMP_CRILE_STRAIGHT_14",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "36",
+    "nextNodeId": "37",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-047",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "step_confirmed"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "37",
+    "nextNodeId": "38",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-048",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "step_confirmed"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "38",
+    "nextNodeId": "39",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-049",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "step_confirmed"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "39",
+    "nextNodeId": "40",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-050",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "step_confirmed"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "40",
+    "nextNodeId": "42",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-051",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "ISOTONIC_SALINE",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "42",
+    "nextNodeId": "43",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-052",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "SUCTION_TIP_YANKAUER",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "43",
+    "nextNodeId": "44",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-053",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "count_confirmed",
+    "counts": {
+     "COMPRESS": 10
+    }
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "44",
+    "nextNodeId": "45",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-054",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "count_confirmed",
+    "counts": {
+     "INSTRUMENT": 20
+    }
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "45",
+    "nextNodeId": "46",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-055",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "count_confirmed",
+    "counts": {
+     "NEEDLE": 3
+    }
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "46",
+    "nextNodeId": "47",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-056",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "step_confirmed"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "47",
+    "nextNodeId": "48",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-057",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "CLAMP_CRILE_CURVED_14",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "48",
+    "nextNodeId": "49",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-058",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "NEEDLE_HOLDER_DEBAKEY_18",
+    "target": "SURGEON",
+    "sutureCode": "SUTURE_POLYGLACTIN_0"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "49",
+    "nextNodeId": "50",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-059",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "NEEDLE_HOLDER_DEBAKEY_18",
+    "target": "SURGEON",
+    "sutureCode": "SUTURE_POLYGLACTIN_0"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "50",
+    "nextNodeId": "51",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-060",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "CLAMP_OCHSNER_KOCHER_CURVED_20",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "51",
+    "nextNodeId": "52",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-061",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "NEEDLE_HOLDER_DEBAKEY_18",
+    "target": "SURGEON",
+    "sutureCode": "SUTURE_POLYGLACTIN_0"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "52",
+    "nextNodeId": "53",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-062",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "ISOTONIC_SALINE",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "53",
+    "nextNodeId": "54",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-063",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "NEEDLE_HOLDER_DEBAKEY_18",
+    "target": "SURGEON",
+    "sutureCode": "SUTURE_POLYGLACTIN_2_0"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "54",
+    "nextNodeId": "55",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-064",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "FORCEPS_STILLE_NON_TOOTHED_15",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "55",
+    "nextNodeId": "56",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-065",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "NEEDLE_HOLDER_DEBAKEY_18",
+    "target": "SURGEON",
+    "sutureCode": "SUTURE_POLYPROPYLENE_3_0"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "56",
+    "nextNodeId": "57",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-066",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "STERILE_GAUZE_SPONGE",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "57",
+    "nextNodeId": "58",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-067",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "DRESSING_GAUZE_10X10",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "58",
+    "nextNodeId": "59",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-068",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "TAPE_SILK",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "59",
+    "nextNodeId": "60",
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "tam-vaka-069",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "step_confirmed"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "60",
+    "nextNodeId": null,
+    "deviationType": null,
+    "score": 85,
+    "branch": null,
+    "adaptive": [],
+    "completed": true
+   }
+  }
+ ],
+ "report": {
+  "score": 85,
+  "wrongActions": 2,
+  "correctActions": 66,
+  "complicationsTriggered": 0,
+  "complicationsResolved": 0
+ }
+}

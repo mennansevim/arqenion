@@ -1,0 +1,8 @@
+[
+  {"stepId": 50, "expected": "SUTURE_POLYGLACTIN_0", "actual": "SUTURE_POLYPROPYLENE_0", "parameters": {}, "scenario": "S50-E6"},
+  {"stepId": 50, "expected": "SUTURE_POLYGLACTIN_0", "actual": "SUTURE_POLYGLACTIN_RAPIDE", "parameters": {}, "scenario": "S50-E7"},
+  {"stepId": 52, "expected": "SUTURE_POLYGLACTIN_0", "actual": "SUTURE_POLYPROPYLENE_0", "parameters": {}, "scenario": "S52-E6"},
+  {"stepId": 52, "expected": "SUTURE_POLYGLACTIN_0", "actual": "SUTURE_POLYGLACTIN_RAPIDE", "parameters": {}, "scenario": "S52-E7"},
+  {"stepId": 56, "expected": null, "actual": "SUTURE_POLYPROPYLENE_3_0", "parameters": {"SKIN_CLOSURE_TYPE": "AESTHETIC"}, "scenario": "S56-E5"},
+  {"stepId": 56, "expected": null, "actual": "SUTURE_POLIGLECAPRONE_4_0", "parameters": {"SKIN_CLOSURE_TYPE": "STANDARD"}, "scenario": "S56-E6"}
+]

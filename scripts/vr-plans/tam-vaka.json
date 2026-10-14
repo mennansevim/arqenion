@@ -1,0 +1,38 @@
+{
+ "name": "tam-vaka",
+ "description": "Ameliyat öncesi dahil tam vaka: PRE01'de hasta formlarının kontrolü atlanır (hata, onam riski), sonra liste eksiksiz onaylanır; ardından 60 adım.",
+ "start": {
+  "scenarioId": "case-full-01",
+  "userId": "vr-test",
+  "seed": "vr-tam"
+ },
+ "inject": [
+  {
+   "at": "PRE01",
+   "send": {
+    "eventType": "checklist_confirmed",
+    "checkedItems": [
+     "PRE01.1",
+     "PRE01.2"
+    ]
+   }
+  },
+  {
+   "at": "PRE04",
+   "send": {
+    "eventType": "instrument_delivered",
+    "instrumentCode": "SCALPEL_BLADE_10",
+    "target": "SURGEON"
+   }
+  },
+  {
+   "at": "PRE05",
+   "send": {
+    "eventType": "checklist_confirmed",
+    "checkedItems": [
+     "PRE99.1"
+    ]
+   }
+  }
+ ]
+}

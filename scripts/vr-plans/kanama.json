@@ -1,0 +1,10 @@
+{
+ "name": "kanama",
+ "description": "Kanamalı vaka: 40 → 41 hemostaz, 43 → 43a ara hemostaz ve tekrar yıkama.",
+ "start": {
+  "scenarioId": "case-bleeding-01",
+  "userId": "vr-test",
+  "seed": "vr-kanama"
+ },
+ "inject": []
+}
