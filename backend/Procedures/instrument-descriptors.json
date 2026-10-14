@@ -1,0 +1,29 @@
+{
+  "about": "Senaryo başlıklarındaki niteleyicilerin (dişli, travmatik, numaralı) model kataloğundaki alet adlarında geçmediği durumlar için ek kelimeler. Yalnızca klinik metin/senaryo eşleştirmede kullanılır (backend FlowClinicalText ve ai-gateway knowledge). Yanıltıcı aletlerin kendisi model kataloğunda (procedure-model/tools/clinical_review.py, 6. tur).",
+  "descriptors": {
+    "CLAMP_OCHSNER_KOCHER_CURVED_20": [
+      "dişli",
+      "travmatik"
+    ],
+    "CLAMP_ALLIS_15": [
+      "dişli",
+      "travmatik"
+    ],
+    "FORCEPS_TOOTHED_15": [
+      "travmatik",
+      "pens"
+    ],
+    "SCALPEL_BLADE_11": [
+      "numaralı"
+    ],
+    "SCALPEL_BLADE_12": [
+      "numaralı"
+    ],
+    "SCALPEL_BLADE_10": [
+      "numaralı"
+    ],
+    "SCALPEL_BLADE_15": [
+      "numaralı"
+    ]
+  }
+}

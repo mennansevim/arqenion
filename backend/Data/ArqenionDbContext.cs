@@ -1,11 +1,11 @@
 using Microsoft.EntityFrameworkCore;
-using Operion.Api.Models;
+using Arqenion.Api.Models;
 
-namespace Operion.Api.Data;
+namespace Arqenion.Api.Data;
 
-public sealed class OperionDbContext : DbContext
+public sealed class ArqenionDbContext : DbContext
 {
-    public OperionDbContext(DbContextOptions<OperionDbContext> options) : base(options) { }
+    public ArqenionDbContext(DbContextOptions<ArqenionDbContext> options) : base(options) { }
 
     public DbSet<User> Users => Set<User>();
     public DbSet<SessionRecord> Sessions => Set<SessionRecord>();

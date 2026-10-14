@@ -1,0 +1,2187 @@
+{
+ "procedure": "open-appendectomy",
+ "version": "2.4.0",
+ "conditions": {
+  "EXPOSURE_INSUFFICIENT": {
+   "code": "EXPOSURE_INSUFFICIENT",
+   "description": "Farabeuf ile yeterli cerrahi görüş sağlanamadı ve cerrah ek ekartasyon istedi",
+   "source": "SCENARIO",
+   "evaluatedAt": 11
+  },
+  "ADHESIONS_PRESENT": {
+   "code": "ADHESIONS_PRESENT",
+   "description": "Appendiks, çekum ve çevre dokular arasında yapışıklık var",
+   "source": "SCENARIO",
+   "evaluatedAt": 19,
+   "scenarioField": "patient.hasAdhesion"
+  },
+  "LIGATURE_NOT_SECURE": {
+   "code": "LIGATURE_NOT_SECURE",
+   "description": "Cerrah appendiks kökündeki bağı güvenli bulmadı",
+   "source": "ADAPTIVE",
+   "evaluatedAt": 29
+  },
+  "BLEEDING_DETECTED": {
+   "code": "BLEEDING_DETECTED",
+   "description": "Cerrahi sahada kanama odağı saptandı",
+   "source": "ADAPTIVE",
+   "evaluatedAt": 40,
+   "reviewQuestion": 27
+  },
+  "COUNT_MISMATCH": {
+   "code": "COUNT_MISMATCH",
+   "description": "Kompres / alet / iğne sayımında uyumsuzluk var",
+   "source": "RUNTIME",
+   "evaluatedAt": 47,
+   "note": "count_confirmed sayıları beklenenle uyuşmadığında; senaryo eksik malzeme de enjekte edebilir"
+  },
+  "BLEEDING_AFTER_IRRIGATION": {
+   "code": "BLEEDING_AFTER_IRRIGATION",
+   "description": "Yıkama ve aspirasyondan sonra sahada kanama görüldü",
+   "source": "ADAPTIVE",
+   "evaluatedAt": 43,
+   "reviewQuestion": 27,
+   "maxEvaluations": 2
+  },
+  "ITEM_FOUND_ON_RECOUNT": {
+   "code": "ITEM_FOUND_ON_RECOUNT",
+   "description": "Eksik malzeme tekrar sayımda bulundu (sayım hatası)",
+   "source": "ADAPTIVE",
+   "evaluatedAt": "47a",
+   "reviewQuestion": 26
+  },
+  "ITEM_FOUND_IN_FIELD": {
+   "code": "ITEM_FOUND_IN_FIELD",
+   "description": "Eksik malzeme saha aramasında bulundu",
+   "source": "ADAPTIVE",
+   "evaluatedAt": "47b",
+   "reviewQuestion": 26
+  },
+  "ITEM_FOUND_ON_IMAGING": {
+   "code": "ITEM_FOUND_ON_IMAGING",
+   "description": "Eksik malzeme radyolojik görüntülemede hastada görüldü",
+   "source": "ADAPTIVE",
+   "evaluatedAt": "47d",
+   "reviewQuestion": 26
+  },
+  "SURGICAL_SITE_INFECTION": {
+   "code": "SURGICAL_SITE_INFECTION",
+   "description": "Kirli bistüri ucu kullanımına bağlı cerrahi alan enfeksiyonu gelişti",
+   "source": "ADAPTIVE",
+   "evaluatedAt": "debrief",
+   "kind": "OUTCOME",
+   "reviewQuestion": 2,
+   "note": "Akışı değiştirmez; sonucu (debrief, skor, dijital ikiz) etkiler"
+  }
+ },
+ "parameters": {
+  "PATIENT_BODY_TYPE": {
+   "type": "enum",
+   "values": [
+    "THIN",
+    "NORMAL",
+    "OBESE"
+   ],
+   "source": "SCENARIO",
+   "scenarioField": "patient.bodyType",
+   "default": "NORMAL",
+   "reviewQuestion": 11
+  },
+  "MESO_VESSELS": {
+   "type": "list",
+   "items": {
+    "caliber": [
+     "SMALL",
+     "MEDIUM",
+     "LARGE"
+    ]
+   },
+   "source": "SCENARIO",
+   "default": [
+    {
+     "caliber": "MEDIUM"
+    },
+    {
+     "caliber": "MEDIUM"
+    }
+   ],
+   "reviewQuestion": 15,
+   "note": "Klemplenecek mezappendiks damarları; adet ve çap klemp sayısını ve tipini belirler"
+  },
+  "SKIN_CLOSURE_TYPE": {
+   "type": "enum",
+   "values": [
+    "STANDARD",
+    "AESTHETIC"
+   ],
+   "source": "SCENARIO",
+   "default": "STANDARD",
+   "note": "Cilt kapatma tipi; senaryo ya da cerrah istemi belirler"
+  }
+ },
+ "parameterDefaults": {
+  "PATIENT_BODY_TYPE": "NORMAL",
+  "MESO_VESSELS": [
+   {
+    "caliber": "MEDIUM"
+   },
+   {
+    "caliber": "MEDIUM"
+   }
+  ],
+  "SKIN_CLOSURE_TYPE": "STANDARD"
+ },
+ "entry": "PRE01",
+ "nodes": [
+  {
+   "id": "PRE01",
+   "kind": "preop",
+   "isDecision": false,
+   "label": "Hasta ve ameliyat doğrulaması",
+   "next": "PRE02",
+   "branches": []
+  },
+  {
+   "id": "PRE02",
+   "kind": "preop",
+   "isDecision": false,
+   "label": "Hastanın ameliyat odasına alınması ve genel anestezi",
+   "next": "PRE03",
+   "branches": []
+  },
+  {
+   "id": "PRE03",
+   "kind": "preop",
+   "isDecision": false,
+   "label": "Monopolar elektrokoter hazırlığı",
+   "next": "PRE04",
+   "branches": []
+  },
+  {
+   "id": "PRE04",
+   "kind": "preop",
+   "isDecision": false,
+   "label": "Hastanın antiseptik solüsyon ile boyanması",
+   "next": "PRE05",
+   "branches": []
+  },
+  {
+   "id": "PRE05",
+   "kind": "preop",
+   "isDecision": false,
+   "label": "Hastanın steril örtülmesi",
+   "next": "PRE06",
+   "branches": []
+  },
+  {
+   "id": "PRE06",
+   "kind": "preop",
+   "isDecision": false,
+   "label": "Mayo masasının düzenlenmesi",
+   "next": "PRE07",
+   "branches": []
+  },
+  {
+   "id": "PRE07",
+   "kind": "preop",
+   "isDecision": false,
+   "label": "Koter kalemi ve aspiratör hortumunun steril alana açılması",
+   "next": "PRE08",
+   "branches": []
+  },
+  {
+   "id": "PRE08",
+   "kind": "preop",
+   "isDecision": false,
+   "label": "Koter ve aspiratör bağlantılarının kurulması",
+   "next": "PRE09",
+   "branches": []
+  },
+  {
+   "id": "PRE09",
+   "kind": "preop",
+   "isDecision": false,
+   "label": "Başlangıç sayımı",
+   "next": 1,
+   "branches": []
+  },
+  {
+   "id": 1,
+   "kind": "step",
+   "isDecision": false,
+   "label": "Sağ alt kadranda McBurney (veya Elliot) cilt insizyonu",
+   "phaseId": "PH01",
+   "subflowId": null,
+   "action": "INCISE",
+   "instrument": "SCALPEL_BLADE_10",
+   "target": "SKIN",
+   "roles": [
+    "SURGEON"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [
+    "SCALPEL_BLADE_10",
+    "SCALPEL_BLADE_15"
+   ],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 2,
+   "branches": []
+  },
+  {
+   "id": 2,
+   "kind": "step",
+   "isDecision": false,
+   "label": "Cilt altı yağ dokusunun diseksiyonu",
+   "phaseId": "PH01",
+   "subflowId": null,
+   "action": "DISSECT",
+   "instrument": "ESU_MONOPOLAR_PEN",
+   "target": "SUBCUTANEOUS_FAT",
+   "roles": [
+    "SURGEON"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [
+    "ESU_MONOPOLAR_PEN"
+   ],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 3,
+   "branches": []
+  },
+  {
+   "id": 3,
+   "kind": "step",
+   "isDecision": false,
+   "label": "Camper ve Scarpa fasya tabakalarının açılması",
+   "phaseId": "PH01",
+   "subflowId": null,
+   "action": "OPEN",
+   "instrument": "FORCEPS_STILLE_NON_TOOTHED_15",
+   "target": "CAMPER_SCARPA_FASCIA",
+   "roles": [
+    "SURGEON"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [
+    "FORCEPS_STILLE_NON_TOOTHED_15",
+    "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+   ],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 4,
+   "branches": []
+  },
+  {
+   "id": 4,
+   "kind": "step",
+   "isDecision": false,
+   "label": "Dış oblik aponevrozunun ortaya konması",
+   "phaseId": "PH01",
+   "subflowId": null,
+   "action": "EXPOSE",
+   "instrument": "RETRACTOR_FARABEUF_15_SET",
+   "target": "EXTERNAL_OBLIQUE_APONEUROSIS",
+   "roles": [
+    "SURGEON",
+    "ASSISTANT"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [
+    "RETRACTOR_FARABEUF_15_SET",
+    "RETRACTOR_ROUX_14",
+    "RETRACTOR_ROUX_15",
+    "RETRACTOR_FARABEUF_LONG_SET",
+    "RETRACTOR_ROUX_LONG"
+   ],
+   "parameterRules": [
+    {
+     "parameter": "PATIENT_BODY_TYPE",
+     "source": "R5 (Q-B2)",
+     "expectedInstruments": {
+      "THIN": [
+       "RETRACTOR_FARABEUF_15_SET",
+       "RETRACTOR_ROUX_14",
+       "RETRACTOR_ROUX_15"
+      ],
+      "NORMAL": [
+       "RETRACTOR_FARABEUF_15_SET",
+       "RETRACTOR_ROUX_14",
+       "RETRACTOR_ROUX_15"
+      ],
+      "OBESE": [
+       "RETRACTOR_FARABEUF_LONG_SET",
+       "RETRACTOR_ROUX_LONG"
+      ]
+     },
+     "note": "Kilolu hastada 15 cm'den uzun Farabeuf, gerekirse 15 cm'den uzun Roux; 15 cm uzatmak hata sayılır."
+    }
+   ],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 5,
+   "branches": []
+  },
+  {
+   "id": 5,
+   "kind": "step",
+   "isDecision": false,
+   "label": "Dış oblik aponevrozunun insize edilmesi",
+   "phaseId": "PH01",
+   "subflowId": null,
+   "action": "INCISE",
+   "instrument": "SCALPEL_BLADE_15",
+   "target": "EXTERNAL_OBLIQUE_APONEUROSIS",
+   "roles": [
+    "SURGEON"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [
+    "SCALPEL_BLADE_15"
+   ],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 6,
+   "branches": []
+  },
+  {
+   "id": 6,
+   "kind": "step",
+   "isDecision": false,
+   "label": "Kas liflerinin künt diseksiyonla ayrılması",
+   "phaseId": "PH01",
+   "subflowId": null,
+   "action": "BLUNT_DISSECT",
+   "instrument": "CLAMP_CRILE_STRAIGHT_14",
+   "target": "ABDOMINAL_MUSCLE_FIBERS",
+   "roles": [
+    "SURGEON"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [
+    "CLAMP_CRILE_STRAIGHT_14"
+   ],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 7,
+   "branches": []
+  },
+  {
+   "id": 7,
+   "kind": "step",
+   "isDecision": false,
+   "label": "Transversalis fasyanın açılması",
+   "phaseId": "PH01",
+   "subflowId": null,
+   "action": "OPEN",
+   "instrument": "CLAMP_CRILE_CURVED_14",
+   "target": "TRANSVERSALIS_FASCIA",
+   "roles": [
+    "SURGEON"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [
+    "CLAMP_CRILE_CURVED_14"
+   ],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 8,
+   "branches": []
+  },
+  {
+   "id": 8,
+   "kind": "step",
+   "isDecision": false,
+   "label": "Peritonun tutulması",
+   "phaseId": "PH01",
+   "subflowId": null,
+   "action": "GRASP",
+   "instrument": "FORCEPS_STILLE_NON_TOOTHED_15",
+   "target": "PERITONEUM",
+   "roles": [
+    "SURGEON"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [
+    "FORCEPS_STILLE_NON_TOOTHED_15",
+    "FORCEPS_DEBAKEY",
+    "CLAMP_CRILE_CURVED_14"
+   ],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 9,
+   "branches": []
+  },
+  {
+   "id": 9,
+   "kind": "step",
+   "isDecision": false,
+   "label": "Peritonun küçük bir kesi ile açılması",
+   "phaseId": "PH01",
+   "subflowId": null,
+   "action": "INCISE",
+   "instrument": "SCALPEL_BLADE_15",
+   "target": "PERITONEUM",
+   "roles": [
+    "SURGEON"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [
+    "SCALPEL_BLADE_15"
+   ],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 10,
+   "branches": []
+  },
+  {
+   "id": 10,
+   "kind": "step",
+   "isDecision": false,
+   "label": "Periton açıklığının makas ile genişletilmesi",
+   "phaseId": "PH01",
+   "subflowId": null,
+   "action": "EXTEND_INCISION",
+   "instrument": "SCISSORS_METZENBAUM",
+   "target": "PERITONEUM",
+   "roles": [
+    "SURGEON"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [
+    "SCISSORS_METZENBAUM"
+   ],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 11,
+   "branches": []
+  },
+  {
+   "id": 11,
+   "kind": "step",
+   "isDecision": true,
+   "label": "Farabeuf ekartörünün yerleştirilmesi",
+   "phaseId": "PH02",
+   "subflowId": null,
+   "action": "RETRACT",
+   "instrument": "RETRACTOR_FARABEUF_15_SET",
+   "target": "WOUND_EDGES",
+   "roles": [
+    "SURGEON",
+    "ASSISTANT"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [
+    "RETRACTOR_FARABEUF_15_SET",
+    "RETRACTOR_FARABEUF_LONG_SET"
+   ],
+   "parameterRules": [
+    {
+     "parameter": "PATIENT_BODY_TYPE",
+     "source": "Klinik teyit R2",
+     "expectedInstruments": {
+      "THIN": [
+       "RETRACTOR_FARABEUF_15_SET"
+      ],
+      "NORMAL": [
+       "RETRACTOR_FARABEUF_15_SET"
+      ],
+      "OBESE": [
+       "RETRACTOR_FARABEUF_LONG_SET"
+      ]
+     },
+     "note": "Kilolu hastada 15 cm'den uzun Farabeuf; 15 cm uzatmak hata sayılır."
+    }
+   ],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 13,
+   "branches": [
+    {
+     "when": "EXPOSURE_INSUFFICIENT",
+     "goTo": 12
+    }
+   ]
+  },
+  {
+   "id": 12,
+   "kind": "conditional",
+   "isDecision": false,
+   "label": "Gerekirse Roux ekartörünün yerleştirilmesi",
+   "phaseId": "PH02",
+   "subflowId": null,
+   "action": "RETRACT",
+   "instrument": "RETRACTOR_ROUX_14",
+   "target": "WOUND_EDGES",
+   "roles": [
+    "SURGEON",
+    "ASSISTANT"
+   ],
+   "mandatory": false,
+   "condition": "EXPOSURE_INSUFFICIENT",
+   "accepted": [
+    "RETRACTOR_ROUX_14",
+    "RETRACTOR_ROUX_15",
+    "RETRACTOR_ROUX_LONG"
+   ],
+   "parameterRules": [
+    {
+     "parameter": "PATIENT_BODY_TYPE",
+     "source": "Klinik teyit R2",
+     "expectedInstruments": {
+      "THIN": [
+       "RETRACTOR_ROUX_14",
+       "RETRACTOR_ROUX_15"
+      ],
+      "NORMAL": [
+       "RETRACTOR_ROUX_14",
+       "RETRACTOR_ROUX_15"
+      ],
+      "OBESE": [
+       "RETRACTOR_ROUX_LONG"
+      ]
+     },
+     "note": "Kilolu hastada gerekirse 15 cm'den uzun Roux."
+    }
+   ],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 13,
+   "branches": []
+  },
+  {
+   "id": 13,
+   "kind": "step",
+   "isDecision": false,
+   "label": "Cerrahi sahanın ekspoze edilmesi",
+   "phaseId": "PH02",
+   "subflowId": null,
+   "action": "EXPOSE",
+   "instrument": "RETRACTOR_FARABEUF_15_SET",
+   "target": "SURGICAL_FIELD",
+   "roles": [
+    "SURGEON",
+    "ASSISTANT"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 14,
+   "branches": []
+  },
+  {
+   "id": 14,
+   "kind": "step",
+   "isDecision": false,
+   "label": "Çekumun bulunması",
+   "phaseId": "PH03",
+   "subflowId": null,
+   "action": "LOCATE",
+   "instrument": "HAND",
+   "target": "CECUM",
+   "roles": [
+    "SURGEON"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [
+    "HAND"
+   ],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 15,
+   "branches": []
+  },
+  {
+   "id": 15,
+   "kind": "step",
+   "isDecision": false,
+   "label": "Çekumun atravmatik Babcock pens ile tutulması",
+   "phaseId": "PH03",
+   "subflowId": null,
+   "action": "GRASP",
+   "instrument": "CLAMP_BABCOCK_16",
+   "target": "CECUM",
+   "roles": [
+    "SURGEON"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [
+    "CLAMP_BABCOCK_16"
+   ],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 16,
+   "branches": []
+  },
+  {
+   "id": 16,
+   "kind": "step",
+   "isDecision": false,
+   "label": "Çekumun yara dışına alınması",
+   "phaseId": "PH03",
+   "subflowId": null,
+   "action": "EXTERIORIZE",
+   "instrument": "CLAMP_BABCOCK_16",
+   "target": "CECUM",
+   "roles": [
+    "SURGEON"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 17,
+   "branches": []
+  },
+  {
+   "id": 17,
+   "kind": "step",
+   "isDecision": false,
+   "label": "Teniaların takip edilerek appendiksin bulunması",
+   "phaseId": "PH04",
+   "subflowId": null,
+   "action": "LOCATE",
+   "instrument": "HAND",
+   "target": "APPENDIX",
+   "roles": [
+    "SURGEON"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [
+    "HAND"
+   ],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 18,
+   "branches": []
+  },
+  {
+   "id": 18,
+   "kind": "step",
+   "isDecision": false,
+   "label": "Appendiks ucunun Babcock pens ile tutulması",
+   "phaseId": "PH04",
+   "subflowId": null,
+   "action": "GRASP",
+   "instrument": "CLAMP_BABCOCK_16",
+   "target": "APPENDIX_TIP",
+   "roles": [
+    "SURGEON"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 19,
+   "branches": []
+  },
+  {
+   "id": 19,
+   "kind": "step",
+   "isDecision": true,
+   "label": "Yapışıklıkların değerlendirilmesi",
+   "phaseId": "PH05",
+   "subflowId": null,
+   "action": "EVALUATE",
+   "instrument": "HAND",
+   "target": "ADHESIONS",
+   "roles": [
+    "SURGEON"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [
+    "HAND"
+   ],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 22,
+   "branches": [
+    {
+     "when": "ADHESIONS_PRESENT",
+     "goTo": 20
+    }
+   ]
+  },
+  {
+   "id": 20,
+   "kind": "conditional",
+   "isDecision": false,
+   "label": "Yapışıklıkların klemp yardımı ile gerilmesi",
+   "phaseId": "PH05",
+   "subflowId": null,
+   "action": "TENSION",
+   "instrument": "CLAMP_GEMINI_CURVED_20",
+   "target": "ADHESIONS",
+   "roles": [
+    "SURGEON",
+    "ASSISTANT"
+   ],
+   "mandatory": false,
+   "condition": "ADHESIONS_PRESENT",
+   "accepted": [
+    "CLAMP_GEMINI_CURVED_20"
+   ],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 21,
+   "branches": []
+  },
+  {
+   "id": 21,
+   "kind": "conditional",
+   "isDecision": false,
+   "label": "Yapışıklıkların makas veya monopolar koter ile ayrılması",
+   "phaseId": "PH05",
+   "subflowId": null,
+   "action": "SEPARATE",
+   "instrument": "SCISSORS_METZENBAUM_CURVED",
+   "target": "ADHESIONS",
+   "roles": [
+    "SURGEON"
+   ],
+   "mandatory": false,
+   "condition": "ADHESIONS_PRESENT",
+   "accepted": [
+    "SCISSORS_METZENBAUM_CURVED",
+    "ESU_MONOPOLAR_PEN"
+   ],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 22,
+   "branches": []
+  },
+  {
+   "id": 22,
+   "kind": "step",
+   "isDecision": false,
+   "label": "Mezappendiksin ortaya konması",
+   "phaseId": "PH06",
+   "subflowId": null,
+   "action": "EXPOSE",
+   "instrument": "CLAMP_BABCOCK_16",
+   "target": "MESOAPPENDIX",
+   "roles": [
+    "SURGEON"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 23,
+   "branches": []
+  },
+  {
+   "id": 23,
+   "kind": "step",
+   "isDecision": false,
+   "label": "Mezappendiks damarlarının bağlanması",
+   "phaseId": "PH06",
+   "subflowId": null,
+   "action": "LIGATE",
+   "instrument": "CLAMP_CRILE_CURVED_14",
+   "target": "MESOAPPENDICEAL_VESSELS",
+   "roles": [
+    "SURGEON"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [
+    "CLAMP_CRILE_CURVED_14",
+    "FORCEPS_SEMKEN_NON_TOOTHED_15_5",
+    "ESU_MONOPOLAR_PEN",
+    "NEEDLE_HOLDER_DEBAKEY_18"
+   ],
+   "parameterRules": [],
+   "dynamicQuantity": {
+    "parameter": "MESO_VESSELS",
+    "rule": "Her damar için 1 hemostatik klemp",
+    "instrumentByCaliber": {
+     "SMALL": "CLAMP_MOSQUITO",
+     "MEDIUM": "CLAMP_CRILE_CURVED_14",
+     "LARGE": "CLAMP_PEAN"
+    }
+   },
+   "pending": [],
+   "next": 24,
+   "branches": []
+  },
+  {
+   "id": 24,
+   "kind": "step",
+   "isDecision": false,
+   "label": "Mezappendiksin makas ile kesilmesi",
+   "phaseId": "PH06",
+   "subflowId": null,
+   "action": "CUT",
+   "instrument": "SCISSORS_METZENBAUM_CURVED",
+   "target": "MESOAPPENDIX",
+   "roles": [
+    "SURGEON"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [
+    "SCISSORS_METZENBAUM_CURVED"
+   ],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 25,
+   "branches": []
+  },
+  {
+   "id": 25,
+   "kind": "step",
+   "isDecision": false,
+   "label": "Appendiks kökünün tamamen ortaya çıkarılması",
+   "phaseId": "PH07",
+   "subflowId": null,
+   "action": "EXPOSE",
+   "instrument": "CLAMP_BABCOCK_16",
+   "target": "APPENDIX_BASE",
+   "roles": [
+    "SURGEON"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 26,
+   "branches": []
+  },
+  {
+   "id": 26,
+   "kind": "step",
+   "isDecision": false,
+   "label": "3/0 ipek sütürün hazırlanması",
+   "phaseId": "PH07",
+   "subflowId": null,
+   "action": "PREPARE",
+   "instrument": "SUTURE_SILK_3_0",
+   "target": "SUTURE_MATERIAL",
+   "roles": [
+    "SCRUB"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [
+    "SUTURE_SILK_3_0"
+   ],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 27,
+   "branches": []
+  },
+  {
+   "id": 27,
+   "kind": "step",
+   "isDecision": false,
+   "label": "Appendiks kökü çevresine purse-string (çevre) sütürü konulması",
+   "phaseId": "PH07",
+   "subflowId": null,
+   "action": "PURSE_STRING_SUTURE",
+   "instrument": "NEEDLE_HOLDER_DEBAKEY_18",
+   "target": "CECAL_WALL_AROUND_BASE",
+   "roles": [
+    "SURGEON"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [
+    "NEEDLE_HOLDER_DEBAKEY_18"
+   ],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 28,
+   "branches": []
+  },
+  {
+   "id": 28,
+   "kind": "step",
+   "isDecision": false,
+   "label": "Appendiks kökünün 2/0 Poliglaktin (Vicryl) ile bağlanması",
+   "phaseId": "PH08",
+   "subflowId": null,
+   "action": "LIGATE",
+   "instrument": "SUTURE_POLYGLACTIN_2_0",
+   "target": "APPENDIX_BASE",
+   "roles": [
+    "SURGEON"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [
+    "SUTURE_POLYGLACTIN_2_0",
+    "NEEDLE_HOLDER_DEBAKEY_18"
+   ],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 29,
+   "branches": []
+  },
+  {
+   "id": 29,
+   "kind": "step",
+   "isDecision": true,
+   "label": "Bağ sağlamlığının kontrol edilmesi",
+   "phaseId": "PH08",
+   "subflowId": null,
+   "action": "CHECK",
+   "instrument": "HAND",
+   "target": "APPENDIX_BASE",
+   "roles": [
+    "SURGEON"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [
+    "HAND"
+   ],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 30,
+   "branches": [
+    {
+     "when": "LIGATURE_NOT_SECURE",
+     "goTo": 28,
+     "note": "Bağ yenilenir",
+     "maxIterations": 1
+    }
+   ]
+  },
+  {
+   "id": 30,
+   "kind": "step",
+   "isDecision": false,
+   "label": "Bağın distal tarafına düz dişsiz işaret pensinin konulması",
+   "phaseId": "PH09",
+   "subflowId": null,
+   "action": "CLAMP",
+   "instrument": "CLAMP_CRILE_STRAIGHT_14",
+   "target": "APPENDIX",
+   "roles": [
+    "SURGEON"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [
+    "CLAMP_CRILE_STRAIGHT_14"
+   ],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 31,
+   "branches": []
+  },
+  {
+   "id": 31,
+   "kind": "step",
+   "isDecision": false,
+   "label": "No:15 bistürinin hazırlanması",
+   "phaseId": "PH10",
+   "subflowId": null,
+   "action": "PREPARE",
+   "instrument": "SCALPEL_BLADE_15",
+   "target": "SCALPEL",
+   "roles": [
+    "SCRUB"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [
+    "SCALPEL_BLADE_15"
+   ],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 32,
+   "branches": []
+  },
+  {
+   "id": 32,
+   "kind": "step",
+   "isDecision": false,
+   "label": "İşaret pensinin distalinden appendiksin kesilmesi",
+   "phaseId": "PH10",
+   "subflowId": null,
+   "action": "CUT",
+   "instrument": "SCALPEL_BLADE_15",
+   "target": "APPENDIX",
+   "roles": [
+    "SURGEON"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 33,
+   "branches": []
+  },
+  {
+   "id": 33,
+   "kind": "step",
+   "isDecision": false,
+   "label": "Kesilen yüzeyin batikonlu fındık tampon ile silinmesi",
+   "phaseId": "PH11",
+   "subflowId": null,
+   "action": "WIPE",
+   "instrument": "CLAMP_FOERSTER_CURVED_24",
+   "target": "APPENDIX_STUMP",
+   "roles": [
+    "SURGEON"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [
+    "CLAMP_FOERSTER_CURVED_24"
+   ],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 34,
+   "branches": []
+  },
+  {
+   "id": 34,
+   "kind": "step",
+   "isDecision": false,
+   "label": "Kirlenmiş bistüri ucunun değiştirilmesi",
+   "phaseId": "PH11",
+   "subflowId": null,
+   "action": "REPLACE",
+   "instrument": "SCALPEL_BLADE_15",
+   "target": "SCALPEL",
+   "roles": [
+    "SCRUB"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [
+    "SCALPEL_BLADE_15"
+   ],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 35,
+   "branches": []
+  },
+  {
+   "id": 35,
+   "kind": "step",
+   "isDecision": false,
+   "label": "Önceden hazırlanmış purse-string sütürün sıkılması",
+   "phaseId": "PH12",
+   "subflowId": null,
+   "action": "TIGHTEN",
+   "instrument": "SUTURE_SILK_3_0",
+   "target": "PURSE_STRING_SUTURE",
+   "roles": [
+    "SURGEON"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 36,
+   "branches": []
+  },
+  {
+   "id": 36,
+   "kind": "step",
+   "isDecision": false,
+   "label": "Appendiks güdüğünün çekum içine gömülmesi",
+   "phaseId": "PH12",
+   "subflowId": null,
+   "action": "INVERT",
+   "instrument": "CLAMP_CRILE_STRAIGHT_14",
+   "target": "APPENDIX_STUMP",
+   "roles": [
+    "SURGEON"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [
+    "CLAMP_CRILE_STRAIGHT_14",
+    "CLAMP_KELLY_RANKIN_14"
+   ],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 37,
+   "branches": []
+  },
+  {
+   "id": 37,
+   "kind": "step",
+   "isDecision": false,
+   "label": "Çevre sütürünün düğümlenmesi",
+   "phaseId": "PH12",
+   "subflowId": null,
+   "action": "KNOT",
+   "instrument": "SUTURE_SILK_3_0",
+   "target": "PURSE_STRING_SUTURE",
+   "roles": [
+    "SURGEON"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 38,
+   "branches": []
+  },
+  {
+   "id": 38,
+   "kind": "step",
+   "isDecision": false,
+   "label": "Çıkarılan appendiksin patoloji kabına alınması",
+   "phaseId": "PH13",
+   "subflowId": null,
+   "action": "TRANSFER_SPECIMEN",
+   "instrument": "CLAMP_BABCOCK_16",
+   "target": "SPECIMEN",
+   "roles": [
+    "SURGEON",
+    "SCRUB",
+    "CIRCULATOR"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 39,
+   "branches": []
+  },
+  {
+   "id": 39,
+   "kind": "step",
+   "isDecision": false,
+   "label": "Patoloji kabının etiketlenmesi",
+   "phaseId": "PH13",
+   "subflowId": null,
+   "action": "LABEL",
+   "instrument": null,
+   "target": "SPECIMEN_CONTAINER",
+   "roles": [
+    "CIRCULATOR"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 40,
+   "branches": []
+  },
+  {
+   "id": 40,
+   "kind": "step",
+   "isDecision": true,
+   "label": "Cerrahi sahanın kanama açısından kontrol edilmesi",
+   "phaseId": "PH14",
+   "subflowId": null,
+   "action": "INSPECT",
+   "instrument": "HAND",
+   "target": "SURGICAL_FIELD",
+   "roles": [
+    "SURGEON"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [
+    "HAND"
+   ],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 42,
+   "branches": [
+    {
+     "when": "BLEEDING_DETECTED",
+     "goTo": 41
+    }
+   ]
+  },
+  {
+   "id": 41,
+   "kind": "conditional",
+   "isDecision": false,
+   "label": "Gerekli bölgelerde hemostaz sağlanması",
+   "phaseId": "PH14",
+   "subflowId": null,
+   "action": "HEMOSTASIS",
+   "instrument": "CLAMP_MOSQUITO",
+   "target": "BLEEDING_SITES",
+   "roles": [
+    "SURGEON"
+   ],
+   "mandatory": false,
+   "condition": "BLEEDING_DETECTED",
+   "accepted": [
+    "CLAMP_MOSQUITO",
+    "CLAMP_PEAN",
+    "CLAMP_CRILE_STRAIGHT_14",
+    "CLAMP_CRILE_CURVED_14",
+    "CLAMP_CRILE_RANKIN_CURVED_16",
+    "CLAMP_ROCHESTER_PEAN_CURVED_14",
+    "ESU_MONOPOLAR_PEN"
+   ],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 42,
+   "branches": []
+  },
+  {
+   "id": 42,
+   "kind": "step",
+   "isDecision": false,
+   "label": "Karın içinin izotonik serum ile yıkanması",
+   "phaseId": "PH15",
+   "subflowId": null,
+   "action": "IRRIGATE",
+   "instrument": "ISOTONIC_SALINE",
+   "target": "PERITONEAL_CAVITY",
+   "roles": [
+    "SURGEON"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [
+    "ISOTONIC_SALINE"
+   ],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 43,
+   "branches": []
+  },
+  {
+   "id": 43,
+   "kind": "step",
+   "isDecision": true,
+   "label": "Sıvının aspire edilmesi",
+   "phaseId": "PH15",
+   "subflowId": null,
+   "action": "ASPIRATE",
+   "instrument": "SUCTION_TIP_YANKAUER",
+   "target": "IRRIGATION_FLUID",
+   "roles": [
+    "SURGEON"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [
+    "SUCTION_TIP_YANKAUER"
+   ],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 44,
+   "branches": [
+    {
+     "when": "BLEEDING_AFTER_IRRIGATION",
+     "goTo": "43a",
+     "note": "Ara hemostaz, sonra tekrar yıkama",
+     "maxIterations": 1
+    }
+   ]
+  },
+  {
+   "id": 44,
+   "kind": "step",
+   "isDecision": false,
+   "label": "Kompres sayımı",
+   "phaseId": "PH16",
+   "subflowId": null,
+   "action": "COUNT",
+   "instrument": null,
+   "target": "SPONGES_COUNT",
+   "roles": [
+    "SCRUB",
+    "CIRCULATOR"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 45,
+   "branches": []
+  },
+  {
+   "id": 45,
+   "kind": "step",
+   "isDecision": false,
+   "label": "Alet sayımı",
+   "phaseId": "PH16",
+   "subflowId": null,
+   "action": "COUNT",
+   "instrument": null,
+   "target": "INSTRUMENTS_COUNT",
+   "roles": [
+    "SCRUB",
+    "CIRCULATOR"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 46,
+   "branches": []
+  },
+  {
+   "id": 46,
+   "kind": "step",
+   "isDecision": false,
+   "label": "İğne sayımı",
+   "phaseId": "PH16",
+   "subflowId": null,
+   "action": "COUNT",
+   "instrument": null,
+   "target": "NEEDLES_COUNT",
+   "roles": [
+    "SCRUB",
+    "CIRCULATOR"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 47,
+   "branches": []
+  },
+  {
+   "id": 47,
+   "kind": "step",
+   "isDecision": true,
+   "label": "Sayımın doğrulanması",
+   "phaseId": "PH16",
+   "subflowId": null,
+   "action": "VERIFY",
+   "instrument": null,
+   "target": "ALL_COUNTS",
+   "roles": [
+    "SCRUB",
+    "CIRCULATOR"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 48,
+   "branches": [
+    {
+     "when": "COUNT_MISMATCH",
+     "goTo": "47a",
+     "note": "Sayım uyuşmazlığı alt akışı",
+     "maxIterations": 1
+    }
+   ]
+  },
+  {
+   "id": 48,
+   "kind": "step",
+   "isDecision": false,
+   "label": "Periton kenarlarının tutulması",
+   "phaseId": "PH17",
+   "subflowId": null,
+   "action": "GRASP",
+   "instrument": "CLAMP_CRILE_CURVED_14",
+   "target": "PERITONEUM_EDGES",
+   "roles": [
+    "SURGEON"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [
+    "CLAMP_CRILE_CURVED_14",
+    "FORCEPS_STILLE_NON_TOOTHED_15"
+   ],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 49,
+   "branches": []
+  },
+  {
+   "id": 49,
+   "kind": "step",
+   "isDecision": false,
+   "label": "Peritonun 0 veya 1 Vicryl ile kapatılması",
+   "phaseId": "PH17",
+   "subflowId": null,
+   "action": "CLOSE",
+   "instrument": "NEEDLE_HOLDER_DEBAKEY_18",
+   "target": "PERITONEUM",
+   "roles": [
+    "SURGEON"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [
+    "NEEDLE_HOLDER_DEBAKEY_18",
+    "SUTURE_POLYGLACTIN_0",
+    "SUTURE_POLYGLACTIN_1"
+   ],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 50,
+   "branches": []
+  },
+  {
+   "id": 50,
+   "kind": "step",
+   "isDecision": false,
+   "label": "Kas tabakasının 0 veya 1 Vicryl ile kapatılması",
+   "phaseId": "PH18",
+   "subflowId": null,
+   "action": "CLOSE",
+   "instrument": "NEEDLE_HOLDER_DEBAKEY_18",
+   "target": "MUSCLE_LAYER",
+   "roles": [
+    "SURGEON"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [
+    "NEEDLE_HOLDER_DEBAKEY_18",
+    "SUTURE_POLYGLACTIN_0",
+    "SUTURE_POLYGLACTIN_1"
+   ],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 51,
+   "branches": []
+  },
+  {
+   "id": 51,
+   "kind": "step",
+   "isDecision": false,
+   "label": "Fasya kenarlarının hazırlanması",
+   "phaseId": "PH19",
+   "subflowId": null,
+   "action": "GRASP",
+   "instrument": "CLAMP_ALLIS_15",
+   "target": "FASCIA_EDGES",
+   "roles": [
+    "SURGEON"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [
+    "CLAMP_ALLIS_15",
+    "CLAMP_ALLIS_ATRAUMATIC_19",
+    "CLAMP_OCHSNER_KOCHER_CURVED_20",
+    "FORCEPS_STILLE_NON_TOOTHED_15",
+    "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+   ],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 52,
+   "branches": []
+  },
+  {
+   "id": 52,
+   "kind": "step",
+   "isDecision": false,
+   "label": "Fasyanın 0 Vicryl ile kapatılması",
+   "phaseId": "PH19",
+   "subflowId": null,
+   "action": "CLOSE",
+   "instrument": "NEEDLE_HOLDER_DEBAKEY_18",
+   "target": "FASCIA",
+   "roles": [
+    "SURGEON"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [
+    "NEEDLE_HOLDER_DEBAKEY_18",
+    "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+   ],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 53,
+   "branches": []
+  },
+  {
+   "id": 53,
+   "kind": "step",
+   "isDecision": false,
+   "label": "Cilt altının serum fizyolojik ile yıkanması",
+   "phaseId": "PH20",
+   "subflowId": null,
+   "action": "IRRIGATE",
+   "instrument": "ISOTONIC_SALINE",
+   "target": "SUBCUTANEOUS_TISSUE",
+   "roles": [
+    "SURGEON"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [
+    "ISOTONIC_SALINE"
+   ],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 54,
+   "branches": []
+  },
+  {
+   "id": 54,
+   "kind": "step",
+   "isDecision": false,
+   "label": "Cilt altının 2/0 Vicryl ile tek tek kapatılması",
+   "phaseId": "PH20",
+   "subflowId": null,
+   "action": "CLOSE",
+   "instrument": "NEEDLE_HOLDER_DEBAKEY_18",
+   "target": "SUBCUTANEOUS_TISSUE",
+   "roles": [
+    "SURGEON"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [
+    "NEEDLE_HOLDER_DEBAKEY_18",
+    "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+   ],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 55,
+   "branches": []
+  },
+  {
+   "id": 55,
+   "kind": "step",
+   "isDecision": false,
+   "label": "Cilt kenarlarının hizalanması",
+   "phaseId": "PH21",
+   "subflowId": null,
+   "action": "ALIGN",
+   "instrument": "FORCEPS_STILLE_NON_TOOTHED_15",
+   "target": "SKIN_EDGES",
+   "roles": [
+    "SURGEON"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [
+    "FORCEPS_STILLE_NON_TOOTHED_15"
+   ],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 56,
+   "branches": []
+  },
+  {
+   "id": 56,
+   "kind": "step",
+   "isDecision": false,
+   "label": "Cildin kapatılması (estetik: 4/0 Monocryl, standart: 3/0–4/0 Prolen veya 4/0 Polyamid)",
+   "phaseId": "PH21",
+   "subflowId": null,
+   "action": "CLOSE",
+   "instrument": "NEEDLE_HOLDER_DEBAKEY_18",
+   "target": "SKIN",
+   "roles": [
+    "SURGEON"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [
+    "NEEDLE_HOLDER_DEBAKEY_18",
+    "SUTURE_POLIGLECAPRONE_4_0",
+    "SUTURE_POLYPROPYLENE_3_0",
+    "SUTURE_POLYPROPYLENE_4_0",
+    "SUTURE_POLYAMIDE_4_0",
+    "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+   ],
+   "parameterRules": [
+    {
+     "parameter": "SKIN_CLOSURE_TYPE",
+     "source": "Klinik teyit R2",
+     "expectedInstruments": {
+      "AESTHETIC": [
+       "SUTURE_POLIGLECAPRONE_4_0"
+      ],
+      "STANDARD": [
+       "SUTURE_POLYPROPYLENE_3_0",
+       "SUTURE_POLYPROPYLENE_4_0",
+       "SUTURE_POLYAMIDE_4_0"
+      ]
+     }
+    }
+   ],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 57,
+   "branches": []
+  },
+  {
+   "id": 57,
+   "kind": "step",
+   "isDecision": false,
+   "label": "Ameliyat sahasının ıslak tampon ile temizlenmesi",
+   "phaseId": "PH22",
+   "subflowId": null,
+   "action": "CLEAN",
+   "instrument": "STERILE_GAUZE_SPONGE",
+   "target": "WOUND",
+   "roles": [
+    "SURGEON"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [
+    "STERILE_GAUZE_SPONGE"
+   ],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 58,
+   "branches": []
+  },
+  {
+   "id": 58,
+   "kind": "step",
+   "isDecision": false,
+   "label": "Steril gaz kompresin yerleştirilmesi",
+   "phaseId": "PH22",
+   "subflowId": null,
+   "action": "APPLY_DRESSING",
+   "instrument": "DRESSING_GAUZE_10X10",
+   "target": "WOUND",
+   "roles": [
+    "SURGEON"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [
+    "DRESSING_GAUZE_10X10"
+   ],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 59,
+   "branches": []
+  },
+  {
+   "id": 59,
+   "kind": "step",
+   "isDecision": false,
+   "label": "Pansumanın sabitlenmesi",
+   "phaseId": "PH22",
+   "subflowId": null,
+   "action": "SECURE",
+   "instrument": "TAPE_SILK",
+   "target": "DRESSING",
+   "roles": [
+    "SURGEON",
+    "SCRUB"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [
+    "TAPE_SILK",
+    "TAPE_WATERPROOF"
+   ],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 60,
+   "branches": []
+  },
+  {
+   "id": 60,
+   "kind": "step",
+   "isDecision": false,
+   "label": "Operasyonun tamamlanması",
+   "phaseId": "PH22",
+   "subflowId": null,
+   "action": "COMPLETE",
+   "instrument": null,
+   "target": "PATIENT_RECORD",
+   "roles": [
+    "TEAM"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": null,
+   "branches": []
+  },
+  {
+   "id": "43a",
+   "kind": "subflow",
+   "isDecision": false,
+   "label": "Ara hemostaz: kanamanın monopolar koter ile durdurulması",
+   "phaseId": null,
+   "subflowId": "HEMOSTASIS_RECHECK",
+   "action": "HEMOSTASIS",
+   "instrument": "ESU_MONOPOLAR_PEN",
+   "target": "BLEEDING_SITES",
+   "roles": [
+    "SURGEON"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [
+    "ESU_MONOPOLAR_PEN"
+   ],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 42,
+   "branches": []
+  },
+  {
+   "id": "47a",
+   "kind": "subflow",
+   "isDecision": true,
+   "label": "Eksik malzemenin tekrar sayılması",
+   "phaseId": null,
+   "subflowId": "COUNT_DISCREPANCY",
+   "action": "COUNT",
+   "instrument": null,
+   "target": "MISSING_ITEM",
+   "roles": [
+    "SCRUB",
+    "CIRCULATOR"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": "47b",
+   "branches": [
+    {
+     "when": "ITEM_FOUND_ON_RECOUNT",
+     "goTo": 47,
+     "note": "Sayım hatasıydı; doğrulamaya dön"
+    }
+   ]
+  },
+  {
+   "id": "47b",
+   "kind": "subflow",
+   "isDecision": true,
+   "label": "Saha ve atık araması",
+   "phaseId": null,
+   "subflowId": "COUNT_DISCREPANCY",
+   "action": "SEARCH",
+   "instrument": "HAND",
+   "target": "SURGICAL_FIELD",
+   "roles": [
+    "SURGEON",
+    "SCRUB",
+    "CIRCULATOR"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [
+    "HAND"
+   ],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": "47d",
+   "branches": [
+    {
+     "when": "ITEM_FOUND_IN_FIELD",
+     "goTo": "47c"
+    }
+   ]
+  },
+  {
+   "id": "47c",
+   "kind": "subflow",
+   "isDecision": false,
+   "label": "Bulunan malzemenin sayıma eklenmesi",
+   "phaseId": null,
+   "subflowId": "COUNT_DISCREPANCY",
+   "action": "COUNT",
+   "instrument": null,
+   "target": "ALL_COUNTS",
+   "roles": [
+    "SCRUB",
+    "CIRCULATOR"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 47,
+   "branches": []
+  },
+  {
+   "id": "47d",
+   "kind": "subflow",
+   "isDecision": true,
+   "label": "Radyolojik görüntüleme",
+   "phaseId": null,
+   "subflowId": "COUNT_DISCREPANCY",
+   "action": "IMAGING",
+   "instrument": null,
+   "target": "PATIENT",
+   "roles": [
+    "SURGEON",
+    "TEAM"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": "47f",
+   "branches": [
+    {
+     "when": "ITEM_FOUND_ON_IMAGING",
+     "goTo": "47e"
+    }
+   ]
+  },
+  {
+   "id": "47e",
+   "kind": "subflow",
+   "isDecision": false,
+   "label": "Malzemenin hastadan çıkarılması; peritondan itibaren yeniden kapatma",
+   "phaseId": null,
+   "subflowId": "COUNT_DISCREPANCY",
+   "action": "RETRIEVE",
+   "instrument": "HAND",
+   "target": "MISSING_ITEM",
+   "roles": [
+    "SURGEON"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [
+    "HAND"
+   ],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 48,
+   "branches": []
+  },
+  {
+   "id": "47f",
+   "kind": "subflow",
+   "isDecision": false,
+   "label": "Bulunamadı: paketten eksik çıktığı kabul edilir ve kayda geçer",
+   "phaseId": null,
+   "subflowId": "COUNT_DISCREPANCY",
+   "action": "RECORD",
+   "instrument": null,
+   "target": "PATIENT_RECORD",
+   "roles": [
+    "SURGEON",
+    "CIRCULATOR"
+   ],
+   "mandatory": true,
+   "condition": null,
+   "accepted": [],
+   "parameterRules": [],
+   "dynamicQuantity": null,
+   "pending": [],
+   "next": 48,
+   "branches": []
+  }
+ ],
+ "phases": [
+  {
+   "id": "PH01",
+   "name": "Cilt ve Karın Duvarına Giriş",
+   "steps": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+   ]
+  },
+  {
+   "id": "PH02",
+   "name": "Ekartasyon",
+   "steps": [
+    11,
+    12,
+    13
+   ]
+  },
+  {
+   "id": "PH03",
+   "name": "Çekuma Ulaşılması",
+   "steps": [
+    14,
+    15,
+    16
+   ]
+  },
+  {
+   "id": "PH04",
+   "name": "Appendiksin Bulunması",
+   "steps": [
+    17,
+    18
+   ]
+  },
+  {
+   "id": "PH05",
+   "name": "Yapışıklık Varsa",
+   "steps": [
+    19,
+    20,
+    21
+   ]
+  },
+  {
+   "id": "PH06",
+   "name": "Mezappendiks Diseksiyonu",
+   "steps": [
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "id": "PH07",
+   "name": "Appendiks Köküne Hazırlık",
+   "steps": [
+    25,
+    26,
+    27
+   ]
+  },
+  {
+   "id": "PH08",
+   "name": "Appendiks Kökünün Bağlanması",
+   "steps": [
+    28,
+    29
+   ]
+  },
+  {
+   "id": "PH09",
+   "name": "İşaret Pensi Yerleştirilmesi",
+   "steps": [
+    30
+   ]
+  },
+  {
+   "id": "PH10",
+   "name": "Appendiksin Kesilmesi",
+   "steps": [
+    31,
+    32
+   ]
+  },
+  {
+   "id": "PH11",
+   "name": "Güdüğün Temizlenmesi",
+   "steps": [
+    33,
+    34
+   ]
+  },
+  {
+   "id": "PH12",
+   "name": "Güdüğün Gömülmesi",
+   "steps": [
+    35,
+    36,
+    37
+   ]
+  },
+  {
+   "id": "PH13",
+   "name": "Spesimenin Gönderilmesi",
+   "steps": [
+    38,
+    39
+   ]
+  },
+  {
+   "id": "PH14",
+   "name": "Hemostaz",
+   "steps": [
+    40,
+    41
+   ]
+  },
+  {
+   "id": "PH15",
+   "name": "Yıkama",
+   "steps": [
+    42,
+    43
+   ]
+  },
+  {
+   "id": "PH16",
+   "name": "Sayım",
+   "steps": [
+    44,
+    45,
+    46,
+    47
+   ]
+  },
+  {
+   "id": "PH17",
+   "name": "Peritonun Kapatılması",
+   "steps": [
+    48,
+    49
+   ]
+  },
+  {
+   "id": "PH18",
+   "name": "Kas Tabakasının Kapatılması",
+   "steps": [
+    50
+   ]
+  },
+  {
+   "id": "PH19",
+   "name": "Fasya Kapatılması",
+   "steps": [
+    51,
+    52
+   ]
+  },
+  {
+   "id": "PH20",
+   "name": "Cilt Altı Kapatılması",
+   "steps": [
+    53,
+    54
+   ]
+  },
+  {
+   "id": "PH21",
+   "name": "Cilt Kapatılması",
+   "steps": [
+    55,
+    56
+   ]
+  },
+  {
+   "id": "PH22",
+   "name": "Pansuman",
+   "steps": [
+    57,
+    58,
+    59,
+    60
+   ]
+  }
+ ],
+ "subflows": [
+  {
+   "id": "HEMOSTASIS_RECHECK",
+   "name": "Yıkama sonrası kanama",
+   "entryFrom": 43,
+   "steps": [
+    "43a"
+   ]
+  },
+  {
+   "id": "COUNT_DISCREPANCY",
+   "name": "Sayım uyuşmazlığı",
+   "entryFrom": 47,
+   "steps": [
+    "47a",
+    "47b",
+    "47c",
+    "47d",
+    "47e",
+    "47f"
+   ]
+  }
+ ]
+}

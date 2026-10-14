@@ -4,8 +4,8 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <RootNamespace>Operion.Api</RootNamespace>
-    <AssemblyName>Operion.Api</AssemblyName>
+    <RootNamespace>Arqenion.Api</RootNamespace>
+    <AssemblyName>Arqenion.Api</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

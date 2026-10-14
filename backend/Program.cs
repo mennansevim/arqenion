@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
-using Operion.Api.Data;
-using Operion.Api.Hubs;
-using Operion.Api.Services;
+using Arqenion.Api.Data;
+using Arqenion.Api.Hubs;
+using Arqenion.Api.Services;
 
 // .env dosyasındaki anahtarları (ör. OPENAI_API_KEY) ortam değişkenine yükle.
 LoadDotEnv();
@@ -36,15 +36,30 @@ builder.Services.AddCors(options =>
 });
 
 var provider = builder.Configuration["Database:Provider"] ?? "Postgres";
-builder.Services.AddDbContext<OperionDbContext>(opt =>
+builder.Services.AddDbContext<ArqenionDbContext>(opt =>
 {
     if (provider.Equals("InMemory", StringComparison.OrdinalIgnoreCase))
-        opt.UseInMemoryDatabase("operion");
+        opt.UseInMemoryDatabase("arqenion");
     else
         opt.UseNpgsql(builder.Configuration.GetConnectionString("Postgres"));
 });
 
 builder.Services.AddSingleton<ProcedureStore>();
+// 60 adımlık akış modeli (procedure-model/dist); "Procedure:Model" = "v1" ise yeni seanslar eski 25 adımlı modelle başlar.
+builder.Services.AddSingleton(sp =>
+{
+    var cfg = builder.Configuration.GetSection("Procedure");
+    var root = sp.GetRequiredService<IHostEnvironment>().ContentRootPath;
+    return new FlowModelStore(
+        Path.GetFullPath(Path.Combine(root, cfg["ModelDir"] ?? "../procedure-model/dist")),
+        cfg["ModelVersion"] ?? "2.4",
+        Path.Combine(root, "Procedures", "scoring.json"),
+        Path.Combine(root, "Procedures", "instrument-descriptors.json"));
+});
+builder.Services.AddSingleton<FlowEngine>();
+builder.Services.AddSingleton<FlowClinicalText>();
+builder.Services.AddScoped<FlowProcedureService>();
+builder.Services.AddSingleton<IssueStore>();
 builder.Services.AddSingleton<ComplicationEngine>();
 builder.Services.AddScoped<ScoringService>();
 builder.Services.AddScoped<ProcedureService>();
@@ -54,11 +69,21 @@ var app = builder.Build();
 
 // Load procedure/scenario/clinical files eagerly so failures surface at startup.
 app.Services.GetRequiredService<ProcedureStore>();
+app.Services.GetRequiredService<FlowModelStore>();
+app.Services.GetRequiredService<IssueStore>();
 
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<OperionDbContext>();
+    var db = scope.ServiceProvider.GetRequiredService<ArqenionDbContext>();
     db.Database.EnsureCreated();
+    // EnsureCreated mevcut tabloya kolon eklemez; 60 adımlık model için gereken kolonlar veriye dokunmadan eklenir.
+    if (db.Database.IsNpgsql())
+        db.Database.ExecuteSqlRaw("""
+            ALTER TABLE "Sessions" ADD COLUMN IF NOT EXISTS "ProcedureModel" text NULL;
+            ALTER TABLE "Sessions" ADD COLUMN IF NOT EXISTS "CurrentNodeId" text NULL;
+            ALTER TABLE "Sessions" ADD COLUMN IF NOT EXISTS "FlowStateJson" text NULL;
+            ALTER TABLE "SessionEvents" ADD COLUMN IF NOT EXISTS "NodeId" text NULL;
+            """);
 }
 
 app.UseHttpLogging();
@@ -84,7 +109,10 @@ if (Directory.Exists(simulatorPath))
 
 app.MapControllers();
 app.MapHub<SimulationHub>("/hubs/simulation");
-app.MapGet("/", () => Results.Ok(new { service = "Operion API", status = "ok" }));
+// Kök adres simülatöre yönlenir: tünel linkini paylaşırken "/sim/" eklemeyi unutmak
+// sayfanın bozuk görünmesine yol açıyordu. Servis durumu /api/health altında kaldı.
+app.MapGet("/", () => Results.Redirect("/sim/"));
+app.MapGet("/api/health", () => Results.Ok(new { service = "Arqenion API", status = "ok" }));
 
 app.Run();
 

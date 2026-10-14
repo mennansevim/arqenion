@@ -1,7 +1,7 @@
 using System.Text.Json;
-using Operion.Api.Models;
+using Arqenion.Api.Models;
 
-namespace Operion.Api.Services;
+namespace Arqenion.Api.Services;
 
 // Loads and caches the procedure definition, scenarios and clinical knowledge table from disk.
 public sealed class ProcedureStore
@@ -39,6 +39,21 @@ public sealed class ProcedureStore
 
     public ProcedureStep? FirstStep()
         => _procedure.Steps.OrderBy(s => s.StepId).FirstOrDefault();
+
+    public ComplicationDefinition? GetComplication(string? complicationId)
+        => complicationId is null
+            ? null
+            : _procedure.Complications.FirstOrDefault(c =>
+                string.Equals(c.ComplicationId, complicationId, StringComparison.OrdinalIgnoreCase));
+
+    // Bu adımda teslim edilen alet/sütür bir komplikasyon tetikliyor mu?
+    public ComplicationDefinition? MatchComplication(int stepId, string? instrumentCode, string? sutureCode)
+        => _procedure.Complications.FirstOrDefault(c => c.StepId == stepId &&
+            ((instrumentCode is not null && c.TriggerInstruments.Contains(instrumentCode)) ||
+             (sutureCode is not null && c.TriggerSutures.Contains(sutureCode))));
+
+    public InstrumentItem? GetInstrument(string? code)
+        => code is null ? null : _procedure.InstrumentCatalog.FirstOrDefault(i => i.Code == code);
 
     // Exact (stepId, deviation) match first, then wildcard (*, deviation).
     public ClinicalKnowledgeEntry? GetClinicalEntry(int stepId, string deviationType)

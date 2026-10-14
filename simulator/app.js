@@ -1,57 +1,95 @@
-// Operion — Ameliyathane simülasyonu (web).
+// Arqenion — Ameliyathane simülasyonu (web).
 // Unity/VR olmadan tüm eğitim döngüsünü görsel olarak test etmek için event üretir.
 
-// ---- Alet kataloğu (open-appendectomy-v1.json ile birebir + görsel ikonlar) ----
-const INSTRUMENT_CATALOG = [
-  { code: "SCALPEL_NO_15", name: "No:15 Bistüri", icon: "🔪" },
-  { code: "SCALPEL_NO_15_USED", name: "Kirli No:15 Bistüri", icon: "🩸" },
-  { code: "MONOPOLAR_CAUTERY", name: "Monopolar Koter", icon: "⚡" },
-  { code: "MAYO_SCISSORS", name: "Mayo Makası", icon: "✂️" },
-  { code: "METZENBAUM_SCISSORS", name: "Metzenbaum Makası", icon: "✂️" },
-  { code: "STILLE_FORCEPS", name: "Stille Penset", icon: "🥢" },
-  { code: "DEBAKEY_FORCEPS", name: "DeBakey Penset", icon: "🥢" },
-  { code: "FARABEUF_RETRACTOR", name: "Farabeuf Ekartör", icon: "🪝" },
-  { code: "ROUX_RETRACTOR", name: "Roux Ekartör", icon: "🪝" },
-  { code: "LANGENBECK_RETRACTOR", name: "Langenbeck Ekartör", icon: "🪝" },
-  { code: "BABCOCK_ATRAUMATIC", name: "Atravmatik Babcock", icon: "🗜️" },
-  { code: "MOSQUITO_CLAMP", name: "Mosquito Klemp", icon: "🗜️" },
-  { code: "PEAN_CLAMP", name: "Pean Klemp", icon: "🗜️" },
-  { code: "STRAIGHT_CLAMP_ATRAUMATIC", name: "Düz İşaret Pensi", icon: "📎" },
-  { code: "NEEDLE_HOLDER", name: "Portegü", icon: "🪡" },
-  { code: "FOERSTER_CLAMP", name: "Foerster Klemp", icon: "🗜️" },
-];
+// ---- Katalog ve adımlar backend'den (/api/procedure) yüklenir; burada yalnızca ikonlar ve
+//      backend erişilemezse kullanılacak asgari yedek tanım tutulur. ----
+const ICONS = {
+  SCALPEL_NO_15: "🔪", SCALPEL_NO_15_USED: "🩸", SCALPEL_NO_11: "🔪", SCALPEL_NO_20: "🔪",
+  SCALPEL_HANDLE_NO_3: "🖊️", SCALPEL_HANDLE_NO_4: "🖊️",
+  MONOPOLAR_CAUTERY: "⚡", BIPOLAR_CAUTERY: "🔌", YANKAUER_SUCTION_TIP: "🌪️",
+  ELECTROCAUTERY_UNIT: "🖥️", SUCTION_UNIT: "🖥️",
+  MAYO_SCISSORS: "✂️", METZENBAUM_SCISSORS: "✂️",
+  STILLE_FORCEPS: "🥢", SEMKEN_FORCEPS: "🥢", DEBAKEY_FORCEPS: "🥢",
+  FARABEUF_RETRACTOR: "🪝", ROUX_RETRACTOR_14: "🪝", ROUX_RETRACTOR_15: "🪝",
+  LANGENBECK_RETRACTOR: "🪝", KOCHER_RETRACTOR_40: "🪝", KOCHER_RETRACTOR_80: "🪝",
+  BABCOCK_ATRAUMATIC: "🗜️", ATRAUMATIC_CLAMP: "🗜️", ALLIS_CLAMP_TOOTHED: "⚙️", ALLIS_CLAMP_ATRAUMATIC: "🗜️",
+  MOSQUITO_CLAMP: "🗜️", PEAN_CLAMP: "🗜️", CRILE_CLAMP_STRAIGHT: "📎", CRILE_CLAMP_CURVED: "🗜️",
+  CRILE_RANKIN_CLAMP: "🗜️", NISSEN_CLAMP: "🗜️", HEISS_CLAMP: "🗜️", OCHSNER_KOCHER_CLAMP: "⚙️",
+  SCHMIDT_TONSIL_FORCEPS: "🗜️", OVERHOLT_CLAMP: "🗜️", GEMINI_CLAMP: "🗜️",
+  FOERSTER_CLAMP: "🗜️", BACKHAUS_TOWEL_CLAMP: "📌", NEEDLE_HOLDER: "🪡",
+  IRRIGATION_SYRINGE_50: "💉", SYRINGE_20: "💉",
+  SAVLON_SOLUTION: "🧴", POVIDONE_IODINE: "🟤",
+  GAUZE_5X5: "⬜", GAUZE_10X10: "🩹", WET_COMPRESS: "🧻", ADHESIVE_TAPE: "📏",
+  DRAPE_TABLE_CHANGE: "🔄", STEEL_BOWL: "🥣", CONTAINER_LID: "📦", WIRE_BASKET: "🧺",
+};
+const CATEGORY_ICON = { Klemp: "🗜️", Penset: "🥢", Ekartör: "🪝", Makas: "✂️", Kesici: "🔪", Portegü: "🪡", Cihaz: "🖥️", "Cihaz Ucu": "⚡", Sarf: "⬜", Solüsyon: "🧴", Örtü: "📌", Kap: "🥣", Konteyner: "📦",
+  // 60 adımlık model (v2.4) kategorileri
+  blade: "🔪", handle: "🖊️", energy: "⚡", forceps: "🥢", retractor: "🪝", clamp: "🗜️", scissors: "✂️",
+  needle_holder: "🪡", sponge: "⬜", antiseptic: "🟤", fluid: "💧", syringe: "💉", suction: "🌪️",
+  container: "🧪", dressing: "🩹" };
+// v2.4 kategori kodlarının tepsideki Türkçe adı.
+const CATEGORY_LABEL = { blade: "Bistüri ucu", handle: "Bistüri sapı", energy: "Koter", forceps: "Penset", retractor: "Ekartör",
+  clamp: "Klemp", scissors: "Makas", needle_holder: "Portegü", sponge: "Kompres/Spanç", antiseptic: "Antiseptik",
+  fluid: "Sıvı", syringe: "Enjektör", suction: "Aspiratör", container: "Kap", dressing: "Pansuman" };
+const catLabel = (c) => CATEGORY_LABEL[c] || c;
+const iconFor = (item) => ICONS[item.code] || CATEGORY_ICON[item.category] || "🔧";
 
-const SUTURE_CATALOG = [
-  { code: "SILK_3_0", name: "3/0 İpek" },
-  { code: "VICRYL_2_0", name: "2/0 Vicryl" },
-  { code: "VICRYL_1_0", name: "0/1 Vicryl" },
-  { code: "PROLENE_0", name: "0 Prolen" },
-  { code: "POLYAMIDE_4_0", name: "4/0 Polyamid" },
-];
+let INSTRUMENT_CATALOG = [];
+let SUTURE_CATALOG = [];
+let STEPS = [];
+let PHASE_COUNT = 22;
+let TOTAL_STEPS = 0;
+let PROCEDURE_MODEL = "v1";
+let FLOW_GRAPH = [];        // 60 adımlık model: düğümler, düz devam ve karar dalları (akış şeması için)
+let FLOW_PHASES = {};       // aşama kimliği → "no · ad"   // "v2.4": 60 adımlık akış modeli (dallar, onay ve sayım adımları)
 
-// ---- 18 adımlık prosedür (kontrol listesi + görev rehberi için) ----
-const STEPS = [
-  { id: 1, phase: "Giriş", title: "Cilt insizyonu", instruction: "Cerraha No:15 bistüriyi teslim edin.", event: "instrument_delivered", target: "SURGEON", allowed: ["SCALPEL_NO_15"] },
-  { id: 2, phase: "Giriş", title: "Cilt altı/fasya diseksiyonu", instruction: "Cerraha monopolar koter kalemini teslim edin.", event: "instrument_delivered", target: "SURGEON", allowed: ["MONOPOLAR_CAUTERY"] },
-  { id: 3, phase: "Giriş", title: "Kas künt diseksiyonu", instruction: "Cerraha mayo makasını teslim edin.", event: "instrument_delivered", target: "SURGEON", allowed: ["MAYO_SCISSORS"] },
-  { id: 4, phase: "Giriş", title: "Periton açılması", instruction: "Cerraha stille (veya DeBakey) pensetini teslim edin.", event: "instrument_delivered", target: "SURGEON", allowed: ["STILLE_FORCEPS", "DEBAKEY_FORCEPS"] },
-  { id: 5, phase: "Ekartasyon", title: "Ekartör yerleştirme", instruction: "Cerraha uygun ekartörü (Farabeuf/Roux/Langenbeck) teslim edin.", event: "instrument_delivered", target: "SURGEON", allowed: ["FARABEUF_RETRACTOR", "ROUX_RETRACTOR", "LANGENBECK_RETRACTOR"] },
-  { id: 6, phase: "Çekum", title: "Çekumun tutulması", instruction: "Cerraha atravmatik Babcock'ı teslim edin.", event: "instrument_delivered", target: "SURGEON", allowed: ["BABCOCK_ATRAUMATIC"] },
-  { id: 7, phase: "Appendiks", title: "Appendiks ucunun tutulması", instruction: "Cerraha Babcock'ı teslim edin (appendiks ucu).", event: "instrument_delivered", target: "SURGEON", allowed: ["BABCOCK_ATRAUMATIC"] },
-  { id: 8, phase: "Mezoappendiks", title: "Mezoappendiks bağlanması", instruction: "Mosquito/Pean klemp veya portegüyü teslim edin.", event: "instrument_delivered", target: "SURGEON", allowed: ["MOSQUITO_CLAMP", "PEAN_CLAMP", "NEEDLE_HOLDER"] },
-  { id: 9, phase: "Kök hazırlık", title: "Purse-string sütürü", instruction: "Portegüye 3/0 ipek takıp cerraha teslim edin.", event: "instrument_delivered", target: "SURGEON", allowed: ["NEEDLE_HOLDER"], suture: "SILK_3_0" },
-  { id: 10, phase: "Kök bağlama", title: "Kök bağlama", instruction: "Portegüye 2/0 Vicryl takıp cerraha teslim edin.", event: "instrument_delivered", target: "SURGEON", allowed: ["NEEDLE_HOLDER"], suture: "VICRYL_2_0" },
-  { id: 11, phase: "İşaret pensi", title: "İşaret pensi", instruction: "Cerraha düz dişsiz işaret pensini teslim edin.", event: "instrument_delivered", target: "SURGEON", allowed: ["STRAIGHT_CLAMP_ATRAUMATIC"] },
-  { id: 12, phase: "Kesim", title: "Appendiks kesimi", instruction: "Cerraha No:15 bistüriyi teslim edin (appendiks kesimi).", event: "instrument_delivered", target: "SURGEON", allowed: ["SCALPEL_NO_15"] },
-  { id: 13, phase: "Temizlik", title: "Kirli bistüri ucunu değiştir", instruction: "Kirlenmiş bistüri ucunu KİRLİ ALANA bırakın.", event: "instrument_placed", target: "DIRTY_AREA", allowed: ["SCALPEL_NO_15_USED"] },
-  { id: 14, phase: "Spesimen", title: "Spesimeni gönder", instruction: "Spesimeni (Babcock) PATOLOJİ KABINA bırakın.", event: "instrument_placed", target: "PATHOLOGY_CONTAINER", allowed: ["BABCOCK_ATRAUMATIC"] },
-  { id: 15, phase: "Sayım", title: "Kapanış öncesi sayım", instruction: "Kompres/alet/iğne sayımını yapıp onaylayın.", event: "count_confirmed", counts: { COMPRESS: 10, INSTRUMENT: 20, NEEDLE: 3 } },
-  { id: 16, phase: "Periton kapatma", title: "Periton kapatma", instruction: "Portegüye 0/1 Vicryl takıp cerraha teslim edin.", event: "instrument_delivered", target: "SURGEON", allowed: ["NEEDLE_HOLDER"], suture: "VICRYL_1_0" },
-  { id: 17, phase: "Fasya kapatma", title: "Fasya kapatma", instruction: "Portegüye 0 Prolen takıp cerraha teslim edin.", event: "instrument_delivered", target: "SURGEON", allowed: ["NEEDLE_HOLDER"], suture: "PROLENE_0" },
-  { id: 18, phase: "Cilt kapatma", title: "Cilt kapatma & pansuman", instruction: "Portegüye 4/0 Polyamid takıp cerraha teslim edin.", event: "instrument_delivered", target: "SURGEON", allowed: ["NEEDLE_HOLDER"], suture: "POLYAMIDE_4_0" },
-];
-const TOTAL_STEPS = STEPS.length;
+// Adımın kimliği: 60 adımlık modelde düğüm ("43a"), eski modelde adım numarası.
+const keyOf = (s) => (s?.nodeId ?? s?.stepId);
+const isFlowModel = () => PROCEDURE_MODEL !== "v1";
+
+// Adım başlığından kısa bir görev cümlesi türetir (backend'de ayrı bir "instruction" alanı yok).
+function instructionOf(s) {
+  const names = (s.allowedInstruments || []).map(labelOf).join(" / ");
+  if (s.expectedEvent === "count_confirmed") return "Kompres/alet/iğne sayımını yapıp onaylayın.";
+  const zone = s.target === "DIRTY_AREA" ? "KİRLİ ALANA"
+    : s.target === "PATHOLOGY_CONTAINER" ? "PATOLOJİ KABINA" : "Cerraha";
+  const suture = s.requiredSuture ? ` + ${sutureLabelOf(s.requiredSuture)}` : "";
+  return `${zone} teslim edin: ${names}${suture}`;
+}
+
+async function loadProcedure() {
+  const p = await getJson("/api/procedure");
+  PROCEDURE_MODEL = p.procedureModel || "v1";
+  INSTRUMENT_CATALOG = p.instrumentCatalog.map((i) => ({ ...i, icon: iconFor(i) }));
+  SUTURE_CATALOG = p.sutureCatalog;
+  PHASE_COUNT = p.phaseCount || 22;
+  if (isFlowModel()) {
+    // 60 adımlık model: adımlar backend'in StepView'ı olarak gelir (talimat dahil).
+    STEPS = p.steps.map((s) => ({
+      id: s.nodeId, stepNo: s.stepId, phaseNo: s.phaseNo, phase: s.phase, title: s.title,
+      event: s.expectedEvent, kind: s.kind, target: s.target, allowed: s.allowedInstruments || [],
+      suture: s.requiredSuture || undefined, sutures: s.requiredSutures || [], note: s.clinicalNote,
+      isBranch: s.isBranch, condition: s.condition, conditionText: s.conditionText, instruction: s.instruction,
+    }));
+    TOTAL_STEPS = p.mainStepCount || 60;
+    FLOW_GRAPH = p.graph || [];
+    FLOW_PHASES = Object.fromEntries(p.steps.filter((s) => s.phaseNo).map((s) => [s.phaseNo, s.phase]));
+    return p;
+  }
+  STEPS = p.steps.map((s) => ({
+    id: s.stepId, phaseNo: s.phaseNo, phase: s.phase, title: s.title,
+    event: s.expectedEvent, target: s.target, allowed: s.allowedInstruments || [],
+    suture: s.requiredSuture || undefined, counts: s.expectedCounts || undefined,
+    note: s.clinicalNote, sourceSteps: s.sourceSteps || [],
+  }));
+  STEPS.forEach((s) => { s.instruction = instructionOf({ ...s, allowedInstruments: s.allowed, expectedEvent: s.event, requiredSuture: s.suture }); });
+  TOTAL_STEPS = STEPS.length;
+  return p;
+}
+
 const stepMeta = (id) => STEPS.find((s) => s.id === id);
+// İlerleme göstergesi için adım numarası (alt akış "47b" → 47).
+const stepNoOf = (step) => step?.stepId ?? stepMeta(keyOf(step))?.stepNo ?? 0;
 
 const ZONE_MAP = {
   SURGEON: { eventType: "instrument_delivered", target: "SURGEON" },
@@ -65,7 +103,10 @@ const state = {
   currentStep: null,
   connection: null,
   holding: null,
-  counters: { correct: 0, wrong: 0, sterile: 0, hint: 0 },
+  activeComplication: null,
+  visited: new Set(),     // 60 adımlık modelde tamamlanan düğümler (atlanan dallar boş kalır)
+  openBranch: null,       // girilen dal (komplikasyon / ek durum)
+  counters: { correct: 0, wrong: 0, sterile: 0, hint: 0, complication: 0, resolved: 0 },
   timeline: [],
 };
 let trafficCount = 0;
@@ -100,21 +141,29 @@ const els = {
   toast: $("toast"),
   taskCard: $("taskCard"), verdictBanner: $("verdictBanner"),
   cntCorrect: $("cntCorrect"), cntWrong: $("cntWrong"), cntSterile: $("cntSterile"), cntHint: $("cntHint"),
+  cntComp: $("cntComp"), cntResolved: $("cntResolved"),
   compBoard: $("compBoard"),
   hrValue: $("hrValue"), pulseValue: $("pulseValue"), respValue: $("respValue"), riskValue: $("riskValue"),
   monitorState: $("monitorState"), vitalWave: $("vitalWave"), audioToggle: $("audioToggle"),
   aiCard: $("aiCard"),
   handHolding: $("handHolding"), sutureWrap: $("sutureWrap"), sutureSelect: $("sutureSelect"),
-  autoBtn: $("autoBtn"), releaseBtn: $("releaseBtn"),
-  countMode: $("countMode"), countSendBtn: $("countSendBtn"),
+  autoBtn: $("autoBtn"), releaseBtn: $("releaseBtn"), confirmBtn: $("confirmBtn"),
+  countMode: $("countMode"), countSendBtn: $("countSendBtn"), countHelp: $("countHelp"),
   cntCompress: $("cntCompress"), cntInstrument: $("cntInstrument"), cntNeedle: $("cntNeedle"),
   trayWrap: $("trayWrap"), instrumentGrid: $("instrumentGrid"),
+  trayChips: $("trayChips"), traySearch: $("traySearch"), trayExpectedBtn: $("trayExpectedBtn"),
+  trayPrev: $("trayPrev"), trayNext: $("trayNext"),
   stepList: $("stepList"),
   log: $("log"), logToggle: $("logToggle"), clearLogBtn: $("clearLogBtn"),
   traffic: $("traffic"), trafficCount: $("trafficCount"), trafficClear: $("trafficClear"), trafficToggle: $("trafficToggle"),
   reportModal: $("reportModal"), reportBody: $("reportBody"), closeReportBtn: $("closeReportBtn"),
   reportUser: $("reportUser"), reportChart: $("reportChart"), reportChartLegend: $("reportChartLegend"), reportFlow: $("reportFlow"),
   helpModal: $("helpModal"), closeHelpBtn: $("closeHelpBtn"),
+  flowBtn: $("flowBtn"), flowModal: $("flowModal"), closeFlowBtn: $("closeFlowBtn"), flowDiagram: $("flowDiagram"),
+  flowPlan: $("flowPlan"), flowRequests: $("flowRequests"), flowSummary: $("flowSummary"),
+  bugBtn: $("bugBtn"), bugModal: $("bugModal"), closeBugBtn: $("closeBugBtn"), bugSendBtn: $("bugSendBtn"),
+  bugTitle: $("bugTitle"), bugBody: $("bugBody"), bugSeverity: $("bugSeverity"), bugArea: $("bugArea"),
+  bugReporter: $("bugReporter"), bugResult: $("bugResult"),
 };
 
 // ---- Yardımcılar ----
@@ -176,7 +225,7 @@ function briefRes(data) {
   if (!data) return "";
   if (data.deviation) return `SAPMA ${data.deviation.deviationType} · skor=${data.score}`;
   if (data.completed) return `TAMAMLANDI · skor=${data.score}`;
-  if (typeof data.score === "number" && data.currentStep) return `seans · adım ${data.currentStep.stepId} · skor=${data.score}`;
+  if (typeof data.score === "number" && data.currentStep) return `seans · adım ${keyOf(data.currentStep)} · skor=${data.score}`;
   if (typeof data.score === "number") return `OK · skor=${data.score}`;
   return "OK";
 }
@@ -286,6 +335,31 @@ function handleResponse(sentType, data) {
   if (typeof data.score === "number") setScore(data.score);
   const replay = (data.message || "").includes("yinelenen");
 
+  // Senaryo komplikasyonu: açıldı / ilerledi / çözüldü.
+  if (data.activeComplication) {
+    const ac = data.activeComplication;
+    const wasOpen = !!state.activeComplication && !state.activeComplication.resolved;
+    state.activeComplication = ac.resolved ? null : ac;
+    renderActiveComplication(ac);
+    if (!wasOpen) {
+      // Komplikasyon ilk kez bildirildi (çözülebilir veya değil).
+      state.counters.complication++;
+      toast("bad", `KOMPLİKASYON — ${ac.title}`);
+      log("error", `🩸 Komplikasyon: ${ac.title}`, `${ac.narrative}\n\n${ac.resolutionNote}`);
+      traffic("ai", "KOMPLİKASYON", "src-aitable", "🩸", ac.title, ac.narrative);
+      shockMonitor(ac.severity);
+    } else if (ac.resolved) {
+      state.counters.resolved++;
+      toast("good", `Komplikasyon giderildi — ${ac.title}`);
+      log("success", "🩹 Komplikasyon giderildi", ac.resolutionNote);
+      relaxMonitor();
+    }
+  }
+
+  // 60 adımlık model: karar noktasında dala girildi ya da daldan ana akışa dönüldü.
+  if (data.branch && !replay) handleBranch(data.branch);
+  if (data.success && data.currentNodeId && !replay && data.nextNodeId !== data.currentNodeId) state.visited.add(data.currentNodeId);
+
   if (data.deviation) {
     const d = data.deviation;
     if (!replay) {
@@ -315,8 +389,8 @@ function handleResponse(sentType, data) {
     log("info", "💡 İpucu", data.message || "");
   } else {
     if (!replay) state.counters.correct++;
-    const next = data.nextStep ? ` — sıradaki: Adım ${data.nextStep.stepId} · ${data.nextStep.title}` : "";
-    setVerdict("good", data.completed ? "🏁 Tamamlandı" : `DOĞRU ✓ — Adım ${(data.nextStep?.stepId ?? data.currentStepId)}/${TOTAL_STEPS}`);
+    const next = data.nextStep ? ` — sıradaki: Adım ${keyOf(data.nextStep)} · ${data.nextStep.title}` : "";
+    setVerdict("good", data.completed ? "🏁 Tamamlandı" : `DOĞRU ✓ — Adım ${(keyOf(data.nextStep) ?? data.currentStepId)}/${TOTAL_STEPS}`);
     // Doğru ilerleyince son uyarı temizlenir, panel olumlu duruma döner.
     aiState("ok", data.completed ? "🏁 Prosedür doğru tamamlandı." : `✓ Süreç doğru ilerliyor${next}`);
     toast("good", data.message || "Doğru aksiyon.");
@@ -327,6 +401,8 @@ function handleResponse(sentType, data) {
 
   if (!replay) recordTimeline(sentType, data);
 
+  if (!els.flowModal.classList.contains("hidden")) refreshFlow();
+
   if (data.completed) {
     setStep(null);
     markAllStepsDone();
@@ -335,7 +411,81 @@ function handleResponse(sentType, data) {
     toast("good", "Prosedür tamamlandı! Raporu görün.");
   } else if (data.nextStep) {
     setStep(data.nextStep);
+  } else if (data.activeComplication) {
+    // Komplikasyon zinciri ilerledi: adım değişmez, görev kartı yenilenir.
+    setStep(state.currentStep);
   }
+}
+
+// ---- Komplikasyon panosu: üstte aktif senaryo komplikasyonu, altta kümülatif risk ----
+let boardActive = "";   // aktif komplikasyon kartı HTML'i
+let boardCumulative = ""; // kümülatif risk listesi HTML'i
+
+function paintBoard() {
+  const html = boardActive + boardCumulative;
+  els.compBoard.classList.toggle("empty", !html);
+  els.compBoard.innerHTML = html ||
+    `<p class="muted">Yanlış malzeme seçimiyle komplikasyon gelişirse, olay ve çözüm zinciri burada görünür.</p>`;
+}
+
+function renderActiveComplication(ac) {
+  const rows = ac.actions.map((a) => `
+    <div class="rx-step ${a.done ? "done" : (ac.currentAction && a.order === ac.currentAction.order ? "current" : "")}">
+      <span class="rx-mark">${a.done ? "✔" : (ac.currentAction && a.order === ac.currentAction.order ? "▶" : "○")}</span>
+      <span class="rx-body">
+        <span class="rx-title">${a.order}. ${escapeHtml(a.title)}</span>
+        <span class="rx-items">${(a.allowedInstruments || []).map((c) => escapeHtml(labelOf(c))).join(" / ")}${a.requiredSuture ? " + " + escapeHtml(sutureLabelOf(a.requiredSuture)) : ""}</span>
+      </span>
+    </div>`).join("");
+
+  const badge = !ac.scrubResolvable ? "KAYDA GEÇTİ"
+    : ac.resolved ? "GİDERİLDİ" : "AKTİF KOMPLİKASYON";
+  boardActive =
+    `<div class="rx-card ${!ac.scrubResolvable ? "irreversible" : ac.resolved ? "resolved" : "open"} sev-${escapeHtml(ac.severity)}">` +
+      `<div class="rx-head"><span class="rx-badge">${badge}</span>` +
+      `<span class="rx-sev">${escapeHtml(ac.severity)}</span></div>` +
+      `<div class="rx-title-main">${escapeHtml(ac.title)}</div>` +
+      `<div class="rx-narrative">${escapeHtml(ac.narrative)}</div>` +
+      (ac.scrubResolvable
+        ? `<div class="rx-note">✅ ${escapeHtml(ac.resolutionNote)}</div><div class="rx-list">${rows}</div>`
+        : `<div class="rx-note warn">⛔ ${escapeHtml(ac.resolutionNote)}</div>`) +
+    `</div>`;
+  paintBoard();
+}
+
+// 60 adımlık modelde dal: kanama, yapışıklık, sayım uyuşmazlığı… Akışın kendisi çözüm adımlarını getirir.
+const SERIOUS_BRANCHES = new Set(["BLEEDING_DETECTED", "BLEEDING_AFTER_IRRIGATION", "LIGATURE_NOT_SECURE", "COUNT_MISMATCH"]);
+
+function handleBranch(b) {
+  const serious = SERIOUS_BRANCHES.has(b.condition);
+  if (!b.resolved) {
+    state.openBranch = b;
+    state.counters.complication++;
+    toast(serious ? "bad" : "info", `DURUM — ${b.title}`);
+    log(serious ? "error" : "info", `🩸 Dal: ${b.title}`, `Koşul: ${b.condition} (${b.source})\nAkış: Adım ${b.fromNodeId} → ${b.toNodeId}`);
+    traffic("ai", "AKIŞ", "src-aitable", "⑂", b.title, `${b.fromNodeId} → ${b.toNodeId}`);
+    if (serious) shockMonitor("MEDIUM");
+  } else {
+    state.openBranch = null;
+    state.counters.resolved++;
+    toast("good", `Yönetildi — ${b.title}`);
+    log("success", "🩹 Dal tamamlandı", `${b.title} — ana akışa dönülüyor (Adım ${b.toNodeId ?? "-"})`);
+    relaxMonitor();
+  }
+  renderBranch(b);
+}
+
+function renderBranch(b) {
+  boardActive =
+    `<div class="rx-card ${b.resolved ? "resolved" : "open"} sev-${SERIOUS_BRANCHES.has(b.condition) ? "HIGH" : "MEDIUM"}">` +
+      `<div class="rx-head"><span class="rx-badge">${b.resolved ? "YÖNETİLDİ" : "AKIŞ DALI"}</span>` +
+      `<span class="rx-sev">${escapeHtml(b.source)}</span></div>` +
+      `<div class="rx-title-main">${escapeHtml(b.title)}</div>` +
+      `<div class="rx-narrative">${b.resolved
+        ? `Dal tamamlandı; ana akış Adım ${escapeHtml(b.toNodeId ?? "-")} ile sürüyor.`
+        : `Akış Adım ${escapeHtml(b.fromNodeId)} → ${escapeHtml(b.toNodeId)} dalına girdi. Görev kartındaki adımları sırayla uygulayın.`}</div>` +
+    `</div>`;
+  paintBoard();
 }
 
 // ---- SignalR ----
@@ -419,8 +569,9 @@ function pickUp(code) {
     c.classList.toggle("held", c.dataset.code === code));
   document.querySelectorAll(".zone").forEach((z) => z.classList.add("armed"));
   // Sütür gereken adımda doğru sütürü öner.
-  const step = stepMeta(state.currentStep?.stepId);
-  if (step?.suture && code === "NEEDLE_HOLDER") els.sutureSelect.value = step.suture;
+  const step = stepMeta(keyOf(state.currentStep));
+  const isHolder = code === "NEEDLE_HOLDER" || ins?.category === "needle_holder";
+  if (step?.suture && isHolder) els.sutureSelect.value = step.suture;
 }
 
 function release() {
@@ -436,9 +587,13 @@ function deliverToZone(zone) {
   if (!state.holding) { toast("bad", "Önce tepsiden bir alet seçin/sürükleyin."); return; }
   const map = ZONE_MAP[zone];
   const fields = { eventType: map.eventType, instrumentCode: state.holding, target: map.target };
-  const step = stepMeta(state.currentStep?.stepId);
+  const step = stepMeta(keyOf(state.currentStep));
+  const act = state.activeComplication && !state.activeComplication.resolved
+    ? state.activeComplication.currentAction : null;
   const suture = els.sutureSelect.value;
-  if (suture && (step?.suture || state.holding === "NEEDLE_HOLDER")) fields.sutureCode = suture;
+  // 60 adımlık modelde iplik yalnızca seçici açıkken (adım iplik istiyorsa) gönderilir.
+  const sutureOpen = !els.sutureWrap.classList.contains("hidden");
+  if (suture && (isFlowModel() ? sutureOpen : (act?.requiredSuture || step?.suture || state.holding === "NEEDLE_HOLDER"))) fields.sutureCode = suture;
   sendEvent(fields);
   release();
 }
@@ -446,26 +601,47 @@ function deliverToZone(zone) {
 function autoDeliver() {
   const step = state.currentStep;
   if (!step) { toast("bad", "Aktif adım yok."); return; }
-  const meta = stepMeta(step.stepId);
-  if (meta?.event === "count_confirmed") { sendCount(); return; }
-  const code = (step.allowedInstruments || meta?.allowed || [])[0];
+
+  // Komplikasyon açıkken doğru cevap, çözüm zincirinin sıradaki malzemesidir.
+  const act = state.activeComplication && !state.activeComplication.resolved
+    ? state.activeComplication.currentAction : null;
+  if (act) {
+    const map = ZONE_MAP[act.target || "SURGEON"];
+    const fields = { eventType: map.eventType, instrumentCode: act.allowedInstruments[0], target: map.target };
+    if (act.requiredSuture) fields.sutureCode = act.requiredSuture;
+    sendEvent(fields);
+    release();
+    return;
+  }
+
+  const meta = stepMeta(keyOf(step));
+  if ((step.expectedEvent ?? meta?.event) === "count_confirmed") {
+    if (isFlowModel() && step.countCategory) setCountInput(step.countCategory, step.tableCount);
+    sendCount();
+    return;
+  }
+  if ((step.expectedEvent ?? meta?.event) === "step_confirmed") { sendEvent({ eventType: "step_confirmed" }); return; }
+  // İpliğin tek başına hazırlandığı adımda (ör. 3/0 ipek) iplik doğrudan uzatılır.
+  const code = (step.allowedInstruments?.length ? step.allowedInstruments : meta?.allowed || [])[0] ?? (isFlowModel() ? step.requiredSuture : undefined);
   if (!code) { toast("bad", "Bu adımda izinli alet yok."); return; }
   const map = ZONE_MAP[meta?.target || "SURGEON"];
   const fields = { eventType: map.eventType, instrumentCode: code, target: map.target };
-  if (meta?.suture) fields.sutureCode = meta.suture;
+  const suture = step.requiredSuture || meta?.suture;
+  if (suture && suture !== code) fields.sutureCode = suture;
   sendEvent(fields);
   release();
 }
 
+const COUNT_INPUT = () => ({ COMPRESS: els.cntCompress, INSTRUMENT: els.cntInstrument, NEEDLE: els.cntNeedle });
+function setCountInput(category, value) { const el = COUNT_INPUT()[category]; if (el) el.value = value; }
+
 function sendCount() {
-  sendEvent({
-    eventType: "count_confirmed",
-    counts: {
-      COMPRESS: Number(els.cntCompress.value),
-      INSTRUMENT: Number(els.cntInstrument.value),
-      NEEDLE: Number(els.cntNeedle.value),
-    },
-  });
+  const cat = state.currentStep?.countCategory;
+  // 60 adımlık modelde her sayım ayrı adımdır: yalnızca o kategorinin sayısı gönderilir.
+  const counts = isFlowModel() && cat
+    ? { [cat]: Number(COUNT_INPUT()[cat].value) }
+    : { COMPRESS: Number(els.cntCompress.value), INSTRUMENT: Number(els.cntInstrument.value), NEEDLE: Number(els.cntNeedle.value) };
+  sendEvent({ eventType: "count_confirmed", counts });
 }
 
 // ---- UI güncelleyiciler ----
@@ -485,55 +661,111 @@ function setStep(step) {
     updateSceneMode(null);
     return;
   }
-  const id = step.stepId;
+  const id = keyOf(step);
   const meta = stepMeta(id);
-  els.progressLabel.textContent = `Adım ${id} / ${TOTAL_STEPS}`;
-  els.progressBar.style.width = `${(id / TOTAL_STEPS) * 100}%`;
+  const phaseNo = step.phaseNo || meta?.phaseNo || 0;
+  const phaseTxt = phaseNo ? `Aşama ${phaseNo} / ${PHASE_COUNT}` : `${escapeHtml(step.phase ?? "Alt akış")}`;
+  els.progressLabel.textContent = `${phaseTxt} · Adım ${id}/${TOTAL_STEPS}`;
+  els.progressBar.style.width = `${(stepNoOf(step) / TOTAL_STEPS) * 100}%`;
+
+  // Komplikasyon açıkken görev kartı çözüm zincirinin sıradaki malzemesini gösterir.
+  if (state.activeComplication && !state.activeComplication.resolved && state.activeComplication.currentAction) {
+    renderComplicationTask(state.activeComplication);
+    updateSceneMode(step);
+    updateStepList(id);
+    return;
+  }
 
   const allowed = step.allowedInstruments?.length ? step.allowedInstruments : (meta?.allowed || []);
+  const sutures = step.requiredSutures?.length ? step.requiredSutures : ((step.requiredSuture || meta?.suture) ? [step.requiredSuture || meta?.suture] : []);
+  const clamps = step.clamps?.length ? step.clamps : null;
+  const branch = step.isBranch && (step.conditionText || state.openBranch?.title);
   els.taskCard.classList.remove("empty");
+  els.taskCard.classList.toggle("complication", !!branch);
+  const chips = clamps
+    ? clamps.map((c) => `<span class="chip hi">${c.qty}× ${escapeHtml(labelOf(c.code))}</span>`).join("")
+    : allowed.map((c) => `<span class="chip hi">${escapeHtml(labelOf(c))}</span>`).join("");
   els.taskCard.innerHTML =
-    `<div class="ts-badge">Adım ${id}</div>` +
+    `<div class="ts-badge ${branch ? "danger" : ""}">${phaseNo ? `Aşama ${phaseNo}` : "Dal"}</div>` +
     `<div class="ts-body">` +
-      `<div class="ts-title">${escapeHtml(step.title ?? meta?.title ?? "")}</div>` +
-      `<div class="ts-inst">${escapeHtml(meta?.instruction ?? "")}</div>` +
+      `<div class="ts-title">${branch ? "⑂ " : ""}${escapeHtml(isFlowModel() ? `${id}. ` : "")}${escapeHtml(step.title ?? meta?.title ?? "")}</div>` +
+      (branch ? `<div class="ts-inst">🩸 ${escapeHtml(branch)}</div>` : "") +
+      `<div class="ts-inst">${escapeHtml(step.instruction ?? meta?.instruction ?? "")}</div>` +
     `</div>` +
-    `<div class="ts-chips">${allowed.map((c) => `<span class="chip hi">${escapeHtml(labelOf(c))}</span>`).join("") || "<span class='muted'>-</span>"}</div>`;
+    `<div class="ts-chips">${chips}` +
+    `${sutures.map((x) => `<span class="chip su">${escapeHtml(sutureLabelOf(x))}</span>`).join("")}` +
+    `${allowed.length || sutures.length ? "" : `<span class='muted'>${step.kind === "count" ? "sayım" : "yeni alet yok"}</span>`}</div>`;
 
   updateSceneMode(step);
   updateStepList(id);
+}
+
+// Görev kartını komplikasyon çözüm moduna alır.
+function renderComplicationTask(ac) {
+  const a = ac.currentAction;
+  els.taskCard.classList.remove("empty");
+  els.taskCard.classList.add("complication");
+  els.taskCard.innerHTML =
+    `<div class="ts-badge danger">${ac.resolutionIndex + 1}/${ac.resolutionTotal}</div>` +
+    `<div class="ts-body">` +
+      `<div class="ts-title">🩸 ${escapeHtml(ac.title)} — ${escapeHtml(a.title)}</div>` +
+      `<div class="ts-inst">${escapeHtml(a.note || "")}</div>` +
+    `</div>` +
+    `<div class="ts-chips">${(a.allowedInstruments || []).map((c) => `<span class="chip hi">${escapeHtml(labelOf(c))}</span>`).join("")}` +
+    `${a.requiredSuture ? `<span class="chip su">${escapeHtml(sutureLabelOf(a.requiredSuture))}</span>` : ""}</div>`;
 }
 
 function labelOf(code) {
   return INSTRUMENT_CATALOG.find((i) => i.code === code)?.name ?? code;
 }
 
-function updateSceneMode(step) {
-  const meta = step ? stepMeta(step.stepId) : null;
-  const isCount = meta?.event === "count_confirmed";
-  els.countMode.classList.toggle("hidden", !isCount);
-  els.trayWrap.classList.toggle("dim", isCount);
+function sutureLabelOf(code) {
+  return SUTURE_CATALOG.find((s) => s.code === code)?.name ?? code;
+}
 
-  if (isCount && meta?.counts) {
+function updateSceneMode(step) {
+  const meta = step ? stepMeta(keyOf(step)) : null;
+  const ac = state.activeComplication;
+  const act = ac && !ac.resolved ? ac.currentAction : null;
+  const event = step?.expectedEvent ?? meta?.event;
+  const isCount = !act && event === "count_confirmed";
+  const isConfirm = !act && event === "step_confirmed";
+  els.countMode.classList.toggle("hidden", !isCount);
+  els.trayWrap.classList.toggle("dim", isCount || isConfirm);
+  els.confirmBtn.classList.toggle("hidden", !isFlowModel() || !step);
+  els.confirmBtn.classList.toggle("btn-primary", isConfirm);
+  els.confirmBtn.classList.toggle("btn-ghost", !isConfirm);
+
+  if (isCount && isFlowModel() && step.countCategory) {
+    // Her sayım ayrı adım: yalnızca o kategori; kutu başlangıç kaydıyla gelir, masadaki gerçek sayı girilir.
+    els.countMode.querySelectorAll("[data-count]").forEach((f) => f.classList.toggle("hidden", f.dataset.count !== step.countCategory));
+    setCountInput(step.countCategory, step.recordedCount);
+    const name = { COMPRESS: "kompres", INSTRUMENT: "alet", NEEDLE: "iğne" }[step.countCategory];
+    els.countHelp.innerHTML = `Masada sayılan ${name}: <b>${step.tableCount}</b> · başlangıç kaydı: <b>${step.recordedCount}</b>. ` +
+      `Sirküleyle birlikte sayıp <b>masadaki gerçek sayıyı</b> girin; uyuşmazlık varsa doğrulamada bildirilir.`;
+  } else if (isCount && meta?.counts) {
+    els.countMode.querySelectorAll("[data-count]").forEach((f) => f.classList.remove("hidden"));
     els.cntCompress.value = meta.counts.COMPRESS;
     els.cntInstrument.value = meta.counts.INSTRUMENT;
     els.cntNeedle.value = meta.counts.NEEDLE;
   }
 
-  // Sütür seçici görünürlüğü.
-  const needsSuture = !!meta?.suture;
-  els.sutureWrap.classList.toggle("hidden", !needsSuture);
-  if (needsSuture) els.sutureSelect.value = meta.suture;
+  // Sütür seçici görünürlüğü (komplikasyon açıkken zincirin kendi sütürü geçerlidir).
+  const requiredSuture = act ? act.requiredSuture : (step?.requiredSuture ?? meta?.suture);
+  els.sutureWrap.classList.toggle("hidden", !requiredSuture);
+  if (requiredSuture) els.sutureSelect.value = requiredSuture;
 
-  // Beklenen alet vurgusu.
-  const allowed = new Set(step ? (step.allowedInstruments?.length ? step.allowedInstruments : meta?.allowed || []) : []);
-  els.instrumentGrid.querySelectorAll(".tray-card").forEach((c) =>
-    c.classList.toggle("expected", allowed.has(c.dataset.code)));
+  // Beklenen alet vurgusu; "yalnızca beklenen" filtresi açıksa ray yeniden kurulur.
+  const allowed = new Set(act
+    ? (act.allowedInstruments || [])
+    : (step ? (step.allowedInstruments?.length ? step.allowedInstruments : meta?.allowed || []) : []));
+  if (trayFilter.expectedOnly) buildTray();
+  else highlightExpected(allowed);
 
   // Beklenen bölge vurgusu.
-  const zone = meta?.target || "SURGEON";
+  const zone = act ? (act.target || "SURGEON") : (meta?.target || "SURGEON");
   document.querySelectorAll(".zone").forEach((z) =>
-    z.classList.toggle("expected", !isCount && z.dataset.zone === zone));
+    z.classList.toggle("expected", !isCount && !isConfirm && z.dataset.zone === zone));
 }
 
 function setVerdict(kind, text) {
@@ -542,7 +774,10 @@ function setVerdict(kind, text) {
 }
 
 function resetCounters() {
-  state.counters = { correct: 0, wrong: 0, sterile: 0, hint: 0 };
+  state.visited = new Set();
+  state.openBranch = null;
+  state.counters = { correct: 0, wrong: 0, sterile: 0, hint: 0, complication: 0, resolved: 0 };
+  state.activeComplication = null;
   state.timeline = [];
   updateCounters();
   els.aiCard.classList.add("empty");
@@ -552,9 +787,9 @@ function resetCounters() {
   setMonitorLevel("STABLE");
 }
 
-// ---- Kümülatif komplikasyon panosu ----
+// ---- Kümülatif komplikasyon riski (aktif komplikasyon kartının altında) ----
 function renderComplications(assess) {
-  if (!assess || !assess.items || assess.items.length === 0) { resetComplications(); return; }
+  if (!assess || !assess.items || assess.items.length === 0) { boardCumulative = ""; paintBoard(); return; }
   const rows = assess.items.map((it) => `
     <div class="comp-item ${it.primary ? "primary" : ""}">
       <div class="comp-row">
@@ -566,15 +801,28 @@ function renderComplications(assess) {
       <div class="comp-bar"><span style="width:${it.probability}%"></span></div>
       <div class="comp-meta">${it.occurrences}× tekrar · şiddet ${escapeHtml(it.severity)}</div>
     </div>`).join("");
-  els.compBoard.classList.remove("empty");
-  els.compBoard.innerHTML =
-    `<div class="comp-summary">${escapeHtml(assess.summary)}</div><div class="comp-list">${rows}</div>`;
+  boardCumulative =
+    `<div class="comp-cum"><div class="comp-summary">${escapeHtml(assess.summary)}</div>` +
+    `<div class="comp-list">${rows}</div></div>`;
+  paintBoard();
 }
 
 function resetComplications() {
   if (!els.compBoard) return;
-  els.compBoard.classList.add("empty");
-  els.compBoard.innerHTML = `<p class="muted">Hatalar biriktikçe en olası komplikasyonlar burada (max 5) görünür.</p>`;
+  boardActive = "";
+  boardCumulative = "";
+  paintBoard();
+}
+
+// Komplikasyon anında hasta monitörünü sert biçimde sarsar.
+function shockMonitor(severity) {
+  const bump = { LOW: 10, MEDIUM: 20, HIGH: 32, CRITICAL: 46 }[severity] || 24;
+  monitor.stress = clamp(monitor.stress + bump, 0, 100);
+  monitor.currentRiskScore = clamp(monitor.currentRiskScore + bump, 0, 99);
+  monitor.targetHeartRate = clamp(76 + monitor.stress * 0.95, 70, 178);
+  monitor.targetPulseRate = clamp(monitor.targetHeartRate - 2 - (monitor.stress > 60 ? 8 : 0), 55, 175);
+  monitor.targetRespRate = clamp(14 + monitor.stress * 0.25, 12, 42);
+  setMonitorLevel(severity === "CRITICAL" ? "CRITICAL" : "HIGH", severity);
 }
 
 // ---- Hasta monitörü: canlı vital simülasyonu ----
@@ -750,21 +998,57 @@ function updateCounters() {
   els.cntWrong.textContent = state.counters.wrong;
   els.cntSterile.textContent = state.counters.sterile;
   els.cntHint.textContent = state.counters.hint;
+  if (els.cntComp) els.cntComp.textContent = state.counters.complication;
+  if (els.cntResolved) els.cntResolved.textContent = state.counters.resolved;
 }
 
-// ---- Kontrol listesi ----
+// ---- Kontrol listesi: 22 ana aşama başlığı, altında o aşamanın adımları ----
 function buildStepList() {
   els.stepList.innerHTML = "";
+  let lastPhase = null;
   for (const s of STEPS) {
+    const phaseKey = `${s.phaseNo}|${s.phase}`;
+    if (phaseKey !== lastPhase) {
+      lastPhase = phaseKey;
+      const head = document.createElement("li");
+      head.className = "phase-head" + (s.phaseNo ? "" : " branch");
+      head.dataset.phase = s.phaseNo;
+      head.innerHTML = `<span class="phase-no">${s.phaseNo || "⑂"}</span><span class="phase-nm">${escapeHtml(s.phase)}</span>`;
+      els.stepList.appendChild(head);
+    }
+    const multi = STEPS.filter((x) => x.phaseNo === s.phaseNo).length > 1;
     const li = document.createElement("li");
-    li.className = "step-item pending";
+    li.className = "step-item pending" + (multi ? " sub" : "") + (s.isBranch ? " branch" : "");
     li.dataset.id = s.id;
-    li.innerHTML = `<span class="step-mark">○</span><span class="step-txt"><b>${s.id}.</b> ${s.title}</span>`;
+    li.dataset.phase = s.phaseNo;
+    const label = isFlowModel() ? `${s.id}. ${s.title}` : s.title;
+    li.innerHTML = `<span class="step-mark">○</span><span class="step-txt">${escapeHtml(label)}</span>`;
     els.stepList.appendChild(li);
   }
 }
 
 function updateStepList(currentId) {
+  const cur = stepMeta(currentId);
+  if (isFlowModel()) {
+    // Akış dallandığı için sıra değil, gerçekten yürünen düğümler işaretlenir; atlanan dallar soluk kalır.
+    const curIdx = STEPS.findIndex((s) => s.id === currentId);
+    els.stepList.querySelectorAll(".step-item").forEach((li, i) => {
+      const id = li.dataset.id;
+      li.classList.remove("done", "active", "pending", "skipped");
+      const mark = li.querySelector(".step-mark");
+      if (id === currentId) { li.classList.add("active"); mark.textContent = "▶"; }
+      else if (state.visited.has(id)) { li.classList.add("done"); mark.textContent = "✔"; }
+      else if (i < curIdx) { li.classList.add("skipped"); mark.textContent = "–"; }
+      else { li.classList.add("pending"); mark.textContent = "○"; }
+    });
+    els.stepList.querySelectorAll(".phase-head").forEach((h) => {
+      const no = Number(h.dataset.phase);
+      h.classList.toggle("active", !!cur && no === cur.phaseNo && no > 0);
+      h.classList.toggle("done", !!cur && no > 0 && cur.phaseNo > 0 && no < cur.phaseNo);
+    });
+    revealInList(els.stepList.querySelector(".step-item.active"));
+    return;
+  }
   els.stepList.querySelectorAll(".step-item").forEach((li) => {
     const id = Number(li.dataset.id);
     li.classList.remove("done", "active", "pending");
@@ -772,14 +1056,33 @@ function updateStepList(currentId) {
     else if (id === currentId) { li.classList.add("active"); li.querySelector(".step-mark").textContent = "▶"; }
     else { li.classList.add("pending"); li.querySelector(".step-mark").textContent = "○"; }
   });
-  const active = els.stepList.querySelector(".step-item.active");
-  if (active) active.scrollIntoView({ block: "nearest" });
+  els.stepList.querySelectorAll(".phase-head").forEach((h) => {
+    const no = Number(h.dataset.phase);
+    h.classList.toggle("active", !!cur && no === cur.phaseNo);
+    h.classList.toggle("done", !!cur && no < cur.phaseNo);
+  });
+  revealInList(els.stepList.querySelector(".step-item.active"));
+}
+
+// Aktif adımı yalnızca listenin kendi kaydırma kutusunda görünür kılar; sayfanın kendisi kaymaz.
+function revealInList(item) {
+  if (!item) return;
+  let box = item.parentElement;
+  while (box && box !== document.body && !(box.scrollHeight > box.clientHeight && getComputedStyle(box).overflowY !== "visible"))
+    box = box.parentElement;
+  if (!box || box === document.body) return;
+  const top = item.getBoundingClientRect().top - box.getBoundingClientRect().top + box.scrollTop;
+  if (top < box.scrollTop || top + item.offsetHeight > box.scrollTop + box.clientHeight)
+    box.scrollTo({ top: Math.max(0, top - box.clientHeight / 2), behavior: "smooth" });
 }
 
 function markAllStepsDone() {
   els.stepList.querySelectorAll(".step-item").forEach((li) => {
     li.classList.remove("active", "pending"); li.classList.add("done");
     li.querySelector(".step-mark").textContent = "✔";
+  });
+  els.stepList.querySelectorAll(".phase-head").forEach((h) => {
+    h.classList.remove("active"); h.classList.add("done");
   });
   els.progressBar.style.width = "100%";
 }
@@ -794,6 +1097,8 @@ function showReport(report, events) {
     ["Yanlış Aksiyon", report.wrongActions],
     ["Steril İhlali", report.sterileViolations],
     ["Kullanılan İpucu", report.hintsUsed],
+    ["Gelişen Komplikasyon", report.complicationsTriggered ?? 0],
+    ["Giderilen Komplikasyon", report.complicationsResolved ?? 0],
   ];
   els.reportBody.innerHTML =
     rows.map(([k, v]) => `<div class="report-row"><span class="k">${k}</span><span class="v">${v ?? "-"}</span></div>`).join("") +
@@ -808,7 +1113,7 @@ function recordTimeline(type, data) {
   const label = data.deviation ? `SAPMA ${data.deviation.deviationType}`
     : type === "hint_requested" ? "İpucu"
     : data.completed ? "Tamamlandı"
-    : `Adım ${data.currentStepId} ✓`;
+    : `Adım ${data.currentNodeId ?? data.currentStepId} ✓`;
   state.timeline.push({
     hr: Math.round(monitor.targetHeartRate),
     resp: Math.round(monitor.targetRespRate),
@@ -856,7 +1161,7 @@ function renderFlow(events) {
     return `<div class="flow-row ${ok ? "ok" : "bad"}">` +
       `<span class="fr-idx">${i + 1}</span>` +
       `<span class="fr-mark">${ok ? "✓" : "✕"}</span>` +
-      `<span class="fr-main">Adım ${e.stepId} · ${escapeHtml(e.eventType)}${escapeHtml(ins)}${escapeHtml(dev)}</span>` +
+      `<span class="fr-main">Adım ${escapeHtml(e.nodeId ?? e.stepId)} · ${escapeHtml(e.eventType)}${escapeHtml(ins)}${escapeHtml(dev)}</span>` +
       `<span class="fr-score">${sc}</span></div>`;
   }).join("");
 }
@@ -872,21 +1177,330 @@ function formatError(e) {
 }
 
 // ---- Kurulum ----
+// Tepsi kategoriye göre gruplanır; set kalemleri ürün koduyla, sarf malzemeler "EK" rozetiyle görünür.
+// Yerleşim: sabit yükseklikli, yatay kaydırılan iki satırlık ray — bırakma bölgeleri hep görünür kalır.
+const CATEGORY_ORDER = ["Kesici", "Makas", "Penset", "Klemp", "Ekartör", "Portegü", "Cihaz Ucu", "Cihaz", "Solüsyon", "Sarf", "Örtü", "Kap", "Konteyner",
+  "blade", "handle", "scissors", "forceps", "clamp", "retractor", "needle_holder", "energy", "suction", "syringe", "fluid", "antiseptic", "sponge", "dressing", "container"];
+const trayFilter = { text: "", category: "ALL", expectedOnly: false };
+
+function categoriesInOrder() {
+  const cats = [...new Set(INSTRUMENT_CATALOG.map((i) => i.category || "Diğer"))];
+  return cats.sort((a, b) => {
+    const ia = CATEGORY_ORDER.indexOf(a), ib = CATEGORY_ORDER.indexOf(b);
+    return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
+  });
+}
+
+function buildTrayChips() {
+  if (!els.trayChips) return;
+  const cats = ["ALL", ...categoriesInOrder()];
+  els.trayChips.innerHTML = cats.map((c) =>
+    `<button class="tcat ${c === trayFilter.category ? "on" : ""}" data-cat="${escapeHtml(c)}">` +
+    `${c === "ALL" ? "Tümü" : escapeHtml(catLabel(c))}</button>`).join("");
+  els.trayChips.querySelectorAll(".tcat").forEach((b) =>
+    b.addEventListener("click", () => {
+      trayFilter.category = b.dataset.cat;
+      trayFilter.expectedOnly = false;
+      buildTrayChips();
+      buildTray();
+    }));
+}
+
+// O anda beklenen malzeme kodları (komplikasyon açıksa zincirin sıradaki basamağı).
+function expectedCodes() {
+  const ac = state.activeComplication;
+  if (ac && !ac.resolved && ac.currentAction) return new Set(ac.currentAction.allowedInstruments || []);
+  const step = state.currentStep;
+  if (!step) return new Set();
+  const meta = stepMeta(keyOf(step));
+  return new Set(step.allowedInstruments?.length ? step.allowedInstruments : (meta?.allowed || []));
+}
+
 function buildTray() {
+  const exp = expectedCodes();
+  const q = trayFilter.text.trim().toLocaleLowerCase("tr");
+  const visible = INSTRUMENT_CATALOG.filter((i) => {
+    if (trayFilter.expectedOnly && !exp.has(i.code)) return false;
+    if (trayFilter.category !== "ALL" && (i.category || "Diğer") !== trayFilter.category) return false;
+    if (!q) return true;
+    return `${i.name} ${i.code} ${i.setCode || ""}`.toLocaleLowerCase("tr").includes(q);
+  });
+
   els.instrumentGrid.innerHTML = "";
-  for (const ins of INSTRUMENT_CATALOG) {
-    const card = document.createElement("div");
-    card.className = "tray-card";
-    card.dataset.code = ins.code;
-    card.draggable = true;
-    card.innerHTML = `<span class="tray-ic">${ins.icon}</span><span class="tray-nm">${ins.name}</span>`;
-    card.addEventListener("click", () => pickUp(ins.code));
-    card.addEventListener("dragstart", (e) => { pickUp(ins.code); e.dataTransfer.setData("text/plain", ins.code); });
-    els.instrumentGrid.appendChild(card);
+  if (visible.length === 0) {
+    els.instrumentGrid.innerHTML = `<p class="tray-empty muted">Eşleşen malzeme yok.</p>`;
+    return;
+  }
+
+  const groups = new Map();
+  for (const ins of visible) {
+    const cat = ins.category || "Diğer";
+    if (!groups.has(cat)) groups.set(cat, []);
+    groups.get(cat).push(ins);
+  }
+  for (const cat of categoriesInOrder()) {
+    const items = groups.get(cat);
+    if (!items) continue;
+    const group = document.createElement("div");
+    group.className = "tray-group";
+    const head = document.createElement("div");
+    head.className = "tray-cat";
+    head.textContent = `${catLabel(cat)} (${items.length})`;
+    const cards = document.createElement("div");
+    cards.className = "tray-group-cards";
+    for (const ins of items) cards.appendChild(trayCard(ins));
+    group.append(head, cards);
+    els.instrumentGrid.appendChild(group);
+  }
+  highlightExpected(exp);
+}
+
+function trayCard(ins) {
+  const card = document.createElement("div");
+  card.className = "tray-card" + (ins.sterile === false ? " nonsterile" : "")
+    + (state.holding === ins.code ? " held" : "");
+  card.dataset.code = ins.code;
+  card.draggable = true;
+  // 60 adımlık modelin kataloğunda set kodu yok; "sette yok (EK)" rozeti yalnızca eski katalogda anlamlı.
+  const setInfo = ins.setCode ? ` · ${ins.setCode} (×${ins.quantity})` : (isFlowModel() ? "" : " · sette yok (sarf/ek)");
+  card.title = `${ins.name}${setInfo}${ins.sterile === false ? " · STERİL DEĞİL" : ""}`;
+  card.innerHTML =
+    `<span class="tray-ic">${ins.icon}</span>` +
+    `<span class="tray-nm">${escapeHtml(ins.name)}</span>` +
+    (ins.setCode || !isFlowModel() ? `<span class="tray-code">${ins.setCode ? escapeHtml(ins.setCode) : "EK"}</span>` : "") +
+    (ins.sterile === false ? `<span class="tray-flag">steril değil</span>` : "");
+  card.addEventListener("click", () => pickUp(ins.code));
+  card.addEventListener("dragstart", (e) => { pickUp(ins.code); e.dataTransfer.setData("text/plain", ins.code); });
+  return card;
+}
+
+function highlightExpected(exp) {
+  els.instrumentGrid.querySelectorAll(".tray-card").forEach((c) =>
+    c.classList.toggle("expected", exp.has(c.dataset.code)));
+  scrollExpectedIntoView();
+}
+
+// Beklenen malzemeyi yatay rayda görünür kılar; kullanıcı elle aramak zorunda kalmaz.
+function scrollExpectedIntoView() {
+  const first = els.instrumentGrid.querySelector(".tray-card.expected");
+  if (!first) return;
+  const rail = els.instrumentGrid;
+  const left = first.offsetLeft - rail.clientWidth / 2 + first.clientWidth / 2;
+  rail.scrollTo({ left: Math.max(0, left), behavior: "smooth" });
+}
+
+// ---- Akış şeması: motorun bu seansta yürüdüğü yol (60 adımlık model) ----
+// Yeşil = yürünen, mavi = şu anki adım, gri = atlanan dal, kesikli ok = karar dalı (koşul adıyla).
+let flowRenderNo = 0;
+
+async function openFlow() {
+  if (!isFlowModel()) { toast("bad", "Akış şeması yalnızca 60 adımlık modelde var."); return; }
+  els.flowModal.classList.remove("hidden");
+  await refreshFlow();
+}
+
+async function refreshFlow() {
+  let flow = null;
+  if (state.sessionId) {
+    try { flow = await getJson(`/api/sessions/${state.sessionId}/flow`); } catch (e) { log("error", "✕ Akış okunamadı", formatError(e)); }
+  }
+  renderFlowPlan(flow);
+  await renderFlowDiagram(flow);
+}
+
+const shortLabel = (t, n = 34) => (t.length > n ? t.slice(0, n - 1) + "…" : t).replaceAll('"', "'");
+const nid = (id) => `n${String(id).replace(/[^A-Za-z0-9]/g, "")}`;
+
+function buildMermaid(flow) {
+  const path = flow?.path || [];
+  const current = flow?.currentNodeId ?? null;
+  const visited = new Set(current ? path.slice(0, -1) : path);
+  const order = FLOW_GRAPH.map((n) => n.id);
+  const reach = current ? order.indexOf(current) : (path.length ? order.length : -1);
+  const cls = (id) => id === current ? "current" : visited.has(id) ? "done" : order.indexOf(id) < reach ? "skipped" : "pending";
+
+  const L = ["flowchart TB"];
+  // Ana akış yukarıdan aşağıya tek zincir; dallar yana açılır. Alt akışlar (43a, 47a–f) kendi kutusunda.
+  // Aşama değişen ilk düğümde aşama adı etikete eklenir.
+  let lastPhase = null;
+  const label = (n) => {
+    const ph = n.phaseId ? Number(n.phaseId.replace("PH", "")) : null;
+    const head = ph && ph !== lastPhase ? `[${ph}. ${shortLabel(FLOW_PHASES[ph] || "", 30)}] ` : "";
+    if (ph) lastPhase = ph;
+    return `${head}${n.id}. ${shortLabel(n.label, 44)}`;
+  };
+  for (const n of FLOW_GRAPH.filter((x) => !x.subflowId)) L.push(`${nid(n.id)}["${label(n)}"]:::${cls(n.id)}`);
+  for (const sf of [...new Set(FLOW_GRAPH.filter((x) => x.subflowId).map((x) => x.subflowId))]) {
+    L.push(`subgraph SF_${sf}["⑂ ${sf === "COUNT_DISCREPANCY" ? "Sayım uyuşmazlığı alt akışı" : "Yıkama sonrası kanama"}"]`);
+    for (const n of FLOW_GRAPH.filter((x) => x.subflowId === sf)) L.push(`${nid(n.id)}["${n.id}. ${shortLabel(n.label, 44)}"]:::${cls(n.id)}`);
+    L.push("end");
+  }
+  const edges = [];
+  for (const n of FLOW_GRAPH) {
+    for (const b of n.branches) edges.push({ from: n.id, to: String(b.goTo), label: b.when + (b.maxIterations ? ` ≤${b.maxIterations}` : ""), branch: true });
+    if (n.next != null) edges.push({ from: n.id, to: String(n.next), branch: false });
+  }
+  edges.forEach((e) => L.push(e.branch ? `${nid(e.from)} -.->|${e.label}| ${nid(e.to)}` : `${nid(e.from)} --> ${nid(e.to)}`));
+
+  // Yürünen kenarlar: yoldaki ardışık her çift (dal alındıysa dal kenarı, değilse düz kenar).
+  const walked = new Set();
+  for (let i = 1; i < path.length; i++) {
+    const a = path[i - 1], b = path[i];
+    const idx = edges.findIndex((e) => e.from === a && e.to === b && e.branch) >= 0 && FLOW_GRAPH.find((n) => n.id === a)?.next !== b
+      ? edges.findIndex((e) => e.from === a && e.to === b && e.branch)
+      : edges.findIndex((e) => e.from === a && e.to === b);
+    if (idx >= 0) walked.add(idx);
+  }
+  edges.forEach((e, i) => {
+    if (walked.has(i)) L.push(`linkStyle ${i} stroke:#34d399,stroke-width:3px`);
+    else if (e.branch) L.push(`linkStyle ${i} stroke:#f59e0b,stroke-width:1.5px`);
+  });
+  L.push("classDef done fill:#14532d,stroke:#34d399,color:#d1fae5",
+    "classDef current fill:#1e3a8a,stroke:#93c5fd,stroke-width:3px,color:#ffffff",
+    "classDef skipped fill:#1f2937,stroke:#4b5563,color:#6b7280,stroke-dasharray:4 3",
+    "classDef pending fill:#172036,stroke:#2a3a63,color:#cbd5e1");
+  return L.join("\n");
+}
+
+async function renderFlowDiagram(flow) {
+  if (!window.mermaid) { els.flowDiagram.innerHTML = `<p class="muted">Mermaid yüklenemedi (internet bağlantısı?).</p>`; return; }
+  if (!renderFlowDiagram.ready) {
+    mermaid.initialize({ startOnLoad: false, theme: "dark", securityLevel: "strict", maxTextSize: 200000,
+      flowchart: { curve: "basis", nodeSpacing: 30, rankSpacing: 26, htmlLabels: false, useMaxWidth: false } });
+    renderFlowDiagram.ready = true;
+  }
+  const keep = { left: els.flowDiagram.scrollLeft, top: els.flowDiagram.scrollTop };
+  try {
+    const { svg } = await mermaid.render(`flowSvg${++flowRenderNo}`, buildMermaid(flow));
+    els.flowDiagram.innerHTML = svg;
+    const cur = els.flowDiagram.querySelector("g.node.current");
+    if (cur && !renderFlowDiagram.scrolled) {
+      cur.scrollIntoView({ block: "center", inline: "center" });
+      renderFlowDiagram.scrolled = true;
+    } else els.flowDiagram.scrollTo(keep.left, keep.top);
+  } catch (e) {
+    els.flowDiagram.innerHTML = `<pre class="muted">${escapeHtml(String(e?.message || e))}</pre>`;
+  }
+  const path = flow?.path || [];
+  els.flowSummary.textContent = flow
+    ? `${flow.scenarioId} · ${path.length} adım yüründü · şu an: ${flow.currentNodeId ?? "bitti"}`
+    : "Seans yok — yalnızca model gösteriliyor";
+}
+
+function renderFlowPlan(flow) {
+  if (!flow) { els.flowPlan.innerHTML = `<p class="muted">Seansı başlatınca koşul planı burada görünür.</p>`; els.flowRequests.innerHTML = ""; return; }
+  const val = (v) => v ? "evet" : "hayır";
+  els.flowPlan.innerHTML = flow.conditions.map((c) => {
+    const plan = c.plan ? (c.plan.length > 1 ? c.plan.map(val).join(" → ") : val(c.plan[0])) : "hayır (plan yok)";
+    const yes = c.plan?.some(Boolean);
+    return `<div class="fp-row"><span class="fp-code">${escapeHtml(c.code)}</span>` +
+      `<span class="fp-val ${yes ? "yes" : "no"}">${plan}</span>` +
+      `<span class="fp-desc">${escapeHtml(c.description)} · adım ${escapeHtml(String(c.evaluatedAt ?? "-"))} · ${escapeHtml(c.source)}</span>` +
+      (c.evaluations ? `<span class="fp-eval">değerlendirildi: ${c.evaluations} · dala girildi: ${c.taken}</span>` : "") + `</div>`;
+  }).join("") +
+    `<div class="fp-row"><span class="fp-code">Hasta</span><span class="fp-val">${escapeHtml(flow.parameters.PATIENT_BODY_TYPE ?? "-")}</span>` +
+    `<span class="fp-desc">kapatma: ${escapeHtml(flow.parameters.SKIN_CLOSURE_TYPE ?? "-")} · mezo damar: ${(flow.parameters.MESO_VESSELS || []).map((v) => v.caliber).join(", ") || "-"}` +
+    ` · kompres kayıt/masa: ${flow.counts.recorded.COMPRESS ?? "-"}/${flow.counts.table.COMPRESS ?? "-"}</span></div>`;
+  const req = Object.entries(flow.requests || {});
+  els.flowRequests.innerHTML = req.length
+    ? req.map(([n, names]) => `<div class="fp-row"><span class="fp-code">Adım ${escapeHtml(n)}</span><span class="fp-val">${escapeHtml(names.join(" / "))}</span></div>`).join("")
+    : `<p class="muted">Bu vakada cerrah istemi yok.</p>`;
+}
+
+// ---- Hata bildirimi ----
+// Bildirim sunucuya (backend/AppData/issues.json) yazılır; ngrok üzerinden bağlanan
+// kullanıcının raporu local diskte kalıcı olur.
+function openBugModal() {
+  els.bugResult.classList.add("hidden");
+  els.bugResult.textContent = "";
+  els.bugSendBtn.disabled = false;
+  els.bugModal.classList.remove("hidden");
+  els.bugBody.focus();
+}
+
+function bugContext() {
+  const step = state.currentStep;
+  const meta = step ? stepMeta(keyOf(step)) : null;
+  const ac = state.activeComplication;
+  return {
+    url: location.href,
+    backend: baseUrl(),
+    sessionId: state.sessionId || "-",
+    scenario: els.scenario.value,
+    phase: step ? `${step.phaseNo ?? meta?.phaseNo ?? "-"} · ${step.phase ?? meta?.phase ?? "-"}` : "-",
+    step: step ? `${keyOf(step)}/${TOTAL_STEPS} · ${step.title ?? ""}` : "-",
+    model: PROCEDURE_MODEL,
+    expected: step ? (step.allowedInstruments || meta?.allowed || []).join(" / ") : "-",
+    holding: state.holding || "-",
+    activeComplication: ac && !ac.resolved ? `${ac.title} (${ac.resolutionIndex + 1}/${ac.resolutionTotal})` : "-",
+    score: els.scoreValue.textContent,
+    counters: `doğru=${state.counters.correct} hatalı=${state.counters.wrong} steril=${state.counters.sterile} komp=${state.counters.complication}`,
+    viewport: `${window.innerWidth}x${window.innerHeight}`,
+    userAgent: navigator.userAgent,
+  };
+}
+
+async function sendBugReport() {
+  const body = els.bugBody.value.trim();
+  if (!body) { els.bugBody.focus(); toast("bad", "Lütfen ne olduğunu yazın."); return; }
+  els.bugSendBtn.disabled = true;
+  try {
+    const issue = await postJson("/api/issues", {
+      title: els.bugTitle.value.trim(),
+      body,
+      severity: els.bugSeverity.value,
+      area: els.bugArea.value || null,
+      reportedBy: els.bugReporter.value.trim() || els.userId.value.trim(),
+      context: bugContext(),
+    });
+    els.bugResult.className = "bug-result ok";
+    els.bugResult.textContent = `✔ Kaydedildi — #${issue.number} (${issue.id}). Teşekkürler!`;
+    els.bugTitle.value = "";
+    els.bugBody.value = "";
+    toast("good", `Hata bildirimi alındı — #${issue.number}`);
+    log("success", `🐞 Hata bildirildi #${issue.number}`, `${issue.title}\n${issue.body}`);
+    setTimeout(() => els.bugModal.classList.add("hidden"), 1600);
+  } catch (e) {
+    els.bugResult.className = "bug-result err";
+    els.bugResult.textContent = "✕ Gönderilemedi. Backend adresini kontrol edip tekrar deneyin.";
+    log("error", "✕ Hata bildirimi gönderilemedi", formatError(e));
+  } finally {
+    els.bugSendBtn.disabled = false;
   }
 }
 
+function bindTrayTools() {
+  if (!els.traySearch) return;
+  els.traySearch.addEventListener("input", () => {
+    trayFilter.text = els.traySearch.value;
+    buildTray();
+  });
+  els.trayExpectedBtn.addEventListener("click", () => {
+    trayFilter.expectedOnly = !trayFilter.expectedOnly;
+    if (trayFilter.expectedOnly) { trayFilter.category = "ALL"; trayFilter.text = ""; els.traySearch.value = ""; }
+    els.trayExpectedBtn.classList.toggle("on", trayFilter.expectedOnly);
+    buildTrayChips();
+    buildTray();
+  });
+  const nudge = (dir) => els.instrumentGrid.scrollBy({ left: dir * Math.round(els.instrumentGrid.clientWidth * 0.8), behavior: "smooth" });
+  els.trayPrev.addEventListener("click", () => nudge(-1));
+  els.trayNext.addEventListener("click", () => nudge(1));
+  // Dikey tekerlek hareketini yatay kaydırmaya çevirir.
+  els.instrumentGrid.addEventListener("wheel", (e) => {
+    if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+    e.preventDefault();
+    els.instrumentGrid.scrollLeft += e.deltaY;
+  }, { passive: false });
+  // Sürükleme sırasında rayın kenarına gelince otomatik kaydır.
+  els.instrumentGrid.addEventListener("dragover", (e) => {
+    const r = els.instrumentGrid.getBoundingClientRect();
+    if (e.clientX < r.left + 50) els.instrumentGrid.scrollLeft -= 18;
+    else if (e.clientX > r.right - 50) els.instrumentGrid.scrollLeft += 18;
+  });
+}
+
 function buildSutures() {
+  els.sutureSelect.innerHTML = `<option value="">(iplik yok)</option>`;
   for (const s of SUTURE_CATALOG) {
     const opt = document.createElement("option");
     opt.value = s.code; opt.textContent = s.name;
@@ -909,6 +1523,7 @@ function bindEvents() {
   els.autoBtn.addEventListener("click", autoDeliver);
   els.releaseBtn.addEventListener("click", release);
   els.countSendBtn.addEventListener("click", sendCount);
+  els.confirmBtn.addEventListener("click", () => sendEvent({ eventType: "step_confirmed" }));
   els.clearLogBtn.addEventListener("click", () => (els.log.innerHTML = ""));
   els.trafficClear.addEventListener("click", () => { els.traffic.innerHTML = ""; trafficCount = 0; els.trafficCount.textContent = "0 istek"; });
   els.audioToggle.addEventListener("click", toggleAudio);
@@ -925,7 +1540,19 @@ function bindEvents() {
   });
   els.helpBtn.addEventListener("click", () => els.helpModal.classList.remove("hidden"));
   els.closeHelpBtn.addEventListener("click", () => els.helpModal.classList.add("hidden"));
+  els.bugBtn.addEventListener("click", openBugModal);
+  els.closeBugBtn.addEventListener("click", () => els.bugModal.classList.add("hidden"));
+  els.bugSendBtn.addEventListener("click", sendBugReport);
+  // Ctrl/Cmd+Enter ile gönder, Esc ile kapat.
+  els.bugBody.addEventListener("keydown", (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === "Enter") sendBugReport();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") { els.bugModal.classList.add("hidden"); els.flowModal.classList.add("hidden"); }
+  });
   els.closeReportBtn.addEventListener("click", () => els.reportModal.classList.add("hidden"));
+  els.flowBtn.addEventListener("click", openFlow);
+  els.closeFlowBtn.addEventListener("click", () => { els.flowModal.classList.add("hidden"); renderFlowDiagram.scrolled = false; });
   document.querySelectorAll("button[data-evt]").forEach((btn) =>
     btn.addEventListener("click", () => sendEvent({ eventType: btn.dataset.evt })));
 }
@@ -934,12 +1561,28 @@ function bindEvents() {
 if (location.hostname !== "localhost" && location.hostname !== "127.0.0.1") {
   els.baseUrl.value = location.origin;
 }
-buildTray();
-buildSutures();
-buildStepList();
 bindZones();
 bindEvents();
 setConn(false);
 resetComplications();
 baselineVitals();
 startMonitor();
+
+// Adım listesi ve malzeme kataloğu backend'den yüklenir.
+(async function boot() {
+  try {
+    const p = await loadProcedure();
+    buildTrayChips();
+    buildTray();
+    bindTrayTools();
+    buildSutures();
+    buildStepList();
+    els.progressLabel.textContent = `Aşama 0 / ${PHASE_COUNT}`;
+    log("info", "⚙ Prosedür yüklendi",
+      `${p.title}\nModel: ${PROCEDURE_MODEL} · Aşama: ${PHASE_COUNT} · Adım: ${TOTAL_STEPS} · Alet: ${INSTRUMENT_CATALOG.length}` +
+      (isFlowModel() ? ` · Karar koşulu: ${(p.conditions || []).length}` : ` · Komplikasyon: ${p.complications.length}`));
+  } catch (e) {
+    log("error", "✕ Prosedür yüklenemedi", formatError(e));
+    toast("bad", "Prosedür yüklenemedi — backend adresini kontrol edin.");
+  }
+})();

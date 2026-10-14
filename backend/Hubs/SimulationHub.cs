@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.SignalR;
 
-namespace Operion.Api.Hubs;
+namespace Arqenion.Api.Hubs;
 
 public sealed class SimulationHub : Hub
 {

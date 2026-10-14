@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Operion — Ameliyathane Simülasyonu</title>
-  <link rel="stylesheet" href="styles.css" />
+  <title>Arqenion — Ameliyathane Simülasyonu</title>
+  <link rel="stylesheet" href="styles.css?v=flow1" />
 </head>
 <body>
   <!-- Üst Bar -->
@@ -12,7 +12,7 @@
     <div class="brand">
       <span class="brand-mark">⊕</span>
       <div>
-        <div class="brand-title">Operion</div>
+        <div class="brand-title">Arqenion</div>
         <div class="brand-sub">Açık Apendektomi — Scrub Teknikeri Simülasyonu</div>
       </div>
     </div>
@@ -23,6 +23,9 @@
         <select id="scenario">
           <option value="case-basic-01">Standart Vaka</option>
           <option value="case-adhesion-01">Yapışıklıklı Vaka</option>
+          <option value="case-bleeding-01">Kanamalı Vaka (60 adım)</option>
+          <option value="case-count-01">Sayım Uyuşmazlığı (60 adım)</option>
+          <option value="case-obese-01">Kilolu Hasta, Estetik Kapatma (60 adım)</option>
         </select>
       </label>
       <label class="field">
@@ -31,7 +34,9 @@
       </label>
       <button id="startBtn" class="btn btn-primary">▶ Seansı Başlat</button>
       <button id="endBtn" class="btn btn-danger" disabled>■ Bitir & Rapor</button>
+      <button id="flowBtn" class="btn btn-ghost" title="Motorun bu seansta yürüdüğü akış (60 adımlık model)">⑂ Akış</button>
       <button id="helpBtn" class="btn btn-ghost" title="Nasıl kullanılır?">?</button>
+      <button id="bugBtn" class="btn btn-bug" title="Bir hata veya eksik gördüyseniz bildirin">🐞 Hata Bildir</button>
     </div>
 
     <div id="taskCard" class="task-strip empty">
@@ -45,6 +50,8 @@
         <span class="em bad"><b id="cntWrong">0</b><i>Hatalı</i></span>
         <span class="em warn"><b id="cntSterile">0</b><i>Steril</i></span>
         <span class="em info"><b id="cntHint">0</b><i>İpucu</i></span>
+        <span class="em crit"><b id="cntComp">0</b><i>Komp.</i></span>
+        <span class="em ok"><b id="cntResolved">0</b><i>Çözüldü</i></span>
       </div>
     </div>
 
@@ -66,7 +73,7 @@
       </div>
       <div class="progress-wrap">
         <div class="progress-meta">
-          <span id="progressLabel">Adım 0 / 18</span>
+          <span id="progressLabel">Aşama 0 / 22</span>
           <span id="connState" class="conn-badge conn-off">● Bağlı değil</span>
         </div>
         <div class="progress-track">
@@ -84,10 +91,10 @@
   <div id="toast" class="toast hidden"></div>
 
   <main class="stage-layout">
-    <!-- SOL: Kümülatif Komplikasyon + Canlı Değerlendirme + AI -->
+    <!-- SOL: Komplikasyon + AI geri bildirim -->
     <div class="col col-left">
       <section class="panel">
-        <h2 class="panel-title">� Kümülatif Komplikasyon</h2>
+        <h2 class="panel-title">🩸 Komplikasyon</h2>
         <div id="compBoard" class="comp-board empty">
           <p class="muted">Hatalar biriktikçe en olası komplikasyonlar burada (max 5) görünür.</p>
         </div>
@@ -135,25 +142,35 @@
             <span>Sütür</span>
             <select id="sutureSelect"><option value="">(yok)</option></select>
           </label>
+          <button id="confirmBtn" class="btn btn-mini btn-primary hidden" title="Bu adımda yeni alet verilmez: cerrahı izleyip adımı onaylayın">✔ Adımı onayla (yeni alet yok)</button>
           <button id="autoBtn" class="btn btn-mini btn-success" title="Bu adımın doğru aletini otomatik teslim et">⚡ Doğru aleti gönder</button>
           <button id="releaseBtn" class="btn btn-mini btn-ghost" disabled>Bırak</button>
         </div>
 
         <!-- Sayım modu (yalnızca sayım adımında) -->
         <div id="countMode" class="count-mode hidden">
-          <p class="count-help">Kapanış öncesi sayım. Değerler beklenenle eşleşmezse <b>COUNT_MISMATCH</b> sapması oluşur.</p>
+          <p id="countHelp" class="count-help">Kapanış öncesi sayım. Değerler beklenenle eşleşmezse <b>COUNT_MISMATCH</b> sapması oluşur.</p>
           <div class="count-inputs">
-            <label class="field"><span>Kompres</span><input id="cntCompress" type="number" value="10" /></label>
-            <label class="field"><span>Alet</span><input id="cntInstrument" type="number" value="20" /></label>
-            <label class="field"><span>İğne</span><input id="cntNeedle" type="number" value="3" /></label>
+            <label class="field" data-count="COMPRESS"><span>Kompres</span><input id="cntCompress" type="number" value="10" /></label>
+            <label class="field" data-count="INSTRUMENT"><span>Alet</span><input id="cntInstrument" type="number" value="20" /></label>
+            <label class="field" data-count="NEEDLE"><span>İğne</span><input id="cntNeedle" type="number" value="3" /></label>
           </div>
           <button id="countSendBtn" class="btn btn-primary">✔ Sayımı Onayla</button>
         </div>
 
         <!-- Alet tepsisi -->
         <div id="trayWrap">
-          <h3 class="subhead">🧰 Alet Tepsisi <span class="muted">— sürükleyip bir bölgeye bırakın veya tıklayıp bölge seçin</span></h3>
-          <div id="instrumentGrid" class="tray-grid"></div>
+          <div class="tray-head">
+            <h3 class="subhead">🧰 Alet Tepsisi <span class="muted">— tıklayıp bölge seçin veya sürükleyin</span></h3>
+            <div class="tray-tools">
+              <input id="traySearch" class="tray-search" type="search" placeholder="Alet ara…" autocomplete="off" />
+              <button id="trayExpectedBtn" class="btn btn-mini btn-ghost" title="Yalnızca bu adımda beklenen malzemeleri göster">🎯 Beklenen</button>
+              <button id="trayPrev" class="tray-nav" title="Sola kaydır" aria-label="Sola kaydır">‹</button>
+              <button id="trayNext" class="tray-nav" title="Sağa kaydır" aria-label="Sağa kaydır">›</button>
+            </div>
+          </div>
+          <div id="trayChips" class="tray-chips"></div>
+          <div id="instrumentGrid" class="tray-rail"></div>
         </div>
 
         <!-- Özel olaylar -->
@@ -169,7 +186,7 @@
     <!-- SAĞ: Prosedür adımları + geliştirici logu -->
     <div class="col col-right">
       <section class="panel">
-        <h2 class="panel-title">📋 Prosedür Adımları</h2>
+        <h2 class="panel-title">📋 Prosedür — 22 Aşama</h2>
         <ol id="stepList" class="step-list"></ol>
       </section>
 
@@ -216,15 +233,41 @@
   </div>
 
   <!-- Yardım Modalı -->
+  <div id="flowModal" class="modal hidden">
+    <div class="modal-card modal-flow">
+      <div class="flow-head">
+        <h2>⑂ Akış Şeması</h2>
+        <span id="flowSummary" class="muted"></span>
+        <span class="flow-legend">
+          <span class="lg lg-done">yürünen</span><span class="lg lg-current">şu an</span>
+          <span class="lg lg-skipped">atlanan</span><span class="lg lg-pending">sırada</span>
+          <span class="lg lg-branch">- - → dal (koşul)</span>
+        </span>
+        <button id="closeFlowBtn" class="btn btn-ghost">Kapat</button>
+      </div>
+      <div class="flow-body">
+        <div id="flowDiagram" class="flow-diagram"><p class="muted">Yükleniyor…</p></div>
+        <aside class="flow-side">
+          <h3>Vaka planı (motorun girdisi)</h3>
+          <div id="flowPlan"></div>
+          <h3>Cerrah istemleri</h3>
+          <div id="flowRequests"></div>
+        </aside>
+      </div>
+    </div>
+  </div>
+
   <div id="helpModal" class="modal hidden">
     <div class="modal-card modal-wide">
       <h2>❓ Nasıl Kullanılır?</h2>
       <ol class="help-list">
-        <li><b>Seansı Başlat</b>'a basın. Sol üstte ilk görev, sağda 18 adımlık kontrol listesi belirir.</li>
+        <li><b>Seansı Başlat</b>'a basın. Sol üstte ilk görev, sağda 22 aşamalık kontrol listesi belirir.</li>
         <li><b>Görev Rehberi</b> size ne yapmanız gerektiğini düz Türkçe anlatır. Beklenen alet(ler) tepside <span class="hl-g">yeşil</span> parlar; hedef bölge de vurgulanır.</li>
         <li>Tepsiden bir aleti <b>sürükleyip</b> doğru bölgeye (🩺 Cerrah / 🗑️ Kirli Alan / 🧪 Patoloji) bırakın — ya da alete tıklayıp sonra bölgeye tıklayın.</li>
         <li>Sütür gereken adımlarda <b>Sütür</b> menüsü otomatik açılır ve doğru sütür seçilir; test için değiştirebilirsiniz.</li>
-        <li>Sayım adımında değerleri girip <b>Sayımı Onayla</b>'ya basın.</li>
+        <li>Sayım adımında değerleri girip <b>Sayımı Onayla</b>'ya basın. 60 adımlık modelde her sayım (kompres, alet, iğne) ayrı adımdır; kutu başlangıç kaydıyla gelir, masadaki gerçek sayıyı girin.</li>
+        <li>Cerrahın kendisinin yaptığı adımlarda yeni alet verilmez: <b>✔ Adımı onayla</b>'ya basın. Bu adımlarda alet uzatmak hata sayılır.</li>
+        <li>Senaryoya göre akış dallanabilir (kanama, yapışıklık, sayım uyuşmazlığı…). Dal başlayınca komplikasyon panosunda görünür; ana akışa dönülünce "yönetildi" olur.</li>
         <li>Yanlış alet, yanlış sütür, steril ihlali gibi durumlarda üstte <span class="hl-r">kırmızı</span> afiş çıkar ve <b>AI Geri Bildirim</b> paneli klinik açıklamayı gösterir.</li>
         <li><b>⚡ Doğru aleti gönder</b> düğmesi hızlı demo için o adımın doğru aletini otomatik teslim eder.</li>
         <li>Bitince <b>Bitir & Rapor</b> ile skor ve performans özetini görün.</li>
@@ -233,7 +276,60 @@
     </div>
   </div>
 
+  <!-- Hata Bildirimi Modalı -->
+  <div id="bugModal" class="modal hidden">
+    <div class="modal-card">
+      <h2>🐞 Hata Bildir</h2>
+      <p class="bug-help">Gördüğünüz sorunu yazın. Bulunduğunuz aşama, adım, skor ve seans bilgisi otomatik eklenir.</p>
+      <div class="bug-form">
+        <label class="field">
+          <span>Başlık <i class="opt">(boş bırakılabilir)</i></span>
+          <input id="bugTitle" type="text" maxlength="120" placeholder="Kısa özet" />
+        </label>
+        <label class="field">
+          <span>Ne oldu? <i class="req">*</i></span>
+          <textarea id="bugBody" rows="5" placeholder="Ne yaptınız, ne bekliyordunuz, ne oldu?"></textarea>
+        </label>
+        <div class="bug-row">
+          <label class="field">
+            <span>Önem</span>
+            <select id="bugSeverity">
+              <option value="LOW">Düşük</option>
+              <option value="NORMAL" selected>Normal</option>
+              <option value="HIGH">Yüksek</option>
+              <option value="BLOCKER">Engelleyici</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Alan</span>
+            <select id="bugArea">
+              <option value="">— seçiniz —</option>
+              <option>Alet tepsisi</option>
+              <option>Prosedür adımları</option>
+              <option>Komplikasyon</option>
+              <option>Puanlama</option>
+              <option>Hasta monitörü</option>
+              <option>Rapor</option>
+              <option>Arayüz / görsel</option>
+              <option>Diğer</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Bildiren</span>
+            <input id="bugReporter" type="text" maxlength="60" placeholder="adınız" />
+          </label>
+        </div>
+      </div>
+      <div id="bugResult" class="bug-result hidden"></div>
+      <div class="bug-actions">
+        <button id="bugSendBtn" class="btn btn-primary">Gönder</button>
+        <button id="closeBugBtn" class="btn btn-ghost">Kapat</button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
-  <script src="app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+  <script src="app.js?v=flow1"></script>
 </body>
 </html>

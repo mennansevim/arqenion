@@ -1,0 +1,5732 @@
+{
+ "procedureVersion": "2.4.0",
+ "cases": [
+  {
+   "id": "base",
+   "conditions": {},
+   "parameters": {
+    "PATIENT_BODY_TYPE": "NORMAL",
+    "MESO_VESSELS": [
+     {
+      "caliber": "MEDIUM"
+     },
+     {
+      "caliber": "MEDIUM"
+     }
+    ],
+    "SKIN_CLOSURE_TYPE": "STANDARD"
+   },
+   "path": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "11",
+    "13",
+    "14",
+    "15",
+    "16",
+    "17",
+    "18",
+    "19",
+    "22",
+    "23",
+    "24",
+    "25",
+    "26",
+    "27",
+    "28",
+    "29",
+    "30",
+    "31",
+    "32",
+    "33",
+    "34",
+    "35",
+    "36",
+    "37",
+    "38",
+    "39",
+    "40",
+    "42",
+    "43",
+    "44",
+    "45",
+    "46",
+    "47",
+    "48",
+    "49",
+    "50",
+    "51",
+    "52",
+    "53",
+    "54",
+    "55",
+    "56",
+    "57",
+    "58",
+    "59",
+    "60"
+   ],
+   "expectedInstruments": {
+    "1": {
+     "accepted": [
+      "SCALPEL_BLADE_10",
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "2": {
+     "accepted": [
+      "ESU_MONOPOLAR_PEN"
+     ]
+    },
+    "3": {
+     "accepted": [
+      "FORCEPS_STILLE_NON_TOOTHED_15",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "4": {
+     "accepted": [
+      "RETRACTOR_FARABEUF_15_SET",
+      "RETRACTOR_ROUX_14",
+      "RETRACTOR_ROUX_15",
+      "RETRACTOR_FARABEUF_LONG_SET",
+      "RETRACTOR_ROUX_LONG"
+     ],
+     "byParameter": {
+      "parameter": "PATIENT_BODY_TYPE",
+      "value": "NORMAL",
+      "instruments": [
+       "RETRACTOR_FARABEUF_15_SET",
+       "RETRACTOR_ROUX_14",
+       "RETRACTOR_ROUX_15"
+      ]
+     }
+    },
+    "5": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "6": {
+     "accepted": [
+      "CLAMP_CRILE_STRAIGHT_14"
+     ]
+    },
+    "7": {
+     "accepted": [
+      "CLAMP_CRILE_CURVED_14"
+     ]
+    },
+    "8": {
+     "accepted": [
+      "FORCEPS_STILLE_NON_TOOTHED_15",
+      "FORCEPS_DEBAKEY",
+      "CLAMP_CRILE_CURVED_14"
+     ]
+    },
+    "9": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "10": {
+     "accepted": [
+      "SCISSORS_METZENBAUM"
+     ]
+    },
+    "11": {
+     "accepted": [
+      "RETRACTOR_FARABEUF_15_SET",
+      "RETRACTOR_FARABEUF_LONG_SET"
+     ],
+     "byParameter": {
+      "parameter": "PATIENT_BODY_TYPE",
+      "value": "NORMAL",
+      "instruments": [
+       "RETRACTOR_FARABEUF_15_SET"
+      ]
+     }
+    },
+    "13": {
+     "accepted": []
+    },
+    "14": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "15": {
+     "accepted": [
+      "CLAMP_BABCOCK_16"
+     ]
+    },
+    "16": {
+     "accepted": []
+    },
+    "17": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "18": {
+     "accepted": []
+    },
+    "19": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "22": {
+     "accepted": []
+    },
+    "23": {
+     "accepted": [
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5",
+      "ESU_MONOPOLAR_PEN",
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "CLAMP_CRILE_CURVED_14"
+     ],
+     "clamps": [
+      {
+       "code": "CLAMP_CRILE_CURVED_14",
+       "qty": 2
+      }
+     ]
+    },
+    "24": {
+     "accepted": [
+      "SCISSORS_METZENBAUM_CURVED"
+     ]
+    },
+    "25": {
+     "accepted": []
+    },
+    "26": {
+     "accepted": [
+      "SUTURE_SILK_3_0"
+     ]
+    },
+    "27": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18"
+     ]
+    },
+    "28": {
+     "accepted": [
+      "SUTURE_POLYGLACTIN_2_0",
+      "NEEDLE_HOLDER_DEBAKEY_18"
+     ]
+    },
+    "29": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "30": {
+     "accepted": [
+      "CLAMP_CRILE_STRAIGHT_14"
+     ]
+    },
+    "31": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "32": {
+     "accepted": []
+    },
+    "33": {
+     "accepted": [
+      "CLAMP_FOERSTER_CURVED_24"
+     ]
+    },
+    "34": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "35": {
+     "accepted": []
+    },
+    "36": {
+     "accepted": [
+      "CLAMP_CRILE_STRAIGHT_14",
+      "CLAMP_KELLY_RANKIN_14"
+     ]
+    },
+    "37": {
+     "accepted": []
+    },
+    "38": {
+     "accepted": []
+    },
+    "39": {
+     "accepted": []
+    },
+    "40": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "42": {
+     "accepted": [
+      "ISOTONIC_SALINE"
+     ]
+    },
+    "43": {
+     "accepted": [
+      "SUCTION_TIP_YANKAUER"
+     ]
+    },
+    "44": {
+     "accepted": []
+    },
+    "45": {
+     "accepted": []
+    },
+    "46": {
+     "accepted": []
+    },
+    "47": {
+     "accepted": []
+    },
+    "48": {
+     "accepted": [
+      "CLAMP_CRILE_CURVED_14",
+      "FORCEPS_STILLE_NON_TOOTHED_15"
+     ]
+    },
+    "49": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "SUTURE_POLYGLACTIN_0",
+      "SUTURE_POLYGLACTIN_1"
+     ]
+    },
+    "50": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "SUTURE_POLYGLACTIN_0",
+      "SUTURE_POLYGLACTIN_1"
+     ]
+    },
+    "51": {
+     "accepted": [
+      "CLAMP_ALLIS_15",
+      "CLAMP_ALLIS_ATRAUMATIC_19",
+      "CLAMP_OCHSNER_KOCHER_CURVED_20",
+      "FORCEPS_STILLE_NON_TOOTHED_15",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "52": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "53": {
+     "accepted": [
+      "ISOTONIC_SALINE"
+     ]
+    },
+    "54": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "55": {
+     "accepted": [
+      "FORCEPS_STILLE_NON_TOOTHED_15"
+     ]
+    },
+    "56": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "SUTURE_POLIGLECAPRONE_4_0",
+      "SUTURE_POLYPROPYLENE_3_0",
+      "SUTURE_POLYPROPYLENE_4_0",
+      "SUTURE_POLYAMIDE_4_0",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ],
+     "byParameter": {
+      "parameter": "SKIN_CLOSURE_TYPE",
+      "value": "STANDARD",
+      "instruments": [
+       "SUTURE_POLYPROPYLENE_3_0",
+       "SUTURE_POLYPROPYLENE_4_0",
+       "SUTURE_POLYAMIDE_4_0"
+      ]
+     }
+    },
+    "57": {
+     "accepted": [
+      "STERILE_GAUZE_SPONGE"
+     ]
+    },
+    "58": {
+     "accepted": [
+      "DRESSING_GAUZE_10X10"
+     ]
+    },
+    "59": {
+     "accepted": [
+      "TAPE_SILK",
+      "TAPE_WATERPROOF"
+     ]
+    },
+    "60": {
+     "accepted": []
+    }
+   },
+   "stepCount": 56
+  },
+  {
+   "id": "adhesions",
+   "conditions": {
+    "ADHESIONS_PRESENT": [
+     true
+    ]
+   },
+   "parameters": {
+    "PATIENT_BODY_TYPE": "NORMAL",
+    "MESO_VESSELS": [
+     {
+      "caliber": "MEDIUM"
+     },
+     {
+      "caliber": "MEDIUM"
+     }
+    ],
+    "SKIN_CLOSURE_TYPE": "STANDARD"
+   },
+   "path": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "11",
+    "13",
+    "14",
+    "15",
+    "16",
+    "17",
+    "18",
+    "19",
+    "20",
+    "21",
+    "22",
+    "23",
+    "24",
+    "25",
+    "26",
+    "27",
+    "28",
+    "29",
+    "30",
+    "31",
+    "32",
+    "33",
+    "34",
+    "35",
+    "36",
+    "37",
+    "38",
+    "39",
+    "40",
+    "42",
+    "43",
+    "44",
+    "45",
+    "46",
+    "47",
+    "48",
+    "49",
+    "50",
+    "51",
+    "52",
+    "53",
+    "54",
+    "55",
+    "56",
+    "57",
+    "58",
+    "59",
+    "60"
+   ],
+   "expectedInstruments": {
+    "1": {
+     "accepted": [
+      "SCALPEL_BLADE_10",
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "2": {
+     "accepted": [
+      "ESU_MONOPOLAR_PEN"
+     ]
+    },
+    "3": {
+     "accepted": [
+      "FORCEPS_STILLE_NON_TOOTHED_15",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "4": {
+     "accepted": [
+      "RETRACTOR_FARABEUF_15_SET",
+      "RETRACTOR_ROUX_14",
+      "RETRACTOR_ROUX_15",
+      "RETRACTOR_FARABEUF_LONG_SET",
+      "RETRACTOR_ROUX_LONG"
+     ],
+     "byParameter": {
+      "parameter": "PATIENT_BODY_TYPE",
+      "value": "NORMAL",
+      "instruments": [
+       "RETRACTOR_FARABEUF_15_SET",
+       "RETRACTOR_ROUX_14",
+       "RETRACTOR_ROUX_15"
+      ]
+     }
+    },
+    "5": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "6": {
+     "accepted": [
+      "CLAMP_CRILE_STRAIGHT_14"
+     ]
+    },
+    "7": {
+     "accepted": [
+      "CLAMP_CRILE_CURVED_14"
+     ]
+    },
+    "8": {
+     "accepted": [
+      "FORCEPS_STILLE_NON_TOOTHED_15",
+      "FORCEPS_DEBAKEY",
+      "CLAMP_CRILE_CURVED_14"
+     ]
+    },
+    "9": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "10": {
+     "accepted": [
+      "SCISSORS_METZENBAUM"
+     ]
+    },
+    "11": {
+     "accepted": [
+      "RETRACTOR_FARABEUF_15_SET",
+      "RETRACTOR_FARABEUF_LONG_SET"
+     ],
+     "byParameter": {
+      "parameter": "PATIENT_BODY_TYPE",
+      "value": "NORMAL",
+      "instruments": [
+       "RETRACTOR_FARABEUF_15_SET"
+      ]
+     }
+    },
+    "13": {
+     "accepted": []
+    },
+    "14": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "15": {
+     "accepted": [
+      "CLAMP_BABCOCK_16"
+     ]
+    },
+    "16": {
+     "accepted": []
+    },
+    "17": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "18": {
+     "accepted": []
+    },
+    "19": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "20": {
+     "accepted": [
+      "CLAMP_GEMINI_CURVED_20"
+     ]
+    },
+    "21": {
+     "accepted": [
+      "SCISSORS_METZENBAUM_CURVED",
+      "ESU_MONOPOLAR_PEN"
+     ]
+    },
+    "22": {
+     "accepted": []
+    },
+    "23": {
+     "accepted": [
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5",
+      "ESU_MONOPOLAR_PEN",
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "CLAMP_CRILE_CURVED_14"
+     ],
+     "clamps": [
+      {
+       "code": "CLAMP_CRILE_CURVED_14",
+       "qty": 2
+      }
+     ]
+    },
+    "24": {
+     "accepted": [
+      "SCISSORS_METZENBAUM_CURVED"
+     ]
+    },
+    "25": {
+     "accepted": []
+    },
+    "26": {
+     "accepted": [
+      "SUTURE_SILK_3_0"
+     ]
+    },
+    "27": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18"
+     ]
+    },
+    "28": {
+     "accepted": [
+      "SUTURE_POLYGLACTIN_2_0",
+      "NEEDLE_HOLDER_DEBAKEY_18"
+     ]
+    },
+    "29": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "30": {
+     "accepted": [
+      "CLAMP_CRILE_STRAIGHT_14"
+     ]
+    },
+    "31": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "32": {
+     "accepted": []
+    },
+    "33": {
+     "accepted": [
+      "CLAMP_FOERSTER_CURVED_24"
+     ]
+    },
+    "34": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "35": {
+     "accepted": []
+    },
+    "36": {
+     "accepted": [
+      "CLAMP_CRILE_STRAIGHT_14",
+      "CLAMP_KELLY_RANKIN_14"
+     ]
+    },
+    "37": {
+     "accepted": []
+    },
+    "38": {
+     "accepted": []
+    },
+    "39": {
+     "accepted": []
+    },
+    "40": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "42": {
+     "accepted": [
+      "ISOTONIC_SALINE"
+     ]
+    },
+    "43": {
+     "accepted": [
+      "SUCTION_TIP_YANKAUER"
+     ]
+    },
+    "44": {
+     "accepted": []
+    },
+    "45": {
+     "accepted": []
+    },
+    "46": {
+     "accepted": []
+    },
+    "47": {
+     "accepted": []
+    },
+    "48": {
+     "accepted": [
+      "CLAMP_CRILE_CURVED_14",
+      "FORCEPS_STILLE_NON_TOOTHED_15"
+     ]
+    },
+    "49": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "SUTURE_POLYGLACTIN_0",
+      "SUTURE_POLYGLACTIN_1"
+     ]
+    },
+    "50": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "SUTURE_POLYGLACTIN_0",
+      "SUTURE_POLYGLACTIN_1"
+     ]
+    },
+    "51": {
+     "accepted": [
+      "CLAMP_ALLIS_15",
+      "CLAMP_ALLIS_ATRAUMATIC_19",
+      "CLAMP_OCHSNER_KOCHER_CURVED_20",
+      "FORCEPS_STILLE_NON_TOOTHED_15",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "52": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "53": {
+     "accepted": [
+      "ISOTONIC_SALINE"
+     ]
+    },
+    "54": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "55": {
+     "accepted": [
+      "FORCEPS_STILLE_NON_TOOTHED_15"
+     ]
+    },
+    "56": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "SUTURE_POLIGLECAPRONE_4_0",
+      "SUTURE_POLYPROPYLENE_3_0",
+      "SUTURE_POLYPROPYLENE_4_0",
+      "SUTURE_POLYAMIDE_4_0",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ],
+     "byParameter": {
+      "parameter": "SKIN_CLOSURE_TYPE",
+      "value": "STANDARD",
+      "instruments": [
+       "SUTURE_POLYPROPYLENE_3_0",
+       "SUTURE_POLYPROPYLENE_4_0",
+       "SUTURE_POLYAMIDE_4_0"
+      ]
+     }
+    },
+    "57": {
+     "accepted": [
+      "STERILE_GAUZE_SPONGE"
+     ]
+    },
+    "58": {
+     "accepted": [
+      "DRESSING_GAUZE_10X10"
+     ]
+    },
+    "59": {
+     "accepted": [
+      "TAPE_SILK",
+      "TAPE_WATERPROOF"
+     ]
+    },
+    "60": {
+     "accepted": []
+    }
+   },
+   "stepCount": 58
+  },
+  {
+   "id": "exposure-insufficient",
+   "conditions": {
+    "EXPOSURE_INSUFFICIENT": [
+     true
+    ]
+   },
+   "parameters": {
+    "PATIENT_BODY_TYPE": "NORMAL",
+    "MESO_VESSELS": [
+     {
+      "caliber": "MEDIUM"
+     },
+     {
+      "caliber": "MEDIUM"
+     }
+    ],
+    "SKIN_CLOSURE_TYPE": "STANDARD"
+   },
+   "path": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "11",
+    "12",
+    "13",
+    "14",
+    "15",
+    "16",
+    "17",
+    "18",
+    "19",
+    "22",
+    "23",
+    "24",
+    "25",
+    "26",
+    "27",
+    "28",
+    "29",
+    "30",
+    "31",
+    "32",
+    "33",
+    "34",
+    "35",
+    "36",
+    "37",
+    "38",
+    "39",
+    "40",
+    "42",
+    "43",
+    "44",
+    "45",
+    "46",
+    "47",
+    "48",
+    "49",
+    "50",
+    "51",
+    "52",
+    "53",
+    "54",
+    "55",
+    "56",
+    "57",
+    "58",
+    "59",
+    "60"
+   ],
+   "expectedInstruments": {
+    "1": {
+     "accepted": [
+      "SCALPEL_BLADE_10",
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "2": {
+     "accepted": [
+      "ESU_MONOPOLAR_PEN"
+     ]
+    },
+    "3": {
+     "accepted": [
+      "FORCEPS_STILLE_NON_TOOTHED_15",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "4": {
+     "accepted": [
+      "RETRACTOR_FARABEUF_15_SET",
+      "RETRACTOR_ROUX_14",
+      "RETRACTOR_ROUX_15",
+      "RETRACTOR_FARABEUF_LONG_SET",
+      "RETRACTOR_ROUX_LONG"
+     ],
+     "byParameter": {
+      "parameter": "PATIENT_BODY_TYPE",
+      "value": "NORMAL",
+      "instruments": [
+       "RETRACTOR_FARABEUF_15_SET",
+       "RETRACTOR_ROUX_14",
+       "RETRACTOR_ROUX_15"
+      ]
+     }
+    },
+    "5": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "6": {
+     "accepted": [
+      "CLAMP_CRILE_STRAIGHT_14"
+     ]
+    },
+    "7": {
+     "accepted": [
+      "CLAMP_CRILE_CURVED_14"
+     ]
+    },
+    "8": {
+     "accepted": [
+      "FORCEPS_STILLE_NON_TOOTHED_15",
+      "FORCEPS_DEBAKEY",
+      "CLAMP_CRILE_CURVED_14"
+     ]
+    },
+    "9": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "10": {
+     "accepted": [
+      "SCISSORS_METZENBAUM"
+     ]
+    },
+    "11": {
+     "accepted": [
+      "RETRACTOR_FARABEUF_15_SET",
+      "RETRACTOR_FARABEUF_LONG_SET"
+     ],
+     "byParameter": {
+      "parameter": "PATIENT_BODY_TYPE",
+      "value": "NORMAL",
+      "instruments": [
+       "RETRACTOR_FARABEUF_15_SET"
+      ]
+     }
+    },
+    "12": {
+     "accepted": [
+      "RETRACTOR_ROUX_14",
+      "RETRACTOR_ROUX_15",
+      "RETRACTOR_ROUX_LONG"
+     ],
+     "byParameter": {
+      "parameter": "PATIENT_BODY_TYPE",
+      "value": "NORMAL",
+      "instruments": [
+       "RETRACTOR_ROUX_14",
+       "RETRACTOR_ROUX_15"
+      ]
+     }
+    },
+    "13": {
+     "accepted": []
+    },
+    "14": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "15": {
+     "accepted": [
+      "CLAMP_BABCOCK_16"
+     ]
+    },
+    "16": {
+     "accepted": []
+    },
+    "17": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "18": {
+     "accepted": []
+    },
+    "19": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "22": {
+     "accepted": []
+    },
+    "23": {
+     "accepted": [
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5",
+      "ESU_MONOPOLAR_PEN",
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "CLAMP_CRILE_CURVED_14"
+     ],
+     "clamps": [
+      {
+       "code": "CLAMP_CRILE_CURVED_14",
+       "qty": 2
+      }
+     ]
+    },
+    "24": {
+     "accepted": [
+      "SCISSORS_METZENBAUM_CURVED"
+     ]
+    },
+    "25": {
+     "accepted": []
+    },
+    "26": {
+     "accepted": [
+      "SUTURE_SILK_3_0"
+     ]
+    },
+    "27": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18"
+     ]
+    },
+    "28": {
+     "accepted": [
+      "SUTURE_POLYGLACTIN_2_0",
+      "NEEDLE_HOLDER_DEBAKEY_18"
+     ]
+    },
+    "29": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "30": {
+     "accepted": [
+      "CLAMP_CRILE_STRAIGHT_14"
+     ]
+    },
+    "31": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "32": {
+     "accepted": []
+    },
+    "33": {
+     "accepted": [
+      "CLAMP_FOERSTER_CURVED_24"
+     ]
+    },
+    "34": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "35": {
+     "accepted": []
+    },
+    "36": {
+     "accepted": [
+      "CLAMP_CRILE_STRAIGHT_14",
+      "CLAMP_KELLY_RANKIN_14"
+     ]
+    },
+    "37": {
+     "accepted": []
+    },
+    "38": {
+     "accepted": []
+    },
+    "39": {
+     "accepted": []
+    },
+    "40": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "42": {
+     "accepted": [
+      "ISOTONIC_SALINE"
+     ]
+    },
+    "43": {
+     "accepted": [
+      "SUCTION_TIP_YANKAUER"
+     ]
+    },
+    "44": {
+     "accepted": []
+    },
+    "45": {
+     "accepted": []
+    },
+    "46": {
+     "accepted": []
+    },
+    "47": {
+     "accepted": []
+    },
+    "48": {
+     "accepted": [
+      "CLAMP_CRILE_CURVED_14",
+      "FORCEPS_STILLE_NON_TOOTHED_15"
+     ]
+    },
+    "49": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "SUTURE_POLYGLACTIN_0",
+      "SUTURE_POLYGLACTIN_1"
+     ]
+    },
+    "50": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "SUTURE_POLYGLACTIN_0",
+      "SUTURE_POLYGLACTIN_1"
+     ]
+    },
+    "51": {
+     "accepted": [
+      "CLAMP_ALLIS_15",
+      "CLAMP_ALLIS_ATRAUMATIC_19",
+      "CLAMP_OCHSNER_KOCHER_CURVED_20",
+      "FORCEPS_STILLE_NON_TOOTHED_15",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "52": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "53": {
+     "accepted": [
+      "ISOTONIC_SALINE"
+     ]
+    },
+    "54": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "55": {
+     "accepted": [
+      "FORCEPS_STILLE_NON_TOOTHED_15"
+     ]
+    },
+    "56": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "SUTURE_POLIGLECAPRONE_4_0",
+      "SUTURE_POLYPROPYLENE_3_0",
+      "SUTURE_POLYPROPYLENE_4_0",
+      "SUTURE_POLYAMIDE_4_0",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ],
+     "byParameter": {
+      "parameter": "SKIN_CLOSURE_TYPE",
+      "value": "STANDARD",
+      "instruments": [
+       "SUTURE_POLYPROPYLENE_3_0",
+       "SUTURE_POLYPROPYLENE_4_0",
+       "SUTURE_POLYAMIDE_4_0"
+      ]
+     }
+    },
+    "57": {
+     "accepted": [
+      "STERILE_GAUZE_SPONGE"
+     ]
+    },
+    "58": {
+     "accepted": [
+      "DRESSING_GAUZE_10X10"
+     ]
+    },
+    "59": {
+     "accepted": [
+      "TAPE_SILK",
+      "TAPE_WATERPROOF"
+     ]
+    },
+    "60": {
+     "accepted": []
+    }
+   },
+   "stepCount": 57
+  },
+  {
+   "id": "bleeding",
+   "conditions": {
+    "BLEEDING_DETECTED": [
+     true
+    ]
+   },
+   "parameters": {
+    "PATIENT_BODY_TYPE": "NORMAL",
+    "MESO_VESSELS": [
+     {
+      "caliber": "MEDIUM"
+     },
+     {
+      "caliber": "MEDIUM"
+     }
+    ],
+    "SKIN_CLOSURE_TYPE": "STANDARD"
+   },
+   "path": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "11",
+    "13",
+    "14",
+    "15",
+    "16",
+    "17",
+    "18",
+    "19",
+    "22",
+    "23",
+    "24",
+    "25",
+    "26",
+    "27",
+    "28",
+    "29",
+    "30",
+    "31",
+    "32",
+    "33",
+    "34",
+    "35",
+    "36",
+    "37",
+    "38",
+    "39",
+    "40",
+    "41",
+    "42",
+    "43",
+    "44",
+    "45",
+    "46",
+    "47",
+    "48",
+    "49",
+    "50",
+    "51",
+    "52",
+    "53",
+    "54",
+    "55",
+    "56",
+    "57",
+    "58",
+    "59",
+    "60"
+   ],
+   "expectedInstruments": {
+    "1": {
+     "accepted": [
+      "SCALPEL_BLADE_10",
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "2": {
+     "accepted": [
+      "ESU_MONOPOLAR_PEN"
+     ]
+    },
+    "3": {
+     "accepted": [
+      "FORCEPS_STILLE_NON_TOOTHED_15",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "4": {
+     "accepted": [
+      "RETRACTOR_FARABEUF_15_SET",
+      "RETRACTOR_ROUX_14",
+      "RETRACTOR_ROUX_15",
+      "RETRACTOR_FARABEUF_LONG_SET",
+      "RETRACTOR_ROUX_LONG"
+     ],
+     "byParameter": {
+      "parameter": "PATIENT_BODY_TYPE",
+      "value": "NORMAL",
+      "instruments": [
+       "RETRACTOR_FARABEUF_15_SET",
+       "RETRACTOR_ROUX_14",
+       "RETRACTOR_ROUX_15"
+      ]
+     }
+    },
+    "5": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "6": {
+     "accepted": [
+      "CLAMP_CRILE_STRAIGHT_14"
+     ]
+    },
+    "7": {
+     "accepted": [
+      "CLAMP_CRILE_CURVED_14"
+     ]
+    },
+    "8": {
+     "accepted": [
+      "FORCEPS_STILLE_NON_TOOTHED_15",
+      "FORCEPS_DEBAKEY",
+      "CLAMP_CRILE_CURVED_14"
+     ]
+    },
+    "9": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "10": {
+     "accepted": [
+      "SCISSORS_METZENBAUM"
+     ]
+    },
+    "11": {
+     "accepted": [
+      "RETRACTOR_FARABEUF_15_SET",
+      "RETRACTOR_FARABEUF_LONG_SET"
+     ],
+     "byParameter": {
+      "parameter": "PATIENT_BODY_TYPE",
+      "value": "NORMAL",
+      "instruments": [
+       "RETRACTOR_FARABEUF_15_SET"
+      ]
+     }
+    },
+    "13": {
+     "accepted": []
+    },
+    "14": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "15": {
+     "accepted": [
+      "CLAMP_BABCOCK_16"
+     ]
+    },
+    "16": {
+     "accepted": []
+    },
+    "17": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "18": {
+     "accepted": []
+    },
+    "19": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "22": {
+     "accepted": []
+    },
+    "23": {
+     "accepted": [
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5",
+      "ESU_MONOPOLAR_PEN",
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "CLAMP_CRILE_CURVED_14"
+     ],
+     "clamps": [
+      {
+       "code": "CLAMP_CRILE_CURVED_14",
+       "qty": 2
+      }
+     ]
+    },
+    "24": {
+     "accepted": [
+      "SCISSORS_METZENBAUM_CURVED"
+     ]
+    },
+    "25": {
+     "accepted": []
+    },
+    "26": {
+     "accepted": [
+      "SUTURE_SILK_3_0"
+     ]
+    },
+    "27": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18"
+     ]
+    },
+    "28": {
+     "accepted": [
+      "SUTURE_POLYGLACTIN_2_0",
+      "NEEDLE_HOLDER_DEBAKEY_18"
+     ]
+    },
+    "29": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "30": {
+     "accepted": [
+      "CLAMP_CRILE_STRAIGHT_14"
+     ]
+    },
+    "31": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "32": {
+     "accepted": []
+    },
+    "33": {
+     "accepted": [
+      "CLAMP_FOERSTER_CURVED_24"
+     ]
+    },
+    "34": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "35": {
+     "accepted": []
+    },
+    "36": {
+     "accepted": [
+      "CLAMP_CRILE_STRAIGHT_14",
+      "CLAMP_KELLY_RANKIN_14"
+     ]
+    },
+    "37": {
+     "accepted": []
+    },
+    "38": {
+     "accepted": []
+    },
+    "39": {
+     "accepted": []
+    },
+    "40": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "41": {
+     "accepted": [
+      "CLAMP_MOSQUITO",
+      "CLAMP_PEAN",
+      "CLAMP_CRILE_STRAIGHT_14",
+      "CLAMP_CRILE_CURVED_14",
+      "CLAMP_CRILE_RANKIN_CURVED_16",
+      "CLAMP_ROCHESTER_PEAN_CURVED_14",
+      "ESU_MONOPOLAR_PEN"
+     ]
+    },
+    "42": {
+     "accepted": [
+      "ISOTONIC_SALINE"
+     ]
+    },
+    "43": {
+     "accepted": [
+      "SUCTION_TIP_YANKAUER"
+     ]
+    },
+    "44": {
+     "accepted": []
+    },
+    "45": {
+     "accepted": []
+    },
+    "46": {
+     "accepted": []
+    },
+    "47": {
+     "accepted": []
+    },
+    "48": {
+     "accepted": [
+      "CLAMP_CRILE_CURVED_14",
+      "FORCEPS_STILLE_NON_TOOTHED_15"
+     ]
+    },
+    "49": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "SUTURE_POLYGLACTIN_0",
+      "SUTURE_POLYGLACTIN_1"
+     ]
+    },
+    "50": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "SUTURE_POLYGLACTIN_0",
+      "SUTURE_POLYGLACTIN_1"
+     ]
+    },
+    "51": {
+     "accepted": [
+      "CLAMP_ALLIS_15",
+      "CLAMP_ALLIS_ATRAUMATIC_19",
+      "CLAMP_OCHSNER_KOCHER_CURVED_20",
+      "FORCEPS_STILLE_NON_TOOTHED_15",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "52": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "53": {
+     "accepted": [
+      "ISOTONIC_SALINE"
+     ]
+    },
+    "54": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "55": {
+     "accepted": [
+      "FORCEPS_STILLE_NON_TOOTHED_15"
+     ]
+    },
+    "56": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "SUTURE_POLIGLECAPRONE_4_0",
+      "SUTURE_POLYPROPYLENE_3_0",
+      "SUTURE_POLYPROPYLENE_4_0",
+      "SUTURE_POLYAMIDE_4_0",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ],
+     "byParameter": {
+      "parameter": "SKIN_CLOSURE_TYPE",
+      "value": "STANDARD",
+      "instruments": [
+       "SUTURE_POLYPROPYLENE_3_0",
+       "SUTURE_POLYPROPYLENE_4_0",
+       "SUTURE_POLYAMIDE_4_0"
+      ]
+     }
+    },
+    "57": {
+     "accepted": [
+      "STERILE_GAUZE_SPONGE"
+     ]
+    },
+    "58": {
+     "accepted": [
+      "DRESSING_GAUZE_10X10"
+     ]
+    },
+    "59": {
+     "accepted": [
+      "TAPE_SILK",
+      "TAPE_WATERPROOF"
+     ]
+    },
+    "60": {
+     "accepted": []
+    }
+   },
+   "stepCount": 57
+  },
+  {
+   "id": "bleeding-after-irrigation-once",
+   "conditions": {
+    "BLEEDING_AFTER_IRRIGATION": [
+     true,
+     false
+    ]
+   },
+   "parameters": {
+    "PATIENT_BODY_TYPE": "NORMAL",
+    "MESO_VESSELS": [
+     {
+      "caliber": "MEDIUM"
+     },
+     {
+      "caliber": "MEDIUM"
+     }
+    ],
+    "SKIN_CLOSURE_TYPE": "STANDARD"
+   },
+   "path": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "11",
+    "13",
+    "14",
+    "15",
+    "16",
+    "17",
+    "18",
+    "19",
+    "22",
+    "23",
+    "24",
+    "25",
+    "26",
+    "27",
+    "28",
+    "29",
+    "30",
+    "31",
+    "32",
+    "33",
+    "34",
+    "35",
+    "36",
+    "37",
+    "38",
+    "39",
+    "40",
+    "42",
+    "43",
+    "43a",
+    "42",
+    "43",
+    "44",
+    "45",
+    "46",
+    "47",
+    "48",
+    "49",
+    "50",
+    "51",
+    "52",
+    "53",
+    "54",
+    "55",
+    "56",
+    "57",
+    "58",
+    "59",
+    "60"
+   ],
+   "expectedInstruments": {
+    "1": {
+     "accepted": [
+      "SCALPEL_BLADE_10",
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "2": {
+     "accepted": [
+      "ESU_MONOPOLAR_PEN"
+     ]
+    },
+    "3": {
+     "accepted": [
+      "FORCEPS_STILLE_NON_TOOTHED_15",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "4": {
+     "accepted": [
+      "RETRACTOR_FARABEUF_15_SET",
+      "RETRACTOR_ROUX_14",
+      "RETRACTOR_ROUX_15",
+      "RETRACTOR_FARABEUF_LONG_SET",
+      "RETRACTOR_ROUX_LONG"
+     ],
+     "byParameter": {
+      "parameter": "PATIENT_BODY_TYPE",
+      "value": "NORMAL",
+      "instruments": [
+       "RETRACTOR_FARABEUF_15_SET",
+       "RETRACTOR_ROUX_14",
+       "RETRACTOR_ROUX_15"
+      ]
+     }
+    },
+    "5": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "6": {
+     "accepted": [
+      "CLAMP_CRILE_STRAIGHT_14"
+     ]
+    },
+    "7": {
+     "accepted": [
+      "CLAMP_CRILE_CURVED_14"
+     ]
+    },
+    "8": {
+     "accepted": [
+      "FORCEPS_STILLE_NON_TOOTHED_15",
+      "FORCEPS_DEBAKEY",
+      "CLAMP_CRILE_CURVED_14"
+     ]
+    },
+    "9": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "10": {
+     "accepted": [
+      "SCISSORS_METZENBAUM"
+     ]
+    },
+    "11": {
+     "accepted": [
+      "RETRACTOR_FARABEUF_15_SET",
+      "RETRACTOR_FARABEUF_LONG_SET"
+     ],
+     "byParameter": {
+      "parameter": "PATIENT_BODY_TYPE",
+      "value": "NORMAL",
+      "instruments": [
+       "RETRACTOR_FARABEUF_15_SET"
+      ]
+     }
+    },
+    "13": {
+     "accepted": []
+    },
+    "14": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "15": {
+     "accepted": [
+      "CLAMP_BABCOCK_16"
+     ]
+    },
+    "16": {
+     "accepted": []
+    },
+    "17": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "18": {
+     "accepted": []
+    },
+    "19": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "22": {
+     "accepted": []
+    },
+    "23": {
+     "accepted": [
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5",
+      "ESU_MONOPOLAR_PEN",
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "CLAMP_CRILE_CURVED_14"
+     ],
+     "clamps": [
+      {
+       "code": "CLAMP_CRILE_CURVED_14",
+       "qty": 2
+      }
+     ]
+    },
+    "24": {
+     "accepted": [
+      "SCISSORS_METZENBAUM_CURVED"
+     ]
+    },
+    "25": {
+     "accepted": []
+    },
+    "26": {
+     "accepted": [
+      "SUTURE_SILK_3_0"
+     ]
+    },
+    "27": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18"
+     ]
+    },
+    "28": {
+     "accepted": [
+      "SUTURE_POLYGLACTIN_2_0",
+      "NEEDLE_HOLDER_DEBAKEY_18"
+     ]
+    },
+    "29": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "30": {
+     "accepted": [
+      "CLAMP_CRILE_STRAIGHT_14"
+     ]
+    },
+    "31": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "32": {
+     "accepted": []
+    },
+    "33": {
+     "accepted": [
+      "CLAMP_FOERSTER_CURVED_24"
+     ]
+    },
+    "34": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "35": {
+     "accepted": []
+    },
+    "36": {
+     "accepted": [
+      "CLAMP_CRILE_STRAIGHT_14",
+      "CLAMP_KELLY_RANKIN_14"
+     ]
+    },
+    "37": {
+     "accepted": []
+    },
+    "38": {
+     "accepted": []
+    },
+    "39": {
+     "accepted": []
+    },
+    "40": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "42": {
+     "accepted": [
+      "ISOTONIC_SALINE"
+     ]
+    },
+    "43": {
+     "accepted": [
+      "SUCTION_TIP_YANKAUER"
+     ]
+    },
+    "43a": {
+     "accepted": [
+      "ESU_MONOPOLAR_PEN"
+     ]
+    },
+    "44": {
+     "accepted": []
+    },
+    "45": {
+     "accepted": []
+    },
+    "46": {
+     "accepted": []
+    },
+    "47": {
+     "accepted": []
+    },
+    "48": {
+     "accepted": [
+      "CLAMP_CRILE_CURVED_14",
+      "FORCEPS_STILLE_NON_TOOTHED_15"
+     ]
+    },
+    "49": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "SUTURE_POLYGLACTIN_0",
+      "SUTURE_POLYGLACTIN_1"
+     ]
+    },
+    "50": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "SUTURE_POLYGLACTIN_0",
+      "SUTURE_POLYGLACTIN_1"
+     ]
+    },
+    "51": {
+     "accepted": [
+      "CLAMP_ALLIS_15",
+      "CLAMP_ALLIS_ATRAUMATIC_19",
+      "CLAMP_OCHSNER_KOCHER_CURVED_20",
+      "FORCEPS_STILLE_NON_TOOTHED_15",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "52": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "53": {
+     "accepted": [
+      "ISOTONIC_SALINE"
+     ]
+    },
+    "54": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "55": {
+     "accepted": [
+      "FORCEPS_STILLE_NON_TOOTHED_15"
+     ]
+    },
+    "56": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "SUTURE_POLIGLECAPRONE_4_0",
+      "SUTURE_POLYPROPYLENE_3_0",
+      "SUTURE_POLYPROPYLENE_4_0",
+      "SUTURE_POLYAMIDE_4_0",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ],
+     "byParameter": {
+      "parameter": "SKIN_CLOSURE_TYPE",
+      "value": "STANDARD",
+      "instruments": [
+       "SUTURE_POLYPROPYLENE_3_0",
+       "SUTURE_POLYPROPYLENE_4_0",
+       "SUTURE_POLYAMIDE_4_0"
+      ]
+     }
+    },
+    "57": {
+     "accepted": [
+      "STERILE_GAUZE_SPONGE"
+     ]
+    },
+    "58": {
+     "accepted": [
+      "DRESSING_GAUZE_10X10"
+     ]
+    },
+    "59": {
+     "accepted": [
+      "TAPE_SILK",
+      "TAPE_WATERPROOF"
+     ]
+    },
+    "60": {
+     "accepted": []
+    }
+   },
+   "stepCount": 59
+  },
+  {
+   "id": "bleeding-after-irrigation-limit",
+   "conditions": {
+    "BLEEDING_AFTER_IRRIGATION": [
+     true,
+     true
+    ]
+   },
+   "parameters": {
+    "PATIENT_BODY_TYPE": "NORMAL",
+    "MESO_VESSELS": [
+     {
+      "caliber": "MEDIUM"
+     },
+     {
+      "caliber": "MEDIUM"
+     }
+    ],
+    "SKIN_CLOSURE_TYPE": "STANDARD"
+   },
+   "path": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "11",
+    "13",
+    "14",
+    "15",
+    "16",
+    "17",
+    "18",
+    "19",
+    "22",
+    "23",
+    "24",
+    "25",
+    "26",
+    "27",
+    "28",
+    "29",
+    "30",
+    "31",
+    "32",
+    "33",
+    "34",
+    "35",
+    "36",
+    "37",
+    "38",
+    "39",
+    "40",
+    "42",
+    "43",
+    "43a",
+    "42",
+    "43",
+    "44",
+    "45",
+    "46",
+    "47",
+    "48",
+    "49",
+    "50",
+    "51",
+    "52",
+    "53",
+    "54",
+    "55",
+    "56",
+    "57",
+    "58",
+    "59",
+    "60"
+   ],
+   "expectedInstruments": {
+    "1": {
+     "accepted": [
+      "SCALPEL_BLADE_10",
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "2": {
+     "accepted": [
+      "ESU_MONOPOLAR_PEN"
+     ]
+    },
+    "3": {
+     "accepted": [
+      "FORCEPS_STILLE_NON_TOOTHED_15",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "4": {
+     "accepted": [
+      "RETRACTOR_FARABEUF_15_SET",
+      "RETRACTOR_ROUX_14",
+      "RETRACTOR_ROUX_15",
+      "RETRACTOR_FARABEUF_LONG_SET",
+      "RETRACTOR_ROUX_LONG"
+     ],
+     "byParameter": {
+      "parameter": "PATIENT_BODY_TYPE",
+      "value": "NORMAL",
+      "instruments": [
+       "RETRACTOR_FARABEUF_15_SET",
+       "RETRACTOR_ROUX_14",
+       "RETRACTOR_ROUX_15"
+      ]
+     }
+    },
+    "5": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "6": {
+     "accepted": [
+      "CLAMP_CRILE_STRAIGHT_14"
+     ]
+    },
+    "7": {
+     "accepted": [
+      "CLAMP_CRILE_CURVED_14"
+     ]
+    },
+    "8": {
+     "accepted": [
+      "FORCEPS_STILLE_NON_TOOTHED_15",
+      "FORCEPS_DEBAKEY",
+      "CLAMP_CRILE_CURVED_14"
+     ]
+    },
+    "9": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "10": {
+     "accepted": [
+      "SCISSORS_METZENBAUM"
+     ]
+    },
+    "11": {
+     "accepted": [
+      "RETRACTOR_FARABEUF_15_SET",
+      "RETRACTOR_FARABEUF_LONG_SET"
+     ],
+     "byParameter": {
+      "parameter": "PATIENT_BODY_TYPE",
+      "value": "NORMAL",
+      "instruments": [
+       "RETRACTOR_FARABEUF_15_SET"
+      ]
+     }
+    },
+    "13": {
+     "accepted": []
+    },
+    "14": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "15": {
+     "accepted": [
+      "CLAMP_BABCOCK_16"
+     ]
+    },
+    "16": {
+     "accepted": []
+    },
+    "17": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "18": {
+     "accepted": []
+    },
+    "19": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "22": {
+     "accepted": []
+    },
+    "23": {
+     "accepted": [
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5",
+      "ESU_MONOPOLAR_PEN",
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "CLAMP_CRILE_CURVED_14"
+     ],
+     "clamps": [
+      {
+       "code": "CLAMP_CRILE_CURVED_14",
+       "qty": 2
+      }
+     ]
+    },
+    "24": {
+     "accepted": [
+      "SCISSORS_METZENBAUM_CURVED"
+     ]
+    },
+    "25": {
+     "accepted": []
+    },
+    "26": {
+     "accepted": [
+      "SUTURE_SILK_3_0"
+     ]
+    },
+    "27": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18"
+     ]
+    },
+    "28": {
+     "accepted": [
+      "SUTURE_POLYGLACTIN_2_0",
+      "NEEDLE_HOLDER_DEBAKEY_18"
+     ]
+    },
+    "29": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "30": {
+     "accepted": [
+      "CLAMP_CRILE_STRAIGHT_14"
+     ]
+    },
+    "31": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "32": {
+     "accepted": []
+    },
+    "33": {
+     "accepted": [
+      "CLAMP_FOERSTER_CURVED_24"
+     ]
+    },
+    "34": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "35": {
+     "accepted": []
+    },
+    "36": {
+     "accepted": [
+      "CLAMP_CRILE_STRAIGHT_14",
+      "CLAMP_KELLY_RANKIN_14"
+     ]
+    },
+    "37": {
+     "accepted": []
+    },
+    "38": {
+     "accepted": []
+    },
+    "39": {
+     "accepted": []
+    },
+    "40": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "42": {
+     "accepted": [
+      "ISOTONIC_SALINE"
+     ]
+    },
+    "43": {
+     "accepted": [
+      "SUCTION_TIP_YANKAUER"
+     ]
+    },
+    "43a": {
+     "accepted": [
+      "ESU_MONOPOLAR_PEN"
+     ]
+    },
+    "44": {
+     "accepted": []
+    },
+    "45": {
+     "accepted": []
+    },
+    "46": {
+     "accepted": []
+    },
+    "47": {
+     "accepted": []
+    },
+    "48": {
+     "accepted": [
+      "CLAMP_CRILE_CURVED_14",
+      "FORCEPS_STILLE_NON_TOOTHED_15"
+     ]
+    },
+    "49": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "SUTURE_POLYGLACTIN_0",
+      "SUTURE_POLYGLACTIN_1"
+     ]
+    },
+    "50": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "SUTURE_POLYGLACTIN_0",
+      "SUTURE_POLYGLACTIN_1"
+     ]
+    },
+    "51": {
+     "accepted": [
+      "CLAMP_ALLIS_15",
+      "CLAMP_ALLIS_ATRAUMATIC_19",
+      "CLAMP_OCHSNER_KOCHER_CURVED_20",
+      "FORCEPS_STILLE_NON_TOOTHED_15",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "52": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "53": {
+     "accepted": [
+      "ISOTONIC_SALINE"
+     ]
+    },
+    "54": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "55": {
+     "accepted": [
+      "FORCEPS_STILLE_NON_TOOTHED_15"
+     ]
+    },
+    "56": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "SUTURE_POLIGLECAPRONE_4_0",
+      "SUTURE_POLYPROPYLENE_3_0",
+      "SUTURE_POLYPROPYLENE_4_0",
+      "SUTURE_POLYAMIDE_4_0",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ],
+     "byParameter": {
+      "parameter": "SKIN_CLOSURE_TYPE",
+      "value": "STANDARD",
+      "instruments": [
+       "SUTURE_POLYPROPYLENE_3_0",
+       "SUTURE_POLYPROPYLENE_4_0",
+       "SUTURE_POLYAMIDE_4_0"
+      ]
+     }
+    },
+    "57": {
+     "accepted": [
+      "STERILE_GAUZE_SPONGE"
+     ]
+    },
+    "58": {
+     "accepted": [
+      "DRESSING_GAUZE_10X10"
+     ]
+    },
+    "59": {
+     "accepted": [
+      "TAPE_SILK",
+      "TAPE_WATERPROOF"
+     ]
+    },
+    "60": {
+     "accepted": []
+    }
+   },
+   "stepCount": 59
+  },
+  {
+   "id": "ligature-not-secure",
+   "conditions": {
+    "LIGATURE_NOT_SECURE": [
+     true
+    ]
+   },
+   "parameters": {
+    "PATIENT_BODY_TYPE": "NORMAL",
+    "MESO_VESSELS": [
+     {
+      "caliber": "MEDIUM"
+     },
+     {
+      "caliber": "MEDIUM"
+     }
+    ],
+    "SKIN_CLOSURE_TYPE": "STANDARD"
+   },
+   "path": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "11",
+    "13",
+    "14",
+    "15",
+    "16",
+    "17",
+    "18",
+    "19",
+    "22",
+    "23",
+    "24",
+    "25",
+    "26",
+    "27",
+    "28",
+    "29",
+    "28",
+    "29",
+    "30",
+    "31",
+    "32",
+    "33",
+    "34",
+    "35",
+    "36",
+    "37",
+    "38",
+    "39",
+    "40",
+    "42",
+    "43",
+    "44",
+    "45",
+    "46",
+    "47",
+    "48",
+    "49",
+    "50",
+    "51",
+    "52",
+    "53",
+    "54",
+    "55",
+    "56",
+    "57",
+    "58",
+    "59",
+    "60"
+   ],
+   "expectedInstruments": {
+    "1": {
+     "accepted": [
+      "SCALPEL_BLADE_10",
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "2": {
+     "accepted": [
+      "ESU_MONOPOLAR_PEN"
+     ]
+    },
+    "3": {
+     "accepted": [
+      "FORCEPS_STILLE_NON_TOOTHED_15",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "4": {
+     "accepted": [
+      "RETRACTOR_FARABEUF_15_SET",
+      "RETRACTOR_ROUX_14",
+      "RETRACTOR_ROUX_15",
+      "RETRACTOR_FARABEUF_LONG_SET",
+      "RETRACTOR_ROUX_LONG"
+     ],
+     "byParameter": {
+      "parameter": "PATIENT_BODY_TYPE",
+      "value": "NORMAL",
+      "instruments": [
+       "RETRACTOR_FARABEUF_15_SET",
+       "RETRACTOR_ROUX_14",
+       "RETRACTOR_ROUX_15"
+      ]
+     }
+    },
+    "5": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "6": {
+     "accepted": [
+      "CLAMP_CRILE_STRAIGHT_14"
+     ]
+    },
+    "7": {
+     "accepted": [
+      "CLAMP_CRILE_CURVED_14"
+     ]
+    },
+    "8": {
+     "accepted": [
+      "FORCEPS_STILLE_NON_TOOTHED_15",
+      "FORCEPS_DEBAKEY",
+      "CLAMP_CRILE_CURVED_14"
+     ]
+    },
+    "9": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "10": {
+     "accepted": [
+      "SCISSORS_METZENBAUM"
+     ]
+    },
+    "11": {
+     "accepted": [
+      "RETRACTOR_FARABEUF_15_SET",
+      "RETRACTOR_FARABEUF_LONG_SET"
+     ],
+     "byParameter": {
+      "parameter": "PATIENT_BODY_TYPE",
+      "value": "NORMAL",
+      "instruments": [
+       "RETRACTOR_FARABEUF_15_SET"
+      ]
+     }
+    },
+    "13": {
+     "accepted": []
+    },
+    "14": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "15": {
+     "accepted": [
+      "CLAMP_BABCOCK_16"
+     ]
+    },
+    "16": {
+     "accepted": []
+    },
+    "17": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "18": {
+     "accepted": []
+    },
+    "19": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "22": {
+     "accepted": []
+    },
+    "23": {
+     "accepted": [
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5",
+      "ESU_MONOPOLAR_PEN",
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "CLAMP_CRILE_CURVED_14"
+     ],
+     "clamps": [
+      {
+       "code": "CLAMP_CRILE_CURVED_14",
+       "qty": 2
+      }
+     ]
+    },
+    "24": {
+     "accepted": [
+      "SCISSORS_METZENBAUM_CURVED"
+     ]
+    },
+    "25": {
+     "accepted": []
+    },
+    "26": {
+     "accepted": [
+      "SUTURE_SILK_3_0"
+     ]
+    },
+    "27": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18"
+     ]
+    },
+    "28": {
+     "accepted": [
+      "SUTURE_POLYGLACTIN_2_0",
+      "NEEDLE_HOLDER_DEBAKEY_18"
+     ]
+    },
+    "29": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "30": {
+     "accepted": [
+      "CLAMP_CRILE_STRAIGHT_14"
+     ]
+    },
+    "31": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "32": {
+     "accepted": []
+    },
+    "33": {
+     "accepted": [
+      "CLAMP_FOERSTER_CURVED_24"
+     ]
+    },
+    "34": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "35": {
+     "accepted": []
+    },
+    "36": {
+     "accepted": [
+      "CLAMP_CRILE_STRAIGHT_14",
+      "CLAMP_KELLY_RANKIN_14"
+     ]
+    },
+    "37": {
+     "accepted": []
+    },
+    "38": {
+     "accepted": []
+    },
+    "39": {
+     "accepted": []
+    },
+    "40": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "42": {
+     "accepted": [
+      "ISOTONIC_SALINE"
+     ]
+    },
+    "43": {
+     "accepted": [
+      "SUCTION_TIP_YANKAUER"
+     ]
+    },
+    "44": {
+     "accepted": []
+    },
+    "45": {
+     "accepted": []
+    },
+    "46": {
+     "accepted": []
+    },
+    "47": {
+     "accepted": []
+    },
+    "48": {
+     "accepted": [
+      "CLAMP_CRILE_CURVED_14",
+      "FORCEPS_STILLE_NON_TOOTHED_15"
+     ]
+    },
+    "49": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "SUTURE_POLYGLACTIN_0",
+      "SUTURE_POLYGLACTIN_1"
+     ]
+    },
+    "50": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "SUTURE_POLYGLACTIN_0",
+      "SUTURE_POLYGLACTIN_1"
+     ]
+    },
+    "51": {
+     "accepted": [
+      "CLAMP_ALLIS_15",
+      "CLAMP_ALLIS_ATRAUMATIC_19",
+      "CLAMP_OCHSNER_KOCHER_CURVED_20",
+      "FORCEPS_STILLE_NON_TOOTHED_15",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "52": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "53": {
+     "accepted": [
+      "ISOTONIC_SALINE"
+     ]
+    },
+    "54": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "55": {
+     "accepted": [
+      "FORCEPS_STILLE_NON_TOOTHED_15"
+     ]
+    },
+    "56": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "SUTURE_POLIGLECAPRONE_4_0",
+      "SUTURE_POLYPROPYLENE_3_0",
+      "SUTURE_POLYPROPYLENE_4_0",
+      "SUTURE_POLYAMIDE_4_0",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ],
+     "byParameter": {
+      "parameter": "SKIN_CLOSURE_TYPE",
+      "value": "STANDARD",
+      "instruments": [
+       "SUTURE_POLYPROPYLENE_3_0",
+       "SUTURE_POLYPROPYLENE_4_0",
+       "SUTURE_POLYAMIDE_4_0"
+      ]
+     }
+    },
+    "57": {
+     "accepted": [
+      "STERILE_GAUZE_SPONGE"
+     ]
+    },
+    "58": {
+     "accepted": [
+      "DRESSING_GAUZE_10X10"
+     ]
+    },
+    "59": {
+     "accepted": [
+      "TAPE_SILK",
+      "TAPE_WATERPROOF"
+     ]
+    },
+    "60": {
+     "accepted": []
+    }
+   },
+   "stepCount": 58
+  },
+  {
+   "id": "count-found-on-recount",
+   "conditions": {
+    "COUNT_MISMATCH": [
+     true
+    ],
+    "ITEM_FOUND_ON_RECOUNT": [
+     true
+    ]
+   },
+   "parameters": {
+    "PATIENT_BODY_TYPE": "NORMAL",
+    "MESO_VESSELS": [
+     {
+      "caliber": "MEDIUM"
+     },
+     {
+      "caliber": "MEDIUM"
+     }
+    ],
+    "SKIN_CLOSURE_TYPE": "STANDARD"
+   },
+   "path": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "11",
+    "13",
+    "14",
+    "15",
+    "16",
+    "17",
+    "18",
+    "19",
+    "22",
+    "23",
+    "24",
+    "25",
+    "26",
+    "27",
+    "28",
+    "29",
+    "30",
+    "31",
+    "32",
+    "33",
+    "34",
+    "35",
+    "36",
+    "37",
+    "38",
+    "39",
+    "40",
+    "42",
+    "43",
+    "44",
+    "45",
+    "46",
+    "47",
+    "47a",
+    "47",
+    "48",
+    "49",
+    "50",
+    "51",
+    "52",
+    "53",
+    "54",
+    "55",
+    "56",
+    "57",
+    "58",
+    "59",
+    "60"
+   ],
+   "expectedInstruments": {
+    "1": {
+     "accepted": [
+      "SCALPEL_BLADE_10",
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "2": {
+     "accepted": [
+      "ESU_MONOPOLAR_PEN"
+     ]
+    },
+    "3": {
+     "accepted": [
+      "FORCEPS_STILLE_NON_TOOTHED_15",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "4": {
+     "accepted": [
+      "RETRACTOR_FARABEUF_15_SET",
+      "RETRACTOR_ROUX_14",
+      "RETRACTOR_ROUX_15",
+      "RETRACTOR_FARABEUF_LONG_SET",
+      "RETRACTOR_ROUX_LONG"
+     ],
+     "byParameter": {
+      "parameter": "PATIENT_BODY_TYPE",
+      "value": "NORMAL",
+      "instruments": [
+       "RETRACTOR_FARABEUF_15_SET",
+       "RETRACTOR_ROUX_14",
+       "RETRACTOR_ROUX_15"
+      ]
+     }
+    },
+    "5": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "6": {
+     "accepted": [
+      "CLAMP_CRILE_STRAIGHT_14"
+     ]
+    },
+    "7": {
+     "accepted": [
+      "CLAMP_CRILE_CURVED_14"
+     ]
+    },
+    "8": {
+     "accepted": [
+      "FORCEPS_STILLE_NON_TOOTHED_15",
+      "FORCEPS_DEBAKEY",
+      "CLAMP_CRILE_CURVED_14"
+     ]
+    },
+    "9": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "10": {
+     "accepted": [
+      "SCISSORS_METZENBAUM"
+     ]
+    },
+    "11": {
+     "accepted": [
+      "RETRACTOR_FARABEUF_15_SET",
+      "RETRACTOR_FARABEUF_LONG_SET"
+     ],
+     "byParameter": {
+      "parameter": "PATIENT_BODY_TYPE",
+      "value": "NORMAL",
+      "instruments": [
+       "RETRACTOR_FARABEUF_15_SET"
+      ]
+     }
+    },
+    "13": {
+     "accepted": []
+    },
+    "14": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "15": {
+     "accepted": [
+      "CLAMP_BABCOCK_16"
+     ]
+    },
+    "16": {
+     "accepted": []
+    },
+    "17": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "18": {
+     "accepted": []
+    },
+    "19": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "22": {
+     "accepted": []
+    },
+    "23": {
+     "accepted": [
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5",
+      "ESU_MONOPOLAR_PEN",
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "CLAMP_CRILE_CURVED_14"
+     ],
+     "clamps": [
+      {
+       "code": "CLAMP_CRILE_CURVED_14",
+       "qty": 2
+      }
+     ]
+    },
+    "24": {
+     "accepted": [
+      "SCISSORS_METZENBAUM_CURVED"
+     ]
+    },
+    "25": {
+     "accepted": []
+    },
+    "26": {
+     "accepted": [
+      "SUTURE_SILK_3_0"
+     ]
+    },
+    "27": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18"
+     ]
+    },
+    "28": {
+     "accepted": [
+      "SUTURE_POLYGLACTIN_2_0",
+      "NEEDLE_HOLDER_DEBAKEY_18"
+     ]
+    },
+    "29": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "30": {
+     "accepted": [
+      "CLAMP_CRILE_STRAIGHT_14"
+     ]
+    },
+    "31": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "32": {
+     "accepted": []
+    },
+    "33": {
+     "accepted": [
+      "CLAMP_FOERSTER_CURVED_24"
+     ]
+    },
+    "34": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "35": {
+     "accepted": []
+    },
+    "36": {
+     "accepted": [
+      "CLAMP_CRILE_STRAIGHT_14",
+      "CLAMP_KELLY_RANKIN_14"
+     ]
+    },
+    "37": {
+     "accepted": []
+    },
+    "38": {
+     "accepted": []
+    },
+    "39": {
+     "accepted": []
+    },
+    "40": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "42": {
+     "accepted": [
+      "ISOTONIC_SALINE"
+     ]
+    },
+    "43": {
+     "accepted": [
+      "SUCTION_TIP_YANKAUER"
+     ]
+    },
+    "44": {
+     "accepted": []
+    },
+    "45": {
+     "accepted": []
+    },
+    "46": {
+     "accepted": []
+    },
+    "47": {
+     "accepted": []
+    },
+    "47a": {
+     "accepted": []
+    },
+    "48": {
+     "accepted": [
+      "CLAMP_CRILE_CURVED_14",
+      "FORCEPS_STILLE_NON_TOOTHED_15"
+     ]
+    },
+    "49": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "SUTURE_POLYGLACTIN_0",
+      "SUTURE_POLYGLACTIN_1"
+     ]
+    },
+    "50": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "SUTURE_POLYGLACTIN_0",
+      "SUTURE_POLYGLACTIN_1"
+     ]
+    },
+    "51": {
+     "accepted": [
+      "CLAMP_ALLIS_15",
+      "CLAMP_ALLIS_ATRAUMATIC_19",
+      "CLAMP_OCHSNER_KOCHER_CURVED_20",
+      "FORCEPS_STILLE_NON_TOOTHED_15",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "52": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "53": {
+     "accepted": [
+      "ISOTONIC_SALINE"
+     ]
+    },
+    "54": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "55": {
+     "accepted": [
+      "FORCEPS_STILLE_NON_TOOTHED_15"
+     ]
+    },
+    "56": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "SUTURE_POLIGLECAPRONE_4_0",
+      "SUTURE_POLYPROPYLENE_3_0",
+      "SUTURE_POLYPROPYLENE_4_0",
+      "SUTURE_POLYAMIDE_4_0",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ],
+     "byParameter": {
+      "parameter": "SKIN_CLOSURE_TYPE",
+      "value": "STANDARD",
+      "instruments": [
+       "SUTURE_POLYPROPYLENE_3_0",
+       "SUTURE_POLYPROPYLENE_4_0",
+       "SUTURE_POLYAMIDE_4_0"
+      ]
+     }
+    },
+    "57": {
+     "accepted": [
+      "STERILE_GAUZE_SPONGE"
+     ]
+    },
+    "58": {
+     "accepted": [
+      "DRESSING_GAUZE_10X10"
+     ]
+    },
+    "59": {
+     "accepted": [
+      "TAPE_SILK",
+      "TAPE_WATERPROOF"
+     ]
+    },
+    "60": {
+     "accepted": []
+    }
+   },
+   "stepCount": 58
+  },
+  {
+   "id": "count-found-in-field",
+   "conditions": {
+    "COUNT_MISMATCH": [
+     true
+    ],
+    "ITEM_FOUND_IN_FIELD": [
+     true
+    ]
+   },
+   "parameters": {
+    "PATIENT_BODY_TYPE": "NORMAL",
+    "MESO_VESSELS": [
+     {
+      "caliber": "MEDIUM"
+     },
+     {
+      "caliber": "MEDIUM"
+     }
+    ],
+    "SKIN_CLOSURE_TYPE": "STANDARD"
+   },
+   "path": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "11",
+    "13",
+    "14",
+    "15",
+    "16",
+    "17",
+    "18",
+    "19",
+    "22",
+    "23",
+    "24",
+    "25",
+    "26",
+    "27",
+    "28",
+    "29",
+    "30",
+    "31",
+    "32",
+    "33",
+    "34",
+    "35",
+    "36",
+    "37",
+    "38",
+    "39",
+    "40",
+    "42",
+    "43",
+    "44",
+    "45",
+    "46",
+    "47",
+    "47a",
+    "47b",
+    "47c",
+    "47",
+    "48",
+    "49",
+    "50",
+    "51",
+    "52",
+    "53",
+    "54",
+    "55",
+    "56",
+    "57",
+    "58",
+    "59",
+    "60"
+   ],
+   "expectedInstruments": {
+    "1": {
+     "accepted": [
+      "SCALPEL_BLADE_10",
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "2": {
+     "accepted": [
+      "ESU_MONOPOLAR_PEN"
+     ]
+    },
+    "3": {
+     "accepted": [
+      "FORCEPS_STILLE_NON_TOOTHED_15",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "4": {
+     "accepted": [
+      "RETRACTOR_FARABEUF_15_SET",
+      "RETRACTOR_ROUX_14",
+      "RETRACTOR_ROUX_15",
+      "RETRACTOR_FARABEUF_LONG_SET",
+      "RETRACTOR_ROUX_LONG"
+     ],
+     "byParameter": {
+      "parameter": "PATIENT_BODY_TYPE",
+      "value": "NORMAL",
+      "instruments": [
+       "RETRACTOR_FARABEUF_15_SET",
+       "RETRACTOR_ROUX_14",
+       "RETRACTOR_ROUX_15"
+      ]
+     }
+    },
+    "5": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "6": {
+     "accepted": [
+      "CLAMP_CRILE_STRAIGHT_14"
+     ]
+    },
+    "7": {
+     "accepted": [
+      "CLAMP_CRILE_CURVED_14"
+     ]
+    },
+    "8": {
+     "accepted": [
+      "FORCEPS_STILLE_NON_TOOTHED_15",
+      "FORCEPS_DEBAKEY",
+      "CLAMP_CRILE_CURVED_14"
+     ]
+    },
+    "9": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "10": {
+     "accepted": [
+      "SCISSORS_METZENBAUM"
+     ]
+    },
+    "11": {
+     "accepted": [
+      "RETRACTOR_FARABEUF_15_SET",
+      "RETRACTOR_FARABEUF_LONG_SET"
+     ],
+     "byParameter": {
+      "parameter": "PATIENT_BODY_TYPE",
+      "value": "NORMAL",
+      "instruments": [
+       "RETRACTOR_FARABEUF_15_SET"
+      ]
+     }
+    },
+    "13": {
+     "accepted": []
+    },
+    "14": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "15": {
+     "accepted": [
+      "CLAMP_BABCOCK_16"
+     ]
+    },
+    "16": {
+     "accepted": []
+    },
+    "17": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "18": {
+     "accepted": []
+    },
+    "19": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "22": {
+     "accepted": []
+    },
+    "23": {
+     "accepted": [
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5",
+      "ESU_MONOPOLAR_PEN",
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "CLAMP_CRILE_CURVED_14"
+     ],
+     "clamps": [
+      {
+       "code": "CLAMP_CRILE_CURVED_14",
+       "qty": 2
+      }
+     ]
+    },
+    "24": {
+     "accepted": [
+      "SCISSORS_METZENBAUM_CURVED"
+     ]
+    },
+    "25": {
+     "accepted": []
+    },
+    "26": {
+     "accepted": [
+      "SUTURE_SILK_3_0"
+     ]
+    },
+    "27": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18"
+     ]
+    },
+    "28": {
+     "accepted": [
+      "SUTURE_POLYGLACTIN_2_0",
+      "NEEDLE_HOLDER_DEBAKEY_18"
+     ]
+    },
+    "29": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "30": {
+     "accepted": [
+      "CLAMP_CRILE_STRAIGHT_14"
+     ]
+    },
+    "31": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "32": {
+     "accepted": []
+    },
+    "33": {
+     "accepted": [
+      "CLAMP_FOERSTER_CURVED_24"
+     ]
+    },
+    "34": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "35": {
+     "accepted": []
+    },
+    "36": {
+     "accepted": [
+      "CLAMP_CRILE_STRAIGHT_14",
+      "CLAMP_KELLY_RANKIN_14"
+     ]
+    },
+    "37": {
+     "accepted": []
+    },
+    "38": {
+     "accepted": []
+    },
+    "39": {
+     "accepted": []
+    },
+    "40": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "42": {
+     "accepted": [
+      "ISOTONIC_SALINE"
+     ]
+    },
+    "43": {
+     "accepted": [
+      "SUCTION_TIP_YANKAUER"
+     ]
+    },
+    "44": {
+     "accepted": []
+    },
+    "45": {
+     "accepted": []
+    },
+    "46": {
+     "accepted": []
+    },
+    "47": {
+     "accepted": []
+    },
+    "47a": {
+     "accepted": []
+    },
+    "47b": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "47c": {
+     "accepted": []
+    },
+    "48": {
+     "accepted": [
+      "CLAMP_CRILE_CURVED_14",
+      "FORCEPS_STILLE_NON_TOOTHED_15"
+     ]
+    },
+    "49": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "SUTURE_POLYGLACTIN_0",
+      "SUTURE_POLYGLACTIN_1"
+     ]
+    },
+    "50": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "SUTURE_POLYGLACTIN_0",
+      "SUTURE_POLYGLACTIN_1"
+     ]
+    },
+    "51": {
+     "accepted": [
+      "CLAMP_ALLIS_15",
+      "CLAMP_ALLIS_ATRAUMATIC_19",
+      "CLAMP_OCHSNER_KOCHER_CURVED_20",
+      "FORCEPS_STILLE_NON_TOOTHED_15",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "52": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "53": {
+     "accepted": [
+      "ISOTONIC_SALINE"
+     ]
+    },
+    "54": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "55": {
+     "accepted": [
+      "FORCEPS_STILLE_NON_TOOTHED_15"
+     ]
+    },
+    "56": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "SUTURE_POLIGLECAPRONE_4_0",
+      "SUTURE_POLYPROPYLENE_3_0",
+      "SUTURE_POLYPROPYLENE_4_0",
+      "SUTURE_POLYAMIDE_4_0",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ],
+     "byParameter": {
+      "parameter": "SKIN_CLOSURE_TYPE",
+      "value": "STANDARD",
+      "instruments": [
+       "SUTURE_POLYPROPYLENE_3_0",
+       "SUTURE_POLYPROPYLENE_4_0",
+       "SUTURE_POLYAMIDE_4_0"
+      ]
+     }
+    },
+    "57": {
+     "accepted": [
+      "STERILE_GAUZE_SPONGE"
+     ]
+    },
+    "58": {
+     "accepted": [
+      "DRESSING_GAUZE_10X10"
+     ]
+    },
+    "59": {
+     "accepted": [
+      "TAPE_SILK",
+      "TAPE_WATERPROOF"
+     ]
+    },
+    "60": {
+     "accepted": []
+    }
+   },
+   "stepCount": 60
+  },
+  {
+   "id": "count-found-on-imaging",
+   "conditions": {
+    "COUNT_MISMATCH": [
+     true
+    ],
+    "ITEM_FOUND_ON_IMAGING": [
+     true
+    ]
+   },
+   "parameters": {
+    "PATIENT_BODY_TYPE": "NORMAL",
+    "MESO_VESSELS": [
+     {
+      "caliber": "MEDIUM"
+     },
+     {
+      "caliber": "MEDIUM"
+     }
+    ],
+    "SKIN_CLOSURE_TYPE": "STANDARD"
+   },
+   "path": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "11",
+    "13",
+    "14",
+    "15",
+    "16",
+    "17",
+    "18",
+    "19",
+    "22",
+    "23",
+    "24",
+    "25",
+    "26",
+    "27",
+    "28",
+    "29",
+    "30",
+    "31",
+    "32",
+    "33",
+    "34",
+    "35",
+    "36",
+    "37",
+    "38",
+    "39",
+    "40",
+    "42",
+    "43",
+    "44",
+    "45",
+    "46",
+    "47",
+    "47a",
+    "47b",
+    "47d",
+    "47e",
+    "48",
+    "49",
+    "50",
+    "51",
+    "52",
+    "53",
+    "54",
+    "55",
+    "56",
+    "57",
+    "58",
+    "59",
+    "60"
+   ],
+   "expectedInstruments": {
+    "1": {
+     "accepted": [
+      "SCALPEL_BLADE_10",
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "2": {
+     "accepted": [
+      "ESU_MONOPOLAR_PEN"
+     ]
+    },
+    "3": {
+     "accepted": [
+      "FORCEPS_STILLE_NON_TOOTHED_15",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "4": {
+     "accepted": [
+      "RETRACTOR_FARABEUF_15_SET",
+      "RETRACTOR_ROUX_14",
+      "RETRACTOR_ROUX_15",
+      "RETRACTOR_FARABEUF_LONG_SET",
+      "RETRACTOR_ROUX_LONG"
+     ],
+     "byParameter": {
+      "parameter": "PATIENT_BODY_TYPE",
+      "value": "NORMAL",
+      "instruments": [
+       "RETRACTOR_FARABEUF_15_SET",
+       "RETRACTOR_ROUX_14",
+       "RETRACTOR_ROUX_15"
+      ]
+     }
+    },
+    "5": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "6": {
+     "accepted": [
+      "CLAMP_CRILE_STRAIGHT_14"
+     ]
+    },
+    "7": {
+     "accepted": [
+      "CLAMP_CRILE_CURVED_14"
+     ]
+    },
+    "8": {
+     "accepted": [
+      "FORCEPS_STILLE_NON_TOOTHED_15",
+      "FORCEPS_DEBAKEY",
+      "CLAMP_CRILE_CURVED_14"
+     ]
+    },
+    "9": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "10": {
+     "accepted": [
+      "SCISSORS_METZENBAUM"
+     ]
+    },
+    "11": {
+     "accepted": [
+      "RETRACTOR_FARABEUF_15_SET",
+      "RETRACTOR_FARABEUF_LONG_SET"
+     ],
+     "byParameter": {
+      "parameter": "PATIENT_BODY_TYPE",
+      "value": "NORMAL",
+      "instruments": [
+       "RETRACTOR_FARABEUF_15_SET"
+      ]
+     }
+    },
+    "13": {
+     "accepted": []
+    },
+    "14": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "15": {
+     "accepted": [
+      "CLAMP_BABCOCK_16"
+     ]
+    },
+    "16": {
+     "accepted": []
+    },
+    "17": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "18": {
+     "accepted": []
+    },
+    "19": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "22": {
+     "accepted": []
+    },
+    "23": {
+     "accepted": [
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5",
+      "ESU_MONOPOLAR_PEN",
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "CLAMP_CRILE_CURVED_14"
+     ],
+     "clamps": [
+      {
+       "code": "CLAMP_CRILE_CURVED_14",
+       "qty": 2
+      }
+     ]
+    },
+    "24": {
+     "accepted": [
+      "SCISSORS_METZENBAUM_CURVED"
+     ]
+    },
+    "25": {
+     "accepted": []
+    },
+    "26": {
+     "accepted": [
+      "SUTURE_SILK_3_0"
+     ]
+    },
+    "27": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18"
+     ]
+    },
+    "28": {
+     "accepted": [
+      "SUTURE_POLYGLACTIN_2_0",
+      "NEEDLE_HOLDER_DEBAKEY_18"
+     ]
+    },
+    "29": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "30": {
+     "accepted": [
+      "CLAMP_CRILE_STRAIGHT_14"
+     ]
+    },
+    "31": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "32": {
+     "accepted": []
+    },
+    "33": {
+     "accepted": [
+      "CLAMP_FOERSTER_CURVED_24"
+     ]
+    },
+    "34": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "35": {
+     "accepted": []
+    },
+    "36": {
+     "accepted": [
+      "CLAMP_CRILE_STRAIGHT_14",
+      "CLAMP_KELLY_RANKIN_14"
+     ]
+    },
+    "37": {
+     "accepted": []
+    },
+    "38": {
+     "accepted": []
+    },
+    "39": {
+     "accepted": []
+    },
+    "40": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "42": {
+     "accepted": [
+      "ISOTONIC_SALINE"
+     ]
+    },
+    "43": {
+     "accepted": [
+      "SUCTION_TIP_YANKAUER"
+     ]
+    },
+    "44": {
+     "accepted": []
+    },
+    "45": {
+     "accepted": []
+    },
+    "46": {
+     "accepted": []
+    },
+    "47": {
+     "accepted": []
+    },
+    "47a": {
+     "accepted": []
+    },
+    "47b": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "47d": {
+     "accepted": []
+    },
+    "47e": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "48": {
+     "accepted": [
+      "CLAMP_CRILE_CURVED_14",
+      "FORCEPS_STILLE_NON_TOOTHED_15"
+     ]
+    },
+    "49": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "SUTURE_POLYGLACTIN_0",
+      "SUTURE_POLYGLACTIN_1"
+     ]
+    },
+    "50": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "SUTURE_POLYGLACTIN_0",
+      "SUTURE_POLYGLACTIN_1"
+     ]
+    },
+    "51": {
+     "accepted": [
+      "CLAMP_ALLIS_15",
+      "CLAMP_ALLIS_ATRAUMATIC_19",
+      "CLAMP_OCHSNER_KOCHER_CURVED_20",
+      "FORCEPS_STILLE_NON_TOOTHED_15",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "52": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "53": {
+     "accepted": [
+      "ISOTONIC_SALINE"
+     ]
+    },
+    "54": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "55": {
+     "accepted": [
+      "FORCEPS_STILLE_NON_TOOTHED_15"
+     ]
+    },
+    "56": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "SUTURE_POLIGLECAPRONE_4_0",
+      "SUTURE_POLYPROPYLENE_3_0",
+      "SUTURE_POLYPROPYLENE_4_0",
+      "SUTURE_POLYAMIDE_4_0",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ],
+     "byParameter": {
+      "parameter": "SKIN_CLOSURE_TYPE",
+      "value": "STANDARD",
+      "instruments": [
+       "SUTURE_POLYPROPYLENE_3_0",
+       "SUTURE_POLYPROPYLENE_4_0",
+       "SUTURE_POLYAMIDE_4_0"
+      ]
+     }
+    },
+    "57": {
+     "accepted": [
+      "STERILE_GAUZE_SPONGE"
+     ]
+    },
+    "58": {
+     "accepted": [
+      "DRESSING_GAUZE_10X10"
+     ]
+    },
+    "59": {
+     "accepted": [
+      "TAPE_SILK",
+      "TAPE_WATERPROOF"
+     ]
+    },
+    "60": {
+     "accepted": []
+    }
+   },
+   "stepCount": 60
+  },
+  {
+   "id": "count-not-found",
+   "conditions": {
+    "COUNT_MISMATCH": [
+     true
+    ]
+   },
+   "parameters": {
+    "PATIENT_BODY_TYPE": "NORMAL",
+    "MESO_VESSELS": [
+     {
+      "caliber": "MEDIUM"
+     },
+     {
+      "caliber": "MEDIUM"
+     }
+    ],
+    "SKIN_CLOSURE_TYPE": "STANDARD"
+   },
+   "path": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "11",
+    "13",
+    "14",
+    "15",
+    "16",
+    "17",
+    "18",
+    "19",
+    "22",
+    "23",
+    "24",
+    "25",
+    "26",
+    "27",
+    "28",
+    "29",
+    "30",
+    "31",
+    "32",
+    "33",
+    "34",
+    "35",
+    "36",
+    "37",
+    "38",
+    "39",
+    "40",
+    "42",
+    "43",
+    "44",
+    "45",
+    "46",
+    "47",
+    "47a",
+    "47b",
+    "47d",
+    "47f",
+    "48",
+    "49",
+    "50",
+    "51",
+    "52",
+    "53",
+    "54",
+    "55",
+    "56",
+    "57",
+    "58",
+    "59",
+    "60"
+   ],
+   "expectedInstruments": {
+    "1": {
+     "accepted": [
+      "SCALPEL_BLADE_10",
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "2": {
+     "accepted": [
+      "ESU_MONOPOLAR_PEN"
+     ]
+    },
+    "3": {
+     "accepted": [
+      "FORCEPS_STILLE_NON_TOOTHED_15",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "4": {
+     "accepted": [
+      "RETRACTOR_FARABEUF_15_SET",
+      "RETRACTOR_ROUX_14",
+      "RETRACTOR_ROUX_15",
+      "RETRACTOR_FARABEUF_LONG_SET",
+      "RETRACTOR_ROUX_LONG"
+     ],
+     "byParameter": {
+      "parameter": "PATIENT_BODY_TYPE",
+      "value": "NORMAL",
+      "instruments": [
+       "RETRACTOR_FARABEUF_15_SET",
+       "RETRACTOR_ROUX_14",
+       "RETRACTOR_ROUX_15"
+      ]
+     }
+    },
+    "5": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "6": {
+     "accepted": [
+      "CLAMP_CRILE_STRAIGHT_14"
+     ]
+    },
+    "7": {
+     "accepted": [
+      "CLAMP_CRILE_CURVED_14"
+     ]
+    },
+    "8": {
+     "accepted": [
+      "FORCEPS_STILLE_NON_TOOTHED_15",
+      "FORCEPS_DEBAKEY",
+      "CLAMP_CRILE_CURVED_14"
+     ]
+    },
+    "9": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "10": {
+     "accepted": [
+      "SCISSORS_METZENBAUM"
+     ]
+    },
+    "11": {
+     "accepted": [
+      "RETRACTOR_FARABEUF_15_SET",
+      "RETRACTOR_FARABEUF_LONG_SET"
+     ],
+     "byParameter": {
+      "parameter": "PATIENT_BODY_TYPE",
+      "value": "NORMAL",
+      "instruments": [
+       "RETRACTOR_FARABEUF_15_SET"
+      ]
+     }
+    },
+    "13": {
+     "accepted": []
+    },
+    "14": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "15": {
+     "accepted": [
+      "CLAMP_BABCOCK_16"
+     ]
+    },
+    "16": {
+     "accepted": []
+    },
+    "17": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "18": {
+     "accepted": []
+    },
+    "19": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "22": {
+     "accepted": []
+    },
+    "23": {
+     "accepted": [
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5",
+      "ESU_MONOPOLAR_PEN",
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "CLAMP_CRILE_CURVED_14"
+     ],
+     "clamps": [
+      {
+       "code": "CLAMP_CRILE_CURVED_14",
+       "qty": 2
+      }
+     ]
+    },
+    "24": {
+     "accepted": [
+      "SCISSORS_METZENBAUM_CURVED"
+     ]
+    },
+    "25": {
+     "accepted": []
+    },
+    "26": {
+     "accepted": [
+      "SUTURE_SILK_3_0"
+     ]
+    },
+    "27": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18"
+     ]
+    },
+    "28": {
+     "accepted": [
+      "SUTURE_POLYGLACTIN_2_0",
+      "NEEDLE_HOLDER_DEBAKEY_18"
+     ]
+    },
+    "29": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "30": {
+     "accepted": [
+      "CLAMP_CRILE_STRAIGHT_14"
+     ]
+    },
+    "31": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "32": {
+     "accepted": []
+    },
+    "33": {
+     "accepted": [
+      "CLAMP_FOERSTER_CURVED_24"
+     ]
+    },
+    "34": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "35": {
+     "accepted": []
+    },
+    "36": {
+     "accepted": [
+      "CLAMP_CRILE_STRAIGHT_14",
+      "CLAMP_KELLY_RANKIN_14"
+     ]
+    },
+    "37": {
+     "accepted": []
+    },
+    "38": {
+     "accepted": []
+    },
+    "39": {
+     "accepted": []
+    },
+    "40": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "42": {
+     "accepted": [
+      "ISOTONIC_SALINE"
+     ]
+    },
+    "43": {
+     "accepted": [
+      "SUCTION_TIP_YANKAUER"
+     ]
+    },
+    "44": {
+     "accepted": []
+    },
+    "45": {
+     "accepted": []
+    },
+    "46": {
+     "accepted": []
+    },
+    "47": {
+     "accepted": []
+    },
+    "47a": {
+     "accepted": []
+    },
+    "47b": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "47d": {
+     "accepted": []
+    },
+    "47f": {
+     "accepted": []
+    },
+    "48": {
+     "accepted": [
+      "CLAMP_CRILE_CURVED_14",
+      "FORCEPS_STILLE_NON_TOOTHED_15"
+     ]
+    },
+    "49": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "SUTURE_POLYGLACTIN_0",
+      "SUTURE_POLYGLACTIN_1"
+     ]
+    },
+    "50": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "SUTURE_POLYGLACTIN_0",
+      "SUTURE_POLYGLACTIN_1"
+     ]
+    },
+    "51": {
+     "accepted": [
+      "CLAMP_ALLIS_15",
+      "CLAMP_ALLIS_ATRAUMATIC_19",
+      "CLAMP_OCHSNER_KOCHER_CURVED_20",
+      "FORCEPS_STILLE_NON_TOOTHED_15",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "52": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "53": {
+     "accepted": [
+      "ISOTONIC_SALINE"
+     ]
+    },
+    "54": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "55": {
+     "accepted": [
+      "FORCEPS_STILLE_NON_TOOTHED_15"
+     ]
+    },
+    "56": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "SUTURE_POLIGLECAPRONE_4_0",
+      "SUTURE_POLYPROPYLENE_3_0",
+      "SUTURE_POLYPROPYLENE_4_0",
+      "SUTURE_POLYAMIDE_4_0",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ],
+     "byParameter": {
+      "parameter": "SKIN_CLOSURE_TYPE",
+      "value": "STANDARD",
+      "instruments": [
+       "SUTURE_POLYPROPYLENE_3_0",
+       "SUTURE_POLYPROPYLENE_4_0",
+       "SUTURE_POLYAMIDE_4_0"
+      ]
+     }
+    },
+    "57": {
+     "accepted": [
+      "STERILE_GAUZE_SPONGE"
+     ]
+    },
+    "58": {
+     "accepted": [
+      "DRESSING_GAUZE_10X10"
+     ]
+    },
+    "59": {
+     "accepted": [
+      "TAPE_SILK",
+      "TAPE_WATERPROOF"
+     ]
+    },
+    "60": {
+     "accepted": []
+    }
+   },
+   "stepCount": 60
+  },
+  {
+   "id": "obese-aesthetic",
+   "conditions": {
+    "EXPOSURE_INSUFFICIENT": [
+     true
+    ]
+   },
+   "parameters": {
+    "PATIENT_BODY_TYPE": "OBESE",
+    "MESO_VESSELS": [
+     {
+      "caliber": "SMALL"
+     },
+     {
+      "caliber": "LARGE"
+     }
+    ],
+    "SKIN_CLOSURE_TYPE": "AESTHETIC"
+   },
+   "path": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "11",
+    "12",
+    "13",
+    "14",
+    "15",
+    "16",
+    "17",
+    "18",
+    "19",
+    "22",
+    "23",
+    "24",
+    "25",
+    "26",
+    "27",
+    "28",
+    "29",
+    "30",
+    "31",
+    "32",
+    "33",
+    "34",
+    "35",
+    "36",
+    "37",
+    "38",
+    "39",
+    "40",
+    "42",
+    "43",
+    "44",
+    "45",
+    "46",
+    "47",
+    "48",
+    "49",
+    "50",
+    "51",
+    "52",
+    "53",
+    "54",
+    "55",
+    "56",
+    "57",
+    "58",
+    "59",
+    "60"
+   ],
+   "expectedInstruments": {
+    "1": {
+     "accepted": [
+      "SCALPEL_BLADE_10",
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "2": {
+     "accepted": [
+      "ESU_MONOPOLAR_PEN"
+     ]
+    },
+    "3": {
+     "accepted": [
+      "FORCEPS_STILLE_NON_TOOTHED_15",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "4": {
+     "accepted": [
+      "RETRACTOR_FARABEUF_15_SET",
+      "RETRACTOR_ROUX_14",
+      "RETRACTOR_ROUX_15",
+      "RETRACTOR_FARABEUF_LONG_SET",
+      "RETRACTOR_ROUX_LONG"
+     ],
+     "byParameter": {
+      "parameter": "PATIENT_BODY_TYPE",
+      "value": "OBESE",
+      "instruments": [
+       "RETRACTOR_FARABEUF_LONG_SET",
+       "RETRACTOR_ROUX_LONG"
+      ]
+     }
+    },
+    "5": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "6": {
+     "accepted": [
+      "CLAMP_CRILE_STRAIGHT_14"
+     ]
+    },
+    "7": {
+     "accepted": [
+      "CLAMP_CRILE_CURVED_14"
+     ]
+    },
+    "8": {
+     "accepted": [
+      "FORCEPS_STILLE_NON_TOOTHED_15",
+      "FORCEPS_DEBAKEY",
+      "CLAMP_CRILE_CURVED_14"
+     ]
+    },
+    "9": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "10": {
+     "accepted": [
+      "SCISSORS_METZENBAUM"
+     ]
+    },
+    "11": {
+     "accepted": [
+      "RETRACTOR_FARABEUF_15_SET",
+      "RETRACTOR_FARABEUF_LONG_SET"
+     ],
+     "byParameter": {
+      "parameter": "PATIENT_BODY_TYPE",
+      "value": "OBESE",
+      "instruments": [
+       "RETRACTOR_FARABEUF_LONG_SET"
+      ]
+     }
+    },
+    "12": {
+     "accepted": [
+      "RETRACTOR_ROUX_14",
+      "RETRACTOR_ROUX_15",
+      "RETRACTOR_ROUX_LONG"
+     ],
+     "byParameter": {
+      "parameter": "PATIENT_BODY_TYPE",
+      "value": "OBESE",
+      "instruments": [
+       "RETRACTOR_ROUX_LONG"
+      ]
+     }
+    },
+    "13": {
+     "accepted": []
+    },
+    "14": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "15": {
+     "accepted": [
+      "CLAMP_BABCOCK_16"
+     ]
+    },
+    "16": {
+     "accepted": []
+    },
+    "17": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "18": {
+     "accepted": []
+    },
+    "19": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "22": {
+     "accepted": []
+    },
+    "23": {
+     "accepted": [
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5",
+      "ESU_MONOPOLAR_PEN",
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "CLAMP_MOSQUITO",
+      "CLAMP_PEAN"
+     ],
+     "clamps": [
+      {
+       "code": "CLAMP_MOSQUITO",
+       "qty": 1
+      },
+      {
+       "code": "CLAMP_PEAN",
+       "qty": 1
+      }
+     ]
+    },
+    "24": {
+     "accepted": [
+      "SCISSORS_METZENBAUM_CURVED"
+     ]
+    },
+    "25": {
+     "accepted": []
+    },
+    "26": {
+     "accepted": [
+      "SUTURE_SILK_3_0"
+     ]
+    },
+    "27": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18"
+     ]
+    },
+    "28": {
+     "accepted": [
+      "SUTURE_POLYGLACTIN_2_0",
+      "NEEDLE_HOLDER_DEBAKEY_18"
+     ]
+    },
+    "29": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "30": {
+     "accepted": [
+      "CLAMP_CRILE_STRAIGHT_14"
+     ]
+    },
+    "31": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "32": {
+     "accepted": []
+    },
+    "33": {
+     "accepted": [
+      "CLAMP_FOERSTER_CURVED_24"
+     ]
+    },
+    "34": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "35": {
+     "accepted": []
+    },
+    "36": {
+     "accepted": [
+      "CLAMP_CRILE_STRAIGHT_14",
+      "CLAMP_KELLY_RANKIN_14"
+     ]
+    },
+    "37": {
+     "accepted": []
+    },
+    "38": {
+     "accepted": []
+    },
+    "39": {
+     "accepted": []
+    },
+    "40": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "42": {
+     "accepted": [
+      "ISOTONIC_SALINE"
+     ]
+    },
+    "43": {
+     "accepted": [
+      "SUCTION_TIP_YANKAUER"
+     ]
+    },
+    "44": {
+     "accepted": []
+    },
+    "45": {
+     "accepted": []
+    },
+    "46": {
+     "accepted": []
+    },
+    "47": {
+     "accepted": []
+    },
+    "48": {
+     "accepted": [
+      "CLAMP_CRILE_CURVED_14",
+      "FORCEPS_STILLE_NON_TOOTHED_15"
+     ]
+    },
+    "49": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "SUTURE_POLYGLACTIN_0",
+      "SUTURE_POLYGLACTIN_1"
+     ]
+    },
+    "50": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "SUTURE_POLYGLACTIN_0",
+      "SUTURE_POLYGLACTIN_1"
+     ]
+    },
+    "51": {
+     "accepted": [
+      "CLAMP_ALLIS_15",
+      "CLAMP_ALLIS_ATRAUMATIC_19",
+      "CLAMP_OCHSNER_KOCHER_CURVED_20",
+      "FORCEPS_STILLE_NON_TOOTHED_15",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "52": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "53": {
+     "accepted": [
+      "ISOTONIC_SALINE"
+     ]
+    },
+    "54": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "55": {
+     "accepted": [
+      "FORCEPS_STILLE_NON_TOOTHED_15"
+     ]
+    },
+    "56": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "SUTURE_POLIGLECAPRONE_4_0",
+      "SUTURE_POLYPROPYLENE_3_0",
+      "SUTURE_POLYPROPYLENE_4_0",
+      "SUTURE_POLYAMIDE_4_0",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ],
+     "byParameter": {
+      "parameter": "SKIN_CLOSURE_TYPE",
+      "value": "AESTHETIC",
+      "instruments": [
+       "SUTURE_POLIGLECAPRONE_4_0"
+      ]
+     }
+    },
+    "57": {
+     "accepted": [
+      "STERILE_GAUZE_SPONGE"
+     ]
+    },
+    "58": {
+     "accepted": [
+      "DRESSING_GAUZE_10X10"
+     ]
+    },
+    "59": {
+     "accepted": [
+      "TAPE_SILK",
+      "TAPE_WATERPROOF"
+     ]
+    },
+    "60": {
+     "accepted": []
+    }
+   },
+   "stepCount": 57
+  },
+  {
+   "id": "thin-large-vessels",
+   "conditions": {},
+   "parameters": {
+    "PATIENT_BODY_TYPE": "THIN",
+    "MESO_VESSELS": [
+     {
+      "caliber": "LARGE"
+     },
+     {
+      "caliber": "LARGE"
+     },
+     {
+      "caliber": "LARGE"
+     }
+    ],
+    "SKIN_CLOSURE_TYPE": "STANDARD"
+   },
+   "path": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "11",
+    "13",
+    "14",
+    "15",
+    "16",
+    "17",
+    "18",
+    "19",
+    "22",
+    "23",
+    "24",
+    "25",
+    "26",
+    "27",
+    "28",
+    "29",
+    "30",
+    "31",
+    "32",
+    "33",
+    "34",
+    "35",
+    "36",
+    "37",
+    "38",
+    "39",
+    "40",
+    "42",
+    "43",
+    "44",
+    "45",
+    "46",
+    "47",
+    "48",
+    "49",
+    "50",
+    "51",
+    "52",
+    "53",
+    "54",
+    "55",
+    "56",
+    "57",
+    "58",
+    "59",
+    "60"
+   ],
+   "expectedInstruments": {
+    "1": {
+     "accepted": [
+      "SCALPEL_BLADE_10",
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "2": {
+     "accepted": [
+      "ESU_MONOPOLAR_PEN"
+     ]
+    },
+    "3": {
+     "accepted": [
+      "FORCEPS_STILLE_NON_TOOTHED_15",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "4": {
+     "accepted": [
+      "RETRACTOR_FARABEUF_15_SET",
+      "RETRACTOR_ROUX_14",
+      "RETRACTOR_ROUX_15",
+      "RETRACTOR_FARABEUF_LONG_SET",
+      "RETRACTOR_ROUX_LONG"
+     ],
+     "byParameter": {
+      "parameter": "PATIENT_BODY_TYPE",
+      "value": "THIN",
+      "instruments": [
+       "RETRACTOR_FARABEUF_15_SET",
+       "RETRACTOR_ROUX_14",
+       "RETRACTOR_ROUX_15"
+      ]
+     }
+    },
+    "5": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "6": {
+     "accepted": [
+      "CLAMP_CRILE_STRAIGHT_14"
+     ]
+    },
+    "7": {
+     "accepted": [
+      "CLAMP_CRILE_CURVED_14"
+     ]
+    },
+    "8": {
+     "accepted": [
+      "FORCEPS_STILLE_NON_TOOTHED_15",
+      "FORCEPS_DEBAKEY",
+      "CLAMP_CRILE_CURVED_14"
+     ]
+    },
+    "9": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "10": {
+     "accepted": [
+      "SCISSORS_METZENBAUM"
+     ]
+    },
+    "11": {
+     "accepted": [
+      "RETRACTOR_FARABEUF_15_SET",
+      "RETRACTOR_FARABEUF_LONG_SET"
+     ],
+     "byParameter": {
+      "parameter": "PATIENT_BODY_TYPE",
+      "value": "THIN",
+      "instruments": [
+       "RETRACTOR_FARABEUF_15_SET"
+      ]
+     }
+    },
+    "13": {
+     "accepted": []
+    },
+    "14": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "15": {
+     "accepted": [
+      "CLAMP_BABCOCK_16"
+     ]
+    },
+    "16": {
+     "accepted": []
+    },
+    "17": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "18": {
+     "accepted": []
+    },
+    "19": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "22": {
+     "accepted": []
+    },
+    "23": {
+     "accepted": [
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5",
+      "ESU_MONOPOLAR_PEN",
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "CLAMP_PEAN"
+     ],
+     "clamps": [
+      {
+       "code": "CLAMP_PEAN",
+       "qty": 3
+      }
+     ]
+    },
+    "24": {
+     "accepted": [
+      "SCISSORS_METZENBAUM_CURVED"
+     ]
+    },
+    "25": {
+     "accepted": []
+    },
+    "26": {
+     "accepted": [
+      "SUTURE_SILK_3_0"
+     ]
+    },
+    "27": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18"
+     ]
+    },
+    "28": {
+     "accepted": [
+      "SUTURE_POLYGLACTIN_2_0",
+      "NEEDLE_HOLDER_DEBAKEY_18"
+     ]
+    },
+    "29": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "30": {
+     "accepted": [
+      "CLAMP_CRILE_STRAIGHT_14"
+     ]
+    },
+    "31": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "32": {
+     "accepted": []
+    },
+    "33": {
+     "accepted": [
+      "CLAMP_FOERSTER_CURVED_24"
+     ]
+    },
+    "34": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "35": {
+     "accepted": []
+    },
+    "36": {
+     "accepted": [
+      "CLAMP_CRILE_STRAIGHT_14",
+      "CLAMP_KELLY_RANKIN_14"
+     ]
+    },
+    "37": {
+     "accepted": []
+    },
+    "38": {
+     "accepted": []
+    },
+    "39": {
+     "accepted": []
+    },
+    "40": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "42": {
+     "accepted": [
+      "ISOTONIC_SALINE"
+     ]
+    },
+    "43": {
+     "accepted": [
+      "SUCTION_TIP_YANKAUER"
+     ]
+    },
+    "44": {
+     "accepted": []
+    },
+    "45": {
+     "accepted": []
+    },
+    "46": {
+     "accepted": []
+    },
+    "47": {
+     "accepted": []
+    },
+    "48": {
+     "accepted": [
+      "CLAMP_CRILE_CURVED_14",
+      "FORCEPS_STILLE_NON_TOOTHED_15"
+     ]
+    },
+    "49": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "SUTURE_POLYGLACTIN_0",
+      "SUTURE_POLYGLACTIN_1"
+     ]
+    },
+    "50": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "SUTURE_POLYGLACTIN_0",
+      "SUTURE_POLYGLACTIN_1"
+     ]
+    },
+    "51": {
+     "accepted": [
+      "CLAMP_ALLIS_15",
+      "CLAMP_ALLIS_ATRAUMATIC_19",
+      "CLAMP_OCHSNER_KOCHER_CURVED_20",
+      "FORCEPS_STILLE_NON_TOOTHED_15",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "52": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "53": {
+     "accepted": [
+      "ISOTONIC_SALINE"
+     ]
+    },
+    "54": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "55": {
+     "accepted": [
+      "FORCEPS_STILLE_NON_TOOTHED_15"
+     ]
+    },
+    "56": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "SUTURE_POLIGLECAPRONE_4_0",
+      "SUTURE_POLYPROPYLENE_3_0",
+      "SUTURE_POLYPROPYLENE_4_0",
+      "SUTURE_POLYAMIDE_4_0",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ],
+     "byParameter": {
+      "parameter": "SKIN_CLOSURE_TYPE",
+      "value": "STANDARD",
+      "instruments": [
+       "SUTURE_POLYPROPYLENE_3_0",
+       "SUTURE_POLYPROPYLENE_4_0",
+       "SUTURE_POLYAMIDE_4_0"
+      ]
+     }
+    },
+    "57": {
+     "accepted": [
+      "STERILE_GAUZE_SPONGE"
+     ]
+    },
+    "58": {
+     "accepted": [
+      "DRESSING_GAUZE_10X10"
+     ]
+    },
+    "59": {
+     "accepted": [
+      "TAPE_SILK",
+      "TAPE_WATERPROOF"
+     ]
+    },
+    "60": {
+     "accepted": []
+    }
+   },
+   "stepCount": 56
+  },
+  {
+   "id": "everything",
+   "conditions": {
+    "EXPOSURE_INSUFFICIENT": [
+     true
+    ],
+    "ADHESIONS_PRESENT": [
+     true
+    ],
+    "LIGATURE_NOT_SECURE": [
+     true
+    ],
+    "BLEEDING_DETECTED": [
+     true
+    ],
+    "BLEEDING_AFTER_IRRIGATION": [
+     true,
+     true
+    ],
+    "COUNT_MISMATCH": [
+     true
+    ],
+    "ITEM_FOUND_ON_IMAGING": [
+     true
+    ]
+   },
+   "parameters": {
+    "PATIENT_BODY_TYPE": "OBESE",
+    "MESO_VESSELS": [
+     {
+      "caliber": "MEDIUM"
+     }
+    ],
+    "SKIN_CLOSURE_TYPE": "STANDARD"
+   },
+   "path": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "11",
+    "12",
+    "13",
+    "14",
+    "15",
+    "16",
+    "17",
+    "18",
+    "19",
+    "20",
+    "21",
+    "22",
+    "23",
+    "24",
+    "25",
+    "26",
+    "27",
+    "28",
+    "29",
+    "28",
+    "29",
+    "30",
+    "31",
+    "32",
+    "33",
+    "34",
+    "35",
+    "36",
+    "37",
+    "38",
+    "39",
+    "40",
+    "41",
+    "42",
+    "43",
+    "43a",
+    "42",
+    "43",
+    "44",
+    "45",
+    "46",
+    "47",
+    "47a",
+    "47b",
+    "47d",
+    "47e",
+    "48",
+    "49",
+    "50",
+    "51",
+    "52",
+    "53",
+    "54",
+    "55",
+    "56",
+    "57",
+    "58",
+    "59",
+    "60"
+   ],
+   "expectedInstruments": {
+    "1": {
+     "accepted": [
+      "SCALPEL_BLADE_10",
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "2": {
+     "accepted": [
+      "ESU_MONOPOLAR_PEN"
+     ]
+    },
+    "3": {
+     "accepted": [
+      "FORCEPS_STILLE_NON_TOOTHED_15",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "4": {
+     "accepted": [
+      "RETRACTOR_FARABEUF_15_SET",
+      "RETRACTOR_ROUX_14",
+      "RETRACTOR_ROUX_15",
+      "RETRACTOR_FARABEUF_LONG_SET",
+      "RETRACTOR_ROUX_LONG"
+     ],
+     "byParameter": {
+      "parameter": "PATIENT_BODY_TYPE",
+      "value": "OBESE",
+      "instruments": [
+       "RETRACTOR_FARABEUF_LONG_SET",
+       "RETRACTOR_ROUX_LONG"
+      ]
+     }
+    },
+    "5": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "6": {
+     "accepted": [
+      "CLAMP_CRILE_STRAIGHT_14"
+     ]
+    },
+    "7": {
+     "accepted": [
+      "CLAMP_CRILE_CURVED_14"
+     ]
+    },
+    "8": {
+     "accepted": [
+      "FORCEPS_STILLE_NON_TOOTHED_15",
+      "FORCEPS_DEBAKEY",
+      "CLAMP_CRILE_CURVED_14"
+     ]
+    },
+    "9": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "10": {
+     "accepted": [
+      "SCISSORS_METZENBAUM"
+     ]
+    },
+    "11": {
+     "accepted": [
+      "RETRACTOR_FARABEUF_15_SET",
+      "RETRACTOR_FARABEUF_LONG_SET"
+     ],
+     "byParameter": {
+      "parameter": "PATIENT_BODY_TYPE",
+      "value": "OBESE",
+      "instruments": [
+       "RETRACTOR_FARABEUF_LONG_SET"
+      ]
+     }
+    },
+    "12": {
+     "accepted": [
+      "RETRACTOR_ROUX_14",
+      "RETRACTOR_ROUX_15",
+      "RETRACTOR_ROUX_LONG"
+     ],
+     "byParameter": {
+      "parameter": "PATIENT_BODY_TYPE",
+      "value": "OBESE",
+      "instruments": [
+       "RETRACTOR_ROUX_LONG"
+      ]
+     }
+    },
+    "13": {
+     "accepted": []
+    },
+    "14": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "15": {
+     "accepted": [
+      "CLAMP_BABCOCK_16"
+     ]
+    },
+    "16": {
+     "accepted": []
+    },
+    "17": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "18": {
+     "accepted": []
+    },
+    "19": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "20": {
+     "accepted": [
+      "CLAMP_GEMINI_CURVED_20"
+     ]
+    },
+    "21": {
+     "accepted": [
+      "SCISSORS_METZENBAUM_CURVED",
+      "ESU_MONOPOLAR_PEN"
+     ]
+    },
+    "22": {
+     "accepted": []
+    },
+    "23": {
+     "accepted": [
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5",
+      "ESU_MONOPOLAR_PEN",
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "CLAMP_CRILE_CURVED_14"
+     ],
+     "clamps": [
+      {
+       "code": "CLAMP_CRILE_CURVED_14",
+       "qty": 1
+      }
+     ]
+    },
+    "24": {
+     "accepted": [
+      "SCISSORS_METZENBAUM_CURVED"
+     ]
+    },
+    "25": {
+     "accepted": []
+    },
+    "26": {
+     "accepted": [
+      "SUTURE_SILK_3_0"
+     ]
+    },
+    "27": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18"
+     ]
+    },
+    "28": {
+     "accepted": [
+      "SUTURE_POLYGLACTIN_2_0",
+      "NEEDLE_HOLDER_DEBAKEY_18"
+     ]
+    },
+    "29": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "30": {
+     "accepted": [
+      "CLAMP_CRILE_STRAIGHT_14"
+     ]
+    },
+    "31": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "32": {
+     "accepted": []
+    },
+    "33": {
+     "accepted": [
+      "CLAMP_FOERSTER_CURVED_24"
+     ]
+    },
+    "34": {
+     "accepted": [
+      "SCALPEL_BLADE_15"
+     ]
+    },
+    "35": {
+     "accepted": []
+    },
+    "36": {
+     "accepted": [
+      "CLAMP_CRILE_STRAIGHT_14",
+      "CLAMP_KELLY_RANKIN_14"
+     ]
+    },
+    "37": {
+     "accepted": []
+    },
+    "38": {
+     "accepted": []
+    },
+    "39": {
+     "accepted": []
+    },
+    "40": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "41": {
+     "accepted": [
+      "CLAMP_MOSQUITO",
+      "CLAMP_PEAN",
+      "CLAMP_CRILE_STRAIGHT_14",
+      "CLAMP_CRILE_CURVED_14",
+      "CLAMP_CRILE_RANKIN_CURVED_16",
+      "CLAMP_ROCHESTER_PEAN_CURVED_14",
+      "ESU_MONOPOLAR_PEN"
+     ]
+    },
+    "42": {
+     "accepted": [
+      "ISOTONIC_SALINE"
+     ]
+    },
+    "43": {
+     "accepted": [
+      "SUCTION_TIP_YANKAUER"
+     ]
+    },
+    "43a": {
+     "accepted": [
+      "ESU_MONOPOLAR_PEN"
+     ]
+    },
+    "44": {
+     "accepted": []
+    },
+    "45": {
+     "accepted": []
+    },
+    "46": {
+     "accepted": []
+    },
+    "47": {
+     "accepted": []
+    },
+    "47a": {
+     "accepted": []
+    },
+    "47b": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "47d": {
+     "accepted": []
+    },
+    "47e": {
+     "accepted": [
+      "HAND"
+     ]
+    },
+    "48": {
+     "accepted": [
+      "CLAMP_CRILE_CURVED_14",
+      "FORCEPS_STILLE_NON_TOOTHED_15"
+     ]
+    },
+    "49": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "SUTURE_POLYGLACTIN_0",
+      "SUTURE_POLYGLACTIN_1"
+     ]
+    },
+    "50": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "SUTURE_POLYGLACTIN_0",
+      "SUTURE_POLYGLACTIN_1"
+     ]
+    },
+    "51": {
+     "accepted": [
+      "CLAMP_ALLIS_15",
+      "CLAMP_ALLIS_ATRAUMATIC_19",
+      "CLAMP_OCHSNER_KOCHER_CURVED_20",
+      "FORCEPS_STILLE_NON_TOOTHED_15",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "52": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "53": {
+     "accepted": [
+      "ISOTONIC_SALINE"
+     ]
+    },
+    "54": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ]
+    },
+    "55": {
+     "accepted": [
+      "FORCEPS_STILLE_NON_TOOTHED_15"
+     ]
+    },
+    "56": {
+     "accepted": [
+      "NEEDLE_HOLDER_DEBAKEY_18",
+      "SUTURE_POLIGLECAPRONE_4_0",
+      "SUTURE_POLYPROPYLENE_3_0",
+      "SUTURE_POLYPROPYLENE_4_0",
+      "SUTURE_POLYAMIDE_4_0",
+      "FORCEPS_SEMKEN_NON_TOOTHED_15_5"
+     ],
+     "byParameter": {
+      "parameter": "SKIN_CLOSURE_TYPE",
+      "value": "STANDARD",
+      "instruments": [
+       "SUTURE_POLYPROPYLENE_3_0",
+       "SUTURE_POLYPROPYLENE_4_0",
+       "SUTURE_POLYAMIDE_4_0"
+      ]
+     }
+    },
+    "57": {
+     "accepted": [
+      "STERILE_GAUZE_SPONGE"
+     ]
+    },
+    "58": {
+     "accepted": [
+      "DRESSING_GAUZE_10X10"
+     ]
+    },
+    "59": {
+     "accepted": [
+      "TAPE_SILK",
+      "TAPE_WATERPROOF"
+     ]
+    },
+    "60": {
+     "accepted": []
+    }
+   },
+   "stepCount": 69
+  }
+ ]
+}

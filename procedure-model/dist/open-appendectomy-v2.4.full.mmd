@@ -1,0 +1,213 @@
+flowchart TD
+classDef cond fill:#fff4d6,stroke:#c98a00;
+classDef dec fill:#e6f0ff,stroke:#2f6fd6;
+classDef sub fill:#fde8e1,stroke:#c0532b;
+classDef skip fill:#f2f2f2,stroke:#bbb,color:#999,stroke-dasharray:4 3;
+classDef pre fill:#eef7ee,stroke:#3a8a3a;
+subgraph PH01["Cilt ve Karın Duvarına Giriş"]
+  S1["1. Sağ alt kadranda McBurney veya Elliot cilt insizyonu<br/><small>SCALPEL_BLADE_10</small>"]
+  S2["2. Cilt altı yağ dokusunun diseksiyonu<br/><small>ESU_MONOPOLAR_PEN</small>"]
+  S3["3. Camper ve Scarpa fasya tabakalarının açılması<br/><small>FORCEPS_STILLE_NON_TOOTHED_15</small>"]
+  S4["4. Dış oblik aponevrozunun ortaya konması<br/><small>RETRACTOR_FARABEUF_15_SET</small>"]
+  S5["5. Dış oblik aponevrozunun insize edilmesi<br/><small>SCALPEL_BLADE_15</small>"]
+  S6["6. Kas liflerinin künt diseksiyonla ayrılması<br/><small>CLAMP_CRILE_STRAIGHT_14</small>"]
+  S7["7. Transversalis fasyanın açılması<br/><small>CLAMP_CRILE_CURVED_14</small>"]
+  S8["8. Peritonun tutulması<br/><small>FORCEPS_STILLE_NON_TOOTHED_15</small>"]
+  S9["9. Peritonun küçük bir kesi ile açılması<br/><small>SCALPEL_BLADE_15</small>"]
+  S10["10. Periton açıklığının makas ile genişletilmesi<br/><small>SCISSORS_METZENBAUM</small>"]
+end
+subgraph PH02["Ekartasyon"]
+  S11{"11. Farabeuf ekartörünün yerleştirilmesi<br/><small>RETRACTOR_FARABEUF_15_SET</small>"}
+  S12["12. Gerekirse Roux ekartörünün yerleştirilmesi<br/><small>RETRACTOR_ROUX_14</small>"]
+  S13["13. Cerrahi sahanın ekspoze edilmesi<br/><small>RETRACTOR_FARABEUF_15_SET</small>"]
+end
+subgraph PH03["Çekuma Ulaşılması"]
+  S14["14. Çekumun bulunması"]
+  S15["15. Çekumun atravmatik Babcock pens ile tutulması<br/><small>CLAMP_BABCOCK_16</small>"]
+  S16["16. Çekumun yara dışına alınması<br/><small>CLAMP_BABCOCK_16</small>"]
+end
+subgraph PH04["Appendiksin Bulunması"]
+  S17["17. Teniaların takip edilerek appendiksin bulunması"]
+  S18["18. Appendiks ucunun Babcock pens ile tutulması<br/><small>CLAMP_BABCOCK_16</small>"]
+end
+subgraph PH05["Yapışıklık Varsa"]
+  S19{"19. Yapışıklıkların değerlendirilmesi"}
+  S20["20. Yapışıklıkların klemp yardımı ile gerilmesi<br/><small>CLAMP_GEMINI_CURVED_20</small>"]
+  S21["21. Yapışıklıkların makas veya monopolar koter ile ayrılması<br/><small>SCISSORS_METZENBAUM_CURVED</small>"]
+end
+subgraph PH06["Mezappendiks Diseksiyonu"]
+  S22["22. Mezappendiksin ortaya konması<br/><small>CLAMP_BABCOCK_16</small>"]
+  S23["23. Mezappendiks damarlarının bağlanması<br/><small>CLAMP_CRILE_CURVED_14</small>"]
+  S24["24. Mezappendiksin makas ile kesilmesi<br/><small>SCISSORS_METZENBAUM_CURVED</small>"]
+end
+subgraph PH07["Appendiks Köküne Hazırlık"]
+  S25["25. Appendiks kökünün tamamen ortaya çıkarılması<br/><small>CLAMP_BABCOCK_16</small>"]
+  S26["26. 3/0 ipek sütürün hazırlanması<br/><small>SUTURE_SILK_3_0</small>"]
+  S27["27. Appendiks kökü çevresine purse-string çevre sütürü konulması<br/><small>NEEDLE_HOLDER_DEBAKEY_18</small>"]
+end
+subgraph PH08["Appendiks Kökünün Bağlanması"]
+  S28["28. Appendiks kökünün 2/0 Poliglaktin Vicryl ile bağlanması<br/><small>SUTURE_POLYGLACTIN_2_0</small>"]
+  S29{"29. Bağ sağlamlığının kontrol edilmesi"}
+end
+subgraph PH09["İşaret Pensi Yerleştirilmesi"]
+  S30["30. Bağın distal tarafına düz dişsiz işaret pensinin konulması<br/><small>CLAMP_CRILE_STRAIGHT_14</small>"]
+end
+subgraph PH10["Appendiksin Kesilmesi"]
+  S31["31. No:15 bistürinin hazırlanması<br/><small>SCALPEL_BLADE_15</small>"]
+  S32["32. İşaret pensinin distalinden appendiksin kesilmesi<br/><small>SCALPEL_BLADE_15</small>"]
+end
+subgraph PH11["Güdüğün Temizlenmesi"]
+  S33["33. Kesilen yüzeyin batikonlu fındık tampon ile silinmesi<br/><small>CLAMP_FOERSTER_CURVED_24</small>"]
+  S34["34. Kirlenmiş bistüri ucunun değiştirilmesi<br/><small>SCALPEL_BLADE_15</small>"]
+end
+subgraph PH12["Güdüğün Gömülmesi"]
+  S35["35. Önceden hazırlanmış purse-string sütürün sıkılması<br/><small>SUTURE_SILK_3_0</small>"]
+  S36["36. Appendiks güdüğünün çekum içine gömülmesi<br/><small>CLAMP_CRILE_STRAIGHT_14</small>"]
+  S37["37. Çevre sütürünün düğümlenmesi<br/><small>SUTURE_SILK_3_0</small>"]
+end
+subgraph PH13["Spesimenin Gönderilmesi"]
+  S38["38. Çıkarılan appendiksin patoloji kabına alınması<br/><small>CLAMP_BABCOCK_16</small>"]
+  S39["39. Patoloji kabının etiketlenmesi"]
+end
+subgraph PH14["Hemostaz"]
+  S40{"40. Cerrahi sahanın kanama açısından kontrol edilmesi"}
+  S41["41. Gerekli bölgelerde hemostaz sağlanması<br/><small>CLAMP_MOSQUITO</small>"]
+end
+subgraph PH15["Yıkama"]
+  S42["42. Karın içinin izotonik serum ile yıkanması<br/><small>ISOTONIC_SALINE</small>"]
+  S43{"43. Sıvının aspire edilmesi<br/><small>SUCTION_TIP_YANKAUER</small>"}
+end
+subgraph PH16["Sayım"]
+  S44["44. Kompres sayımı"]
+  S45["45. Alet sayımı"]
+  S46["46. İğne sayımı"]
+  S47{"47. Sayımın doğrulanması"}
+end
+subgraph PH17["Peritonun Kapatılması"]
+  S48["48. Periton kenarlarının tutulması<br/><small>CLAMP_CRILE_CURVED_14</small>"]
+  S49["49. Peritonun 0 veya 1 Vicryl ile kapatılması<br/><small>NEEDLE_HOLDER_DEBAKEY_18</small>"]
+end
+subgraph PH18["Kas Tabakasının Kapatılması"]
+  S50["50. Kas tabakasının 0 veya 1 Vicryl ile kapatılması<br/><small>NEEDLE_HOLDER_DEBAKEY_18</small>"]
+end
+subgraph PH19["Fasya Kapatılması"]
+  S51["51. Fasya kenarlarının hazırlanması<br/><small>CLAMP_ALLIS_15</small>"]
+  S52["52. Fasyanın 0 Vicryl ile kapatılması<br/><small>NEEDLE_HOLDER_DEBAKEY_18</small>"]
+end
+subgraph PH20["Cilt Altı Kapatılması"]
+  S53["53. Cilt altının serum fizyolojik ile yıkanması<br/><small>ISOTONIC_SALINE</small>"]
+  S54["54. Cilt altının 2/0 Vicryl ile tek tek kapatılması<br/><small>NEEDLE_HOLDER_DEBAKEY_18</small>"]
+end
+subgraph PH21["Cilt Kapatılması"]
+  S55["55. Cilt kenarlarının hizalanması<br/><small>FORCEPS_STILLE_NON_TOOTHED_15</small>"]
+  S56["56. Cildin kapatılması estetik: 4/0 Monocryl, standart: 3/0–4/0 Prolen veya 4/0 Polyamid<br/><small>NEEDLE_HOLDER_DEBAKEY_18</small>"]
+end
+subgraph PH22["Pansuman"]
+  S57["57. Ameliyat sahasının ıslak tampon ile temizlenmesi<br/><small>STERILE_GAUZE_SPONGE</small>"]
+  S58["58. Steril gaz kompresin yerleştirilmesi<br/><small>DRESSING_GAUZE_10X10</small>"]
+  S59["59. Pansumanın sabitlenmesi<br/><small>TAPE_SILK</small>"]
+  S60["60. Operasyonun tamamlanması"]
+end
+subgraph HEMOSTASIS_RECHECK["Yıkama sonrası kanama"]
+  S43a[/"43a. Ara hemostaz: kanamanın monopolar koter ile durdurulması<br/><small>ESU_MONOPOLAR_PEN</small>"/]
+end
+subgraph COUNT_DISCREPANCY["Sayım uyuşmazlığı"]
+  S47a{"47a. Eksik malzemenin tekrar sayılması"}
+  S47b{"47b. Saha ve atık araması"}
+  S47c[/"47c. Bulunan malzemenin sayıma eklenmesi"/]
+  S47d{"47d. Radyolojik görüntüleme"}
+  S47e[/"47e. Malzemenin hastadan çıkarılması; peritondan itibaren yeniden kapatma"/]
+  S47f[/"47f. Bulunamadı: paketten eksik çıktığı kabul edilir ve kayda geçer"/]
+end
+S1 --> S2
+S2 --> S3
+S3 --> S4
+S4 --> S5
+S5 --> S6
+S6 --> S7
+S7 --> S8
+S8 --> S9
+S9 --> S10
+S10 --> S11
+S11 -->|else| S13
+S11 -->|EXPOSURE_INSUFFICIENT| S12
+S12 --> S13
+S13 --> S14
+S14 --> S15
+S15 --> S16
+S16 --> S17
+S17 --> S18
+S18 --> S19
+S19 -->|else| S22
+S19 -->|ADHESIONS_PRESENT| S20
+S20 --> S21
+S21 --> S22
+S22 --> S23
+S23 --> S24
+S24 --> S25
+S25 --> S26
+S26 --> S27
+S27 --> S28
+S28 --> S29
+S29 -->|else| S30
+S29 -->|LIGATURE_NOT_SECURE| S28
+S30 --> S31
+S31 --> S32
+S32 --> S33
+S33 --> S34
+S34 --> S35
+S35 --> S36
+S36 --> S37
+S37 --> S38
+S38 --> S39
+S39 --> S40
+S40 -->|else| S42
+S40 -->|BLEEDING_DETECTED| S41
+S41 --> S42
+S42 --> S43
+S43 -->|else| S44
+S43 -->|BLEEDING_AFTER_IRRIGATION| S43a
+S44 --> S45
+S45 --> S46
+S46 --> S47
+S47 -->|else| S48
+S47 -->|COUNT_MISMATCH| S47a
+S48 --> S49
+S49 --> S50
+S50 --> S51
+S51 --> S52
+S52 --> S53
+S53 --> S54
+S54 --> S55
+S55 --> S56
+S56 --> S57
+S57 --> S58
+S58 --> S59
+S59 --> S60
+S43a --> S42
+S47a -->|else| S47b
+S47a -->|ITEM_FOUND_ON_RECOUNT| S47
+S47b -->|else| S47d
+S47b -->|ITEM_FOUND_IN_FIELD| S47c
+S47c --> S47
+S47d -->|else| S47f
+S47d -->|ITEM_FOUND_ON_IMAGING| S47e
+S47e --> S48
+S47f --> S48
+class S11 dec;
+class S12 cond;
+class S19 dec;
+class S20 cond;
+class S21 cond;
+class S29 dec;
+class S40 dec;
+class S41 cond;
+class S43 dec;
+class S47 dec;
+class S43a sub;
+class S47a dec;
+class S47b dec;
+class S47c sub;
+class S47d dec;
+class S47e sub;
+class S47f sub;

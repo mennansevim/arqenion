@@ -1,8 +1,8 @@
 using System.Text;
 using System.Text.Json;
-using Operion.Api.Models;
+using Arqenion.Api.Models;
 
-namespace Operion.Api.Services;
+namespace Arqenion.Api.Services;
 
 public sealed class AiFeedbackResult
 {
@@ -21,15 +21,24 @@ public sealed class AiFeedbackResult
     public string? ResponseJson { get; set; }
 }
 
+// Motorun bulduğu bir sapma ve bağlamı (seans, olay, hasta, varsa açık komplikasyon).
+// ProcedureModel: seansın modeli ("v1" ya da "v2.4"); Table: motorun bu sapma için hazır klinik metni (AI yoksa kullanılır).
+public sealed record AiFeedbackRequest(string SessionId, string EventId, int StepId, DeviationDto Deviation, PatientProfile Patient,
+    ActiveComplicationDto? Complication = null, string ProcedureModel = "v1", ClinicalKnowledgeEntry? Table = null);
+
 public interface IAiFeedbackService
 {
-    Task<AiFeedbackResult?> GenerateAsync(int stepId, DeviationDto deviation, bool hasAdhesion, CancellationToken ct);
+    Task<AiFeedbackResult?> GenerateAsync(AiFeedbackRequest request, CancellationToken ct);
 }
 
-// Primary source is the expert-approved clinical knowledge table (traceable, no hallucination).
-// If an OpenAI key is configured, the LLM only rephrases that grounded content into friendlier Turkish.
+// Karar motorda verilir; bu servis yalnızca açıklama metnini getirir:
+// 1) ai-gateway POST /feedback (AiGateway:BaseUrl), AiGateway:TimeoutMs (varsayılan 8 sn; gateway kendi 6 sn yapay zekâ sınırı + 1 sn payla cevap verir) içinde cevap verirse onu kullanır.
+// 2) Servis kapalıysa, hata verirse ya da zaman aşımına uğrarsa klinik bilgi tablosundaki (clinical-knowledge.json) metni kullanır.
 public sealed class AiFeedbackService : IAiFeedbackService
 {
+    private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNameCaseInsensitive = true };
+    private static readonly JsonSerializerOptions RequestJsonOptions = new(JsonSerializerDefaults.Web);
+
     private readonly ProcedureStore _store;
     private readonly IHttpClientFactory _httpFactory;
     private readonly IConfiguration _config;
@@ -44,96 +53,115 @@ public sealed class AiFeedbackService : IAiFeedbackService
         _logger = logger;
     }
 
-    public async Task<AiFeedbackResult?> GenerateAsync(int stepId, DeviationDto deviation, bool hasAdhesion, CancellationToken ct)
+    public async Task<AiFeedbackResult?> GenerateAsync(AiFeedbackRequest request, CancellationToken ct)
     {
-        var entry = _store.GetClinicalEntry(stepId, deviation.DeviationType);
-
-        var result = new AiFeedbackResult
+        var payload = new
         {
-            StepId = stepId,
-            DeviationType = deviation.DeviationType,
-            PossibleRisk = entry?.PossibleRisk ?? "Prosedür kuralına aykırı bir işlem tespit edildi.",
-            Explanation = entry?.Explanation ?? "Bu eylem kanonik prosedür sırasına veya alet uygunluğuna aykırıdır.",
-            RecommendedAction = entry?.RecommendedAction ?? "Doğru adımı ve uygun aleti kontrol ederek işlemi tekrarlayın.",
-            Severity = deviation.Severity,
-            Source = "table",
-            RequestJson = JsonSerializer.Serialize(new { stepId, deviation, hasAdhesion })
+            sessionId = request.SessionId,
+            eventId = request.EventId,
+            stepId = request.StepId,
+            deviationType = request.Deviation.DeviationType,
+            // AI servisi tek bir beklenen kod bekler; motorun "A / B" listesinin ilki gönderilir (v1 çevirisi listeyi kendisi ayıklar).
+            expected = request.ProcedureModel == "v1" ? request.Deviation.Expected : request.Deviation.Expected?.Split(" / ")[0],
+            actual = request.Deviation.Actual,
+            severity = request.Deviation.Severity,
+            parameters = new Dictionary<string, string> { ["PATIENT_BODY_TYPE"] = request.Patient.BodyType },
+            // "v1" ise gateway adım ve alet kodlarını v2.4'e çevirir (ai-gateway/app/legacy_v1_map.json).
+            procedureModel = request.ProcedureModel,
+            complication = request.Complication
         };
-        result.ResponseJson = JsonSerializer.Serialize(new { result.PossibleRisk, result.Explanation, result.RecommendedAction });
+        var requestJson = JsonSerializer.Serialize(payload, RequestJsonOptions);
 
-        var apiKey = _config["OpenAI:ApiKey"];
-        if (string.IsNullOrWhiteSpace(apiKey)) apiKey = _config["OPENAI_API_KEY"];
-        if (string.IsNullOrWhiteSpace(apiKey))
-            return result;
+        var fallback = BuildTableResult(request);
+        fallback.RequestJson = requestJson;
+
+        var baseUrl = _config["AiGateway:BaseUrl"];
+        if (string.IsNullOrWhiteSpace(baseUrl))
+            return fallback;
+
+        var timeout = TimeSpan.FromMilliseconds(_config.GetValue("AiGateway:TimeoutMs", 8000));
 
         try
         {
-            await RephraseWithLlm(result, apiKey, hasAdhesion, ct);
+            using var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+            cts.CancelAfter(timeout);
+
+            var http = _httpFactory.CreateClient();
+            using var req = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl.TrimEnd('/')}/feedback")
+            {
+                Content = new StringContent(requestJson, Encoding.UTF8, "application/json")
+            };
+
+            using var resp = await http.SendAsync(req, cts.Token);
+            resp.EnsureSuccessStatusCode();
+            var raw = await resp.Content.ReadAsStringAsync(cts.Token);
+
+            var gw = JsonSerializer.Deserialize<GatewayFeedback>(raw, JsonOptions);
+            if (gw is null || string.IsNullOrWhiteSpace(gw.PossibleRisk)
+                || string.IsNullOrWhiteSpace(gw.Explanation) || string.IsNullOrWhiteSpace(gw.RecommendedAction))
+            {
+                _logger.LogWarning("AI gateway eksik alanlı cevap verdi (step={Step}); klinik tablo kullanılıyor.", request.StepId);
+                return fallback;
+            }
+
+            return new AiFeedbackResult
+            {
+                StepId = request.StepId,
+                DeviationType = request.Deviation.DeviationType,
+                PossibleRisk = gw.PossibleRisk,
+                Explanation = gw.Explanation,
+                RecommendedAction = gw.RecommendedAction,
+                Severity = gw.Severity ?? request.Deviation.Severity,
+                Source = gw.Source ?? "table",
+                ModelName = gw.ModelName,
+                PromptTokens = gw.PromptTokens,
+                CompletionTokens = gw.CompletionTokens,
+                TotalTokens = gw.PromptTokens + gw.CompletionTokens,
+                RequestJson = requestJson,
+                ResponseJson = raw
+            };
+        }
+        catch (OperationCanceledException) when (ct.IsCancellationRequested)
+        {
+            throw;
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, "LLM rephrase failed; falling back to clinical table content.");
+            // Zaman aşımı, bağlantı hatası veya bozuk cevap: oyuncu cevapsız kalmasın, klinik tablo devreye girsin.
+            _logger.LogWarning(ex, "AI gateway cevap vermedi (session={SessionId} step={Step}); klinik tablo kullanılıyor.",
+                request.SessionId, request.StepId);
+            return fallback;
         }
+    }
 
+    private AiFeedbackResult BuildTableResult(AiFeedbackRequest request)
+    {
+        var entry = request.Table ?? _store.GetClinicalEntry(request.StepId, request.Deviation.DeviationType);
+
+        var result = new AiFeedbackResult
+        {
+            StepId = request.StepId,
+            DeviationType = request.Deviation.DeviationType,
+            PossibleRisk = entry?.PossibleRisk ?? "Prosedür kuralına aykırı bir işlem tespit edildi.",
+            Explanation = entry?.Explanation ?? "Bu eylem kanonik prosedür sırasına veya alet uygunluğuna aykırıdır.",
+            RecommendedAction = entry?.RecommendedAction ?? "Doğru adımı ve uygun aleti kontrol ederek işlemi tekrarlayın.",
+            Severity = request.Deviation.Severity,
+            Source = "table"
+        };
+        result.ResponseJson = JsonSerializer.Serialize(new { result.PossibleRisk, result.Explanation, result.RecommendedAction });
         return result;
     }
 
-    private async Task RephraseWithLlm(AiFeedbackResult result, string apiKey, bool hasAdhesion, CancellationToken ct)
+    // ai-gateway POST /feedback cevabındaki alanlar (camelCase; büyük/küçük harf duyarsız eşlenir).
+    private sealed class GatewayFeedback
     {
-        var model = _config["OpenAI:Model"] ?? _config["OPENAI_MODEL"] ?? "gpt-4o-mini";
-        var system = "Sen ameliyathane scrub teknikeri eğitimi için bir cerrahi eğitmensin. Sana verilen doğrulanmış "
-            + "klinik bulguyu (risk, açıklama, önerilen müdahale) kullanarak SADECE Türkçe, kısa ve pedagojik bir geri "
-            + "bildirim yaz. Yeni tıbbi bilgi UYDURMA; yalnızca verilen içeriği yeniden ifade et. Yanıtı şu JSON şemasıyla "
-            + "döndür: {\"possibleRisk\":string,\"explanation\":string,\"recommendedAction\":string}.";
-        var user = JsonSerializer.Serialize(new
-        {
-            deviationType = result.DeviationType,
-            hasAdhesion,
-            possibleRisk = result.PossibleRisk,
-            explanation = result.Explanation,
-            recommendedAction = result.RecommendedAction
-        });
-
-        var body = new
-        {
-            model,
-            messages = new object[]
-            {
-                new { role = "system", content = system },
-                new { role = "user", content = user }
-            },
-            response_format = new { type = "json_object" },
-            temperature = 0.3
-        };
-
-        var http = _httpFactory.CreateClient();
-        using var req = new HttpRequestMessage(HttpMethod.Post, "https://api.openai.com/v1/chat/completions");
-        req.Headers.Add("Authorization", $"Bearer {apiKey}");
-        req.Content = new StringContent(JsonSerializer.Serialize(body), Encoding.UTF8, "application/json");
-
-        using var resp = await http.SendAsync(req, ct);
-        resp.EnsureSuccessStatusCode();
-        var raw = await resp.Content.ReadAsStringAsync(ct);
-
-        using var doc = JsonDocument.Parse(raw);
-        var content = doc.RootElement.GetProperty("choices")[0].GetProperty("message").GetProperty("content").GetString();
-        if (string.IsNullOrWhiteSpace(content)) return;
-
-        if (doc.RootElement.TryGetProperty("usage", out var usage))
-        {
-            if (usage.TryGetProperty("prompt_tokens", out var pt)) result.PromptTokens = pt.GetInt32();
-            if (usage.TryGetProperty("completion_tokens", out var comp)) result.CompletionTokens = comp.GetInt32();
-            if (usage.TryGetProperty("total_tokens", out var tt)) result.TotalTokens = tt.GetInt32();
-        }
-
-        using var parsed = JsonDocument.Parse(content);
-        var root = parsed.RootElement;
-        if (root.TryGetProperty("possibleRisk", out var r)) result.PossibleRisk = r.GetString() ?? result.PossibleRisk;
-        if (root.TryGetProperty("explanation", out var e)) result.Explanation = e.GetString() ?? result.Explanation;
-        if (root.TryGetProperty("recommendedAction", out var a)) result.RecommendedAction = a.GetString() ?? result.RecommendedAction;
-
-        result.Source = "llm";
-        result.ModelName = model;
-        result.ResponseJson = content;
+        public string? PossibleRisk { get; set; }
+        public string? Explanation { get; set; }
+        public string? RecommendedAction { get; set; }
+        public string? Severity { get; set; }
+        public string? Source { get; set; }
+        public string? ModelName { get; set; }
+        public int? PromptTokens { get; set; }
+        public int? CompletionTokens { get; set; }
     }
 }

@@ -1,0 +1,515 @@
+{
+ "source": "Cerrahi_süturaların_tablosu.docx (Fatih Candemir, 2026-10-07)",
+ "note": "Tablodaki ¹ ² ³ * dipnot işaretlerinin açıklaması belgede yok.",
+ "sutures": [
+  {
+   "name": "Düz katgüt / Plain gut",
+   "material": "Doğal kollajen",
+   "absorbable": true,
+   "structure": "MONOFILAMENT",
+   "absorptionDays": {
+    "min": 70,
+    "max": 70,
+    "approx": true,
+    "text": "≈70"
+   },
+   "footnoteMarks": [
+    "¹"
+   ]
+  },
+  {
+   "name": "Vicryl",
+   "material": "Poliglaktin 910",
+   "absorbable": true,
+   "structure": "MULTIFILAMENT",
+   "absorptionDays": {
+    "min": 56,
+    "max": 70,
+    "approx": false,
+    "text": "56–70"
+   },
+   "footnoteMarks": [
+    "²"
+   ]
+  },
+  {
+   "name": "Prolene / Surgipro",
+   "material": "Polipropilen",
+   "absorbable": false,
+   "structure": "MONOFILAMENT",
+   "absorptionDays": null
+  },
+  {
+   "name": "İpek / Silk",
+   "material": "Perma-Hand / Sofsilk / Silkam",
+   "absorbable": false,
+   "structure": "MULTIFILAMENT",
+   "absorptionDays": null
+  },
+  {
+   "name": "Kromik katgüt / Chromic gut",
+   "material": "",
+   "absorbable": true,
+   "structure": "MONOFILAMENT",
+   "absorptionDays": {
+    "min": 90,
+    "max": 90,
+    "approx": true,
+    "text": "≈90"
+   },
+   "footnoteMarks": [
+    "¹"
+   ]
+  },
+  {
+   "name": "Vicryl Plus",
+   "material": "Antibakteriyel poliglaktin 910",
+   "absorbable": true,
+   "structure": "MULTIFILAMENT",
+   "absorptionDays": {
+    "min": 56,
+    "max": 70,
+    "approx": false,
+    "text": "56–70"
+   }
+  },
+  {
+   "name": "Ethilon / Dermalon / Dafilon / Monosof",
+   "material": "Poliamid (naylon)",
+   "absorbable": false,
+   "structure": "MONOFILAMENT",
+   "absorptionDays": null
+  },
+  {
+   "name": "Nurolon / Surgilon",
+   "material": "Örgülü poliamid (naylon)",
+   "absorbable": false,
+   "structure": "MULTIFILAMENT",
+   "absorptionDays": null
+  },
+  {
+   "name": "Hızlı emilen katgüt",
+   "material": "Fast-absorbing gut",
+   "absorbable": true,
+   "structure": "MONOFILAMENT",
+   "absorptionDays": {
+    "min": 21,
+    "max": 42,
+    "approx": false,
+    "text": "21–42"
+   },
+   "footnoteMarks": [
+    "¹"
+   ]
+  },
+  {
+   "name": "Vicryl Rapide",
+   "material": "Hızlı emilen poliglaktin 910",
+   "absorbable": true,
+   "structure": "MULTIFILAMENT",
+   "absorptionDays": {
+    "min": 42,
+    "max": 42,
+    "approx": true,
+    "text": "≈42"
+   }
+  },
+  {
+   "name": "Novafil",
+   "material": "Polibütester",
+   "absorbable": false,
+   "structure": "MONOFILAMENT",
+   "absorptionDays": null
+  },
+  {
+   "name": "Ethibond Excel",
+   "material": "Kaplı örgülü polyester",
+   "absorbable": false,
+   "structure": "MULTIFILAMENT",
+   "absorptionDays": null
+  },
+  {
+   "name": "Monocryl",
+   "material": "Poliglekapron 25",
+   "absorbable": true,
+   "structure": "MONOFILAMENT",
+   "absorptionDays": {
+    "min": 91,
+    "max": 119,
+    "approx": false,
+    "text": "91–119"
+   }
+  },
+  {
+   "name": "Novosyn",
+   "material": "Poliglaktin 910",
+   "absorbable": true,
+   "structure": "MULTIFILAMENT",
+   "absorptionDays": {
+    "min": 56,
+    "max": 70,
+    "approx": false,
+    "text": "56–70"
+   }
+  },
+  {
+   "name": "V-Loc PBT",
+   "material": "Dikenli polibütester",
+   "absorbable": false,
+   "structure": "MONOFILAMENT",
+   "absorptionDays": null
+  },
+  {
+   "name": "Mersilene",
+   "material": "Kaplamasız örgülü polyester",
+   "absorbable": false,
+   "structure": "MULTIFILAMENT",
+   "absorptionDays": null
+  },
+  {
+   "name": "Monocryl Plus",
+   "material": "Antibakteriyel poliglekapron 25",
+   "absorbable": true,
+   "structure": "MONOFILAMENT",
+   "absorptionDays": {
+    "min": 91,
+    "max": 119,
+    "approx": false,
+    "text": "91–119"
+   }
+  },
+  {
+   "name": "Novosyn Quick",
+   "material": "Hızlı emilen poliglaktin 910",
+   "absorbable": true,
+   "structure": "MULTIFILAMENT",
+   "absorptionDays": {
+    "min": 42,
+    "max": 42,
+    "approx": true,
+    "text": "≈42"
+   }
+  },
+  {
+   "name": "Pronova",
+   "material": "Poli(viniliden florür-ko-heksafloropropilen)",
+   "absorbable": false,
+   "structure": "MONOFILAMENT",
+   "absorptionDays": null
+  },
+  {
+   "name": "Ticron / Surgidac",
+   "material": "Örgülü polyester",
+   "absorbable": false,
+   "structure": "MULTIFILAMENT",
+   "absorptionDays": null
+  },
+  {
+   "name": "PDS II",
+   "material": "Polidioksanon (PDO)",
+   "absorbable": true,
+   "structure": "MONOFILAMENT",
+   "absorptionDays": {
+    "min": 182,
+    "max": 238,
+    "approx": false,
+    "text": "182–238"
+   }
+  },
+  {
+   "name": "Polysorb",
+   "material": "Laktomer 9-1",
+   "absorbable": true,
+   "structure": "MULTIFILAMENT",
+   "absorptionDays": {
+    "min": 56,
+    "max": 70,
+    "approx": false,
+    "text": "56–70"
+   }
+  },
+  {
+   "name": "PTFE / ePTFE sütür",
+   "material": "Elasyn / Gore-Tex",
+   "absorbable": false,
+   "structure": "MONOFILAMENT",
+   "absorptionDays": null
+  },
+  {
+   "name": "PremiCron",
+   "material": "Kaplı örgülü polyester",
+   "absorbable": false,
+   "structure": "MULTIFILAMENT",
+   "absorptionDays": null
+  },
+  {
+   "name": "PDS Plus",
+   "material": "Antibakteriyel polidioksanon",
+   "absorbable": true,
+   "structure": "MONOFILAMENT",
+   "absorptionDays": {
+    "min": 182,
+    "max": 238,
+    "approx": false,
+    "text": "182–238"
+   }
+  },
+  {
+   "name": "Velosorb Fast",
+   "material": "Glikolid/laktid kopolimeri",
+   "absorbable": true,
+   "structure": "MULTIFILAMENT",
+   "absorptionDays": {
+    "min": 40,
+    "max": 50,
+    "approx": false,
+    "text": "40–50"
+   }
+  },
+  {
+   "name": "Optilene",
+   "material": "Polipropilen/polietilen karışımı",
+   "absorbable": false,
+   "structure": "MONOFILAMENT",
+   "absorptionDays": null
+  },
+  {
+   "name": "Dagrofil",
+   "material": "Kaplamasız örgülü polyester",
+   "absorbable": false,
+   "structure": "MULTIFILAMENT",
+   "absorptionDays": null
+  },
+  {
+   "name": "MonoPlus",
+   "material": "Polidioksanon",
+   "absorbable": true,
+   "structure": "MONOFILAMENT",
+   "absorptionDays": {
+    "min": 180,
+    "max": 210,
+    "approx": false,
+    "text": "180–210"
+   }
+  },
+  {
+   "name": "Safil",
+   "material": "Poliglikolik asit (PGA)",
+   "absorbable": true,
+   "structure": "MULTIFILAMENT",
+   "absorptionDays": {
+    "min": 60,
+    "max": 90,
+    "approx": false,
+    "text": "60–90"
+   }
+  },
+  {
+   "name": "Paslanmaz çelik tel",
+   "material": "Tek telli Surgical Steel / Steelex",
+   "absorbable": false,
+   "structure": "MONOFILAMENT",
+   "absorptionDays": null
+  },
+  {
+   "name": "FiberWire / TigerWire",
+   "material": "UHMWPE ve polyester kompoziti",
+   "absorbable": false,
+   "structure": "MULTIFILAMENT",
+   "absorptionDays": null
+  },
+  {
+   "name": "Maxon / Maxon CV",
+   "material": "Poliglikonat",
+   "absorbable": true,
+   "structure": "MONOFILAMENT",
+   "absorptionDays": {
+    "min": 180,
+    "max": 180,
+    "approx": true,
+    "text": "≈180"
+   }
+  },
+  {
+   "name": "Safil Quick / Quick+",
+   "material": "Hızlı emilen PGA",
+   "absorbable": true,
+   "structure": "MULTIFILAMENT",
+   "absorptionDays": {
+    "min": 42,
+    "max": 42,
+    "approx": true,
+    "text": "≈42"
+   }
+  },
+  {
+   "name": "Supramid",
+   "material": "Monofilament varyantları",
+   "absorbable": false,
+   "structure": "MONOFILAMENT",
+   "absorptionDays": null,
+   "footnoteMarks": [
+    "³"
+   ]
+  },
+  {
+   "name": "Supramid / Supramid Extra",
+   "material": "Kılıflı multifilament varyantları",
+   "absorbable": false,
+   "structure": "MULTIFILAMENT",
+   "absorptionDays": null,
+   "footnoteMarks": [
+    "³"
+   ]
+  },
+  {
+   "name": "Biosyn",
+   "material": "Glikomer 631",
+   "absorbable": true,
+   "structure": "MONOFILAMENT",
+   "absorptionDays": {
+    "min": 90,
+    "max": 110,
+    "approx": false,
+    "text": "90–110"
+   }
+  },
+  {
+   "name": "Dexon / Dexon II",
+   "material": "Poliglikolik asit (PGA)",
+   "absorbable": true,
+   "structure": "MULTIFILAMENT",
+   "absorptionDays": {
+    "min": 60,
+    "max": 90,
+    "approx": true,
+    "text": "≈60–90*"
+   },
+   "footnoteMarks": [
+    "*"
+   ]
+  },
+  {
+   "name": "Quill Polypropylene",
+   "material": "Dikenli polipropilen",
+   "absorbable": false,
+   "structure": "MONOFILAMENT",
+   "absorptionDays": null
+  },
+  {
+   "name": "Çok telli paslanmaz çelik",
+   "material": "Bükümlü çelik sütür / Steelex varyantları",
+   "absorbable": false,
+   "structure": "MULTIFILAMENT",
+   "absorptionDays": null
+  },
+  {
+   "name": "Trexon",
+   "material": "Glikolid/dioksanon/trimetilen karbonat kopolimeri",
+   "absorbable": true,
+   "structure": "MONOFILAMENT",
+   "absorptionDays": {
+    "min": 90,
+    "max": 110,
+    "approx": false,
+    "text": "90–110"
+   }
+  },
+  {
+   "name": "Caprosyn",
+   "material": "Poligliton 6211",
+   "absorbable": true,
+   "structure": "MONOFILAMENT",
+   "absorptionDays": {
+    "min": 56,
+    "max": 56,
+    "approx": true,
+    "text": "≈56"
+   }
+  },
+  {
+   "name": "Monosyn",
+   "material": "Glikonat",
+   "absorbable": true,
+   "structure": "MONOFILAMENT",
+   "absorptionDays": {
+    "min": 60,
+    "max": 90,
+    "approx": false,
+    "text": "60–90"
+   }
+  },
+  {
+   "name": "Monosyn Quick",
+   "material": "Hızlı emilen glikonat",
+   "absorbable": true,
+   "structure": "MONOFILAMENT",
+   "absorptionDays": {
+    "min": 56,
+    "max": 56,
+    "approx": true,
+    "text": "≈56"
+   }
+  },
+  {
+   "name": "MonoMax",
+   "material": "Poli-4-hidroksibütirat (P4HB)",
+   "absorbable": true,
+   "structure": "MONOFILAMENT",
+   "absorptionDays": {
+    "min": 390,
+    "max": 390,
+    "approx": true,
+    "text": "≈390"
+   }
+  },
+  {
+   "name": "V-Loc 90",
+   "material": "Dikenli glikolid/dioksanon/trimetilen karbonat kopolimeri",
+   "absorbable": true,
+   "structure": "MONOFILAMENT",
+   "absorptionDays": {
+    "min": 90,
+    "max": 110,
+    "approx": false,
+    "text": "90–110"
+   }
+  },
+  {
+   "name": "V-Loc 180",
+   "material": "Dikenli poliglikonat",
+   "absorbable": true,
+   "structure": "MONOFILAMENT",
+   "absorptionDays": {
+    "min": 180,
+    "max": 180,
+    "approx": true,
+    "text": "≈180"
+   }
+  },
+  {
+   "name": "Quill Monoderm",
+   "material": "Dikenli PGA-PCL kopolimeri",
+   "absorbable": true,
+   "structure": "MONOFILAMENT",
+   "absorptionDays": {
+    "min": 90,
+    "max": 120,
+    "approx": false,
+    "text": "90–120"
+   }
+  },
+  {
+   "name": "Quill PDO",
+   "material": "Dikenli polidioksanon",
+   "absorbable": true,
+   "structure": "MONOFILAMENT",
+   "absorptionDays": {
+    "min": 180,
+    "max": 180,
+    "approx": true,
+    "text": "≈180"
+   }
+  }
+ ]
+}

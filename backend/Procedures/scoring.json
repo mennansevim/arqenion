@@ -1,0 +1,19 @@
+{
+  "about": "60 adımlık model (v2.4) puanlaması. Puanı yalnızca motor değiştirir; AI puana dokunmaz. Eski 25 adımlı model kendi dosyasındaki puanları kullanır.",
+  "startingScore": 100,
+  "bounds": { "min": 0, "max": 100 },
+  "success": { "delivery": 2, "confirm": 1, "count": 2 },
+  "branchStepBonus": 1,
+  "branchResolvedBonus": 4,
+  "hintPenalty": 2,
+  "escalationPerConsecutiveError": 3,
+  "penalties": {
+    "STERILE_VIOLATION": 15,
+    "COUNT_MISMATCH": 20,
+    "INSTRUMENT_DROPPED": 10,
+    "CONTAMINATED_TOOL_REUSE": 12,
+    "WRONG_INSTRUMENT": 8,
+    "WRONG_ORDER": 5
+  },
+  "stepOverrides": {}
+}

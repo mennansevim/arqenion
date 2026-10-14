@@ -1,4 +1,4 @@
-namespace Operion.Api.Models;
+namespace Arqenion.Api.Models;
 
 // ----- API request/response DTOs (contract shared with simulator & VR) -----
 
@@ -10,11 +10,60 @@ public sealed class StartSessionRequest
 
 public sealed class StepView
 {
+    // 60 adımlık modelde ana adım numarası (alt akış "47b" → 47); tam düğüm NodeId'dedir.
     public int StepId { get; set; }
+    public int PhaseNo { get; set; }
     public string Title { get; set; } = "";
     public string Phase { get; set; } = "";
     public string ExpectedEvent { get; set; } = "";
     public List<string> AllowedInstruments { get; set; } = new();
+    public string? RequiredSuture { get; set; }
+    public string? Target { get; set; }
+
+    // ----- 60 adımlık model (v2.4) alanları; eski modelde boş kalır -----
+    public string? NodeId { get; set; }
+    public string? Kind { get; set; }                       // delivery | confirm | count
+    public List<string>? RequiredSutures { get; set; }
+    public List<ClampNeed>? Clamps { get; set; }            // damar sayısına bağlı klempler (kalan)
+    public string? CountCategory { get; set; }
+    public int? TableCount { get; set; }                    // masada sayılacak gerçek adet
+    public int? RecordedCount { get; set; }                 // başlangıç sayım kaydı
+    public string? Condition { get; set; }                  // koşullu/alt akış düğümünün koşulu
+    public string? ConditionText { get; set; }
+    public bool IsBranch { get; set; }
+    public string? Instruction { get; set; }
+    public string? ClinicalNote { get; set; }
+    public string? SurgeonRequest { get; set; }             // hekim tercihine bırakılan adımda cerrahın istemi
+}
+
+// Açık bir komplikasyonun anlık durumu: ne oldu, çözüm zincirinde nerede kalındı, şimdi ne bekleniyor.
+public sealed class ActiveComplicationDto
+{
+    public string ComplicationId { get; set; } = "";
+    public string Title { get; set; } = "";
+    public string Narrative { get; set; } = "";
+    public string ResolutionNote { get; set; } = "";
+    public string Severity { get; set; } = "HIGH";
+    public int StepId { get; set; }
+    public bool ScrubResolvable { get; set; } = true;
+    public int ResolutionIndex { get; set; }
+    public int ResolutionTotal { get; set; }
+    public bool Resolved { get; set; }
+    // Çözüm zincirinde şu an beklenen malzeme teslimi (çözüm bittiyse null).
+    public ResolutionStepView? CurrentAction { get; set; }
+    public List<ResolutionStepView> Actions { get; set; } = new();
+}
+
+public sealed class ResolutionStepView
+{
+    public int Order { get; set; }
+    public string Title { get; set; } = "";
+    public string ExpectedEvent { get; set; } = "";
+    public string? Target { get; set; }
+    public List<string> AllowedInstruments { get; set; } = new();
+    public string? RequiredSuture { get; set; }
+    public string? Note { get; set; }
+    public bool Done { get; set; }
 }
 
 public sealed class StartSessionResponse
@@ -25,6 +74,8 @@ public sealed class StartSessionResponse
     public StepView? CurrentStep { get; set; }
     public int Score { get; set; }
     public string Status { get; set; } = "IN_PROGRESS";
+    public ActiveComplicationDto? ActiveComplication { get; set; }
+    public string ProcedureModel { get; set; } = "v1";
 }
 
 public sealed class EventRequest
@@ -61,6 +112,12 @@ public sealed class ValidationResponse
     public AiFeedbackDto? Complication { get; set; }
     // Ardışık/tekrar eden hatalardan üretilen kümülatif komplikasyon değerlendirmesi.
     public CumulativeComplicationDto? CumulativeComplication { get; set; }
+    // Malzeme seçimiyle tetiklenen senaryo komplikasyonu ve çözüm zincirinin anlık durumu.
+    public ActiveComplicationDto? ActiveComplication { get; set; }
+    // 60 adımlık model: düğüm kimlikleri ve karar noktasında girilen/kapanan dal.
+    public string? CurrentNodeId { get; set; }
+    public string? NextNodeId { get; set; }
+    public FlowBranchDto? Branch { get; set; }
 }
 
 public sealed class ComplicationItemDto
@@ -90,6 +147,8 @@ public sealed class ReportResponse
     public int WrongActions { get; set; }
     public int SterileViolations { get; set; }
     public int HintsUsed { get; set; }
+    public int ComplicationsTriggered { get; set; }
+    public int ComplicationsResolved { get; set; }
     public string Summary { get; set; } = "";
 }
 
