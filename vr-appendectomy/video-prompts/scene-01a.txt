@@ -1,0 +1,8 @@
+SCENE 01A — Lift the headset
+DURATION: 4 seconds
+
+PROMPT
+Begin from the uploaded laboratory image. Strict first-person eye-level POV, looking slightly downward. Both complete bare hands hold the outer left and right housings of the same white VR headset in its tabletop dock. The black padded facial interface and two internal lenses face the wearer; the external front visor faces away. Slowly lift the headset from the dock toward eye level in one deliberate motion. Keep both hands fully inside the frame throughout. Fingers touch only the outer housing, never the lenses. Stop while the headset and both hands are still visible, before the headset obscures the view. Preserve the laboratory, headset geometry, natural finger contact and lighting. No gloves, no face or reflection, no room transformation, no blackout, no generated text. Stable first-person camera, 16:9 landscape, target 24 fps.
+
+NEGATIVE PROMPT
+third-person view, technician face or reflection, gloves, cropped hands, extra fingers, touching lenses, room transformation, blackout, generated text, logos, watermark

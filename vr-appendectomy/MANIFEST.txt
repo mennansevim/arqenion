@@ -1,0 +1,14 @@
+VR APPENDECTOMY — IMAGE-TO-VIDEO PACK
+9 native PNG start frames, 9 English motion prompt files.
+Generated with the built-in image generation tool.
+Target edit: 40 seconds, 16:9, 24 fps. Native PNGs are preserved without resampling.
+
+scene-01a-lab.png: 1672 x 941 px; 1,534,677 bytes
+scene-01b-or-entry.png: 1672 x 941 px; 1,930,460 bytes
+scene-02-readiness.png: 1672 x 941 px; 1,982,334 bytes
+scene-03-scalpel.png: 1672 x 941 px; 2,011,807 bytes
+scene-04-scissors.png: 1672 x 941 px; 2,047,653 bytes
+scene-05-wrong-selection.png: 1672 x 941 px; 2,005,134 bytes
+scene-06-babcock.png: 1672 x 941 px; 1,825,654 bytes
+scene-07-suction.png: 1672 x 941 px; 2,090,668 bytes
+scene-08-closing.png: 1672 x 941 px; 1,824,298 bytes

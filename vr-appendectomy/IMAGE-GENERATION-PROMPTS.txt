@@ -1,0 +1,90 @@
+IMAGE GENERATION PROMPTS
+
+Tool: built-in image generation
+
+Use each scene prompt with the corrected Scene 01B master as reference. Final corrections edit each scene's first result.
+
+
+
+01A — Laboratory (new generation)
+
+Generate one photorealistic landscape first-person starting frame in a modern medical simulation laboratory. Two complete bare hands hold the outer side housings of a white VR headset resting in its tabletop dock. Black facial padding and two internal lenses face the wearer. Fingers never touch lenses. White table, restrained cool gray room, no face, reflection, gloves, text or logos. Headset still below eye level, ready to be lifted.
+
+
+
+01B — Operating room master (new generation)
+
+Use case: ads-marketing. Generate ONE photorealistic cinematic START FRAME for image-to-video, 16:9 landscape 1920x1080 if supported. Premium VR OPEN appendectomy training commercial. Strict first-person eye-level POV from adult surgical technician's eyes angled slightly downward, rectilinear wide view, no fisheye. BOTH own complete teal sterile-gloved hands and blue surgical gown forearms visible in lower foreground with margins, no exposed wrists, hands elevated over sterile surface. Sterile blue-draped Mayo instrument stand directly ahead occupying lower middle, fully draped adult patient on right, operative opening hidden and no tissue or blood. One attentive masked surgeon in blue gown and cap at right diagonal in arm's reach, beige surgical gloves; anesthesia staff deep right background by a dim blank monitor. Cool clean operating room, pale gray wall with generous uncluttered upper-left area, overhead surgical lights. Instruments neat, real stainless steel simple geometry, not excessive. Consistent instrument positions: neutral tray on table upper-right, scalpel left, closed Metzenbaum scissors center-left, curved hemostat center, fenestrated Babcock forceps center-right, suction handpiece with tubing far-right. Hands relaxed, palms slightly inward, fingers natural, not holding anything. No text, UI, numbers, labels, branding, watermark, collage, technician face or reflection. Instruments shown as a visual environment concept, not a verified surgical set.
+Scene 01B: immediate arrival inside the virtual operating room, stable ready posture, symmetrical relaxed empty hands in foreground. Wide establishing composition.
+
+
+
+01B — Master correction
+
+Edit this reference into the final Scene 01B starting frame. Preserve the SAME room, camera, complete teal-gloved POV hands, blue cuffs, draped patient at right, surgeon identity, lighting, upper-left blank wall, composition and photo style. Make ONLY these precise corrections to the instruments: replace the tweezer-like instrument second from right on table with ONE actual stainless steel BABCOCK FORCEPS: two round finger ring handles at the near end, two long straight shafts, one pivot, and a broadened rounded triangular fenestrated atraumatic jaw at the far end with a visible window opening. It must clearly be a ring-handled forceps, NOT tweezers, NOT scissors, not a hemostat. Center hemostat has narrow curved closed jaws. Leftmost scalpel has a SHORT curved no.15 blade rather than long pointed blade. Keep the suction tubing loop entirely ON TOP of the blue sterile table, do not let it hang over the front edge. Keep table layout sparse. Move surgeon slightly closer within natural arm's reach of tray, same right diagonal position. No added text or graphics. One landscape image.
+
+
+
+02 — Initial scene image
+
+Use case: ads-marketing. Edit the provided reference to make ONE separate photorealistic 16:9 START FRAME for the specified image-to-video scene. Lock the same room, surgeon identity, blue gowns, technician teal gloves covering cuffs, beige surgeon gloves, fully covered patient on right, gray wall, cool lighting and clinical photography. Strict technician's first person eye-level POV with BOTH complete technician hands clearly inside frame and natural forearms from bottom corners. Preserve upper-left clear space. No wound, tissue, blood, UI, text, numbers or logos. Keep each tool coherent and rigid. This is a single starting pose, no storyboard, no sequence montage. Scene 02, readiness. Tilt the first-person view just slightly downward so the blue sterile Mayo surface is more prominent, still retain same surgeon on right. Both teal gloved hands remain empty and relaxed above tabletop, do not touch table edge. Surgeon now looks toward technician attentively before giving a nod, hands together. Instruments untouched in same table positions. Neutral tray empty. Keep full two hands in frame.
+
+
+
+03 — Initial scene image
+
+Use case: ads-marketing. Edit the provided reference to make ONE separate photorealistic 16:9 START FRAME for the specified image-to-video scene. Lock the same room, surgeon identity, blue gowns, technician teal gloves covering cuffs, beige surgeon gloves, fully covered patient on right, gray wall, cool lighting and clinical photography. Strict technician's first person eye-level POV with BOTH complete technician hands clearly inside frame and natural forearms from bottom corners. Preserve upper-left clear space. No wound, tissue, blood, UI, text, numbers or logos. Keep each tool coherent and rigid. This is a single starting pose, no storyboard, no sequence montage. Scene 03, scalpel neutral-zone placement, START before placement. Right teal-gloved hand now holds ONE no.3 scalpel handle fitted with a SHORT curved no.15 blade by the blunt handle, suspended several centimeters above the near-left part of the empty metal neutral transfer tray. The scalpel handle points toward surgeon at right, small blade toward left away from all fingers. No duplicate scalpel remains at the table's leftmost slot. Left teal hand remains relaxed and fully visible at lower-left. Surgeon waits with BOTH beige gloved hands near own torso well away from tray. Do not show simultaneous retrieval. Show natural grasp, entire small rigid scalpel readable. Keep remaining instruments in same positions.
+
+
+
+04 — Initial scene image
+
+Use case: ads-marketing. Edit the provided reference to make ONE separate photorealistic 16:9 START FRAME for the specified image-to-video scene. Lock the same room, surgeon identity, blue gowns, technician teal gloves covering cuffs, beige surgeon gloves, fully covered patient on right, gray wall, cool lighting and clinical photography. Strict technician's first person eye-level POV with BOTH complete technician hands clearly inside frame and natural forearms from bottom corners. Preserve upper-left clear space. No wound, tissue, blood, UI, text, numbers or logos. Keep each tool coherent and rigid. This is a single starting pose, no storyboard, no sequence montage. Scene 04, Metzenbaum scissors, START before handoff. Right teal gloved hand in lower-center supports ONE CLOSED Metzenbaum scissors by its long shanks close to the pivot; two ring handles are fully unobstructed and point diagonally upper-right toward the surgeon. Scissors have exactly TWO rings, ONE pivot and TWO slender straight closed blades with blunt tips pointing lower-left away from fingers. The right hand supports from beneath, fingers do NOT go through rings and do not touch blades. Surgeon's beige gloved receiving palm extends from right, OPEN and EMPTY, 10 cm away from rings, not yet touching. Left technician teal hand stays visible empty at lower-left. Scissors original table slot now empty, scalpel absent after previous scene. Show full instrument and entire transfer corridor. No duplicated tools or extra arms.
+
+
+
+05 — Initial scene image
+
+Use case: ads-marketing. Edit the provided reference to make ONE separate photorealistic 16:9 START FRAME for the specified image-to-video scene. Lock the same room, surgeon identity, blue gowns, technician teal gloves covering cuffs, beige surgeon gloves, fully covered patient on right, gray wall, cool lighting and clinical photography. Strict technician's first person eye-level POV with BOTH complete technician hands clearly inside frame and natural forearms from bottom corners. Preserve upper-left clear space. No wound, tissue, blood, UI, text, numbers or logos. Keep each tool coherent and rigid. This is a single starting pose, no storyboard, no sequence montage. Scene 05, wrong selection hesitation. RIGHT teal hand reaching toward the narrow curved HEMOSTAT in center of table, thumb and index hover 2 centimeters above its shaft, fingers slightly open, NOT touching or grasping yet. Left teal hand stays fully visible still above lower-left table. No instrument held. Scalpel and scissors absent, their left table slots empty after prior transfers. To the hemostat's right show a clearly distinct ring-handled atraumatic BABCOCK FORCEPS lying flat: exactly two rings at near end, long shanks and broadened rounded triangular FENESTRATED closed jaws with a visible small central opening at far end. The Babcock must NOT be tweezers and NOT an open pointed clamp. Surgeon waits, hands near torso. No warning overlay. Preserve tray and suction.
+
+
+
+06 — Initial scene image
+
+Use case: ads-marketing. Edit the provided reference to make ONE separate photorealistic 16:9 START FRAME for the specified image-to-video scene. Lock the same room, surgeon identity, blue gowns, technician teal gloves covering cuffs, beige surgeon gloves, fully covered patient on right, gray wall, cool lighting and clinical photography. Strict technician's first person eye-level POV with BOTH complete technician hands clearly inside frame and natural forearms from bottom corners. Preserve upper-left clear space. No wound, tissue, blood, UI, text, numbers or logos. Keep each tool coherent and rigid. This is a single starting pose, no storyboard, no sequence montage. Scene 06, Babcock handoff, START before transfer. Right teal hand supports ONE actual stainless steel atraumatic BABCOCK FORCEPS by long shaft near pivot, leaving TWO ring handles completely free, facing diagonally upper-right toward surgeon's OPEN EMPTY beige gloved receiving palm several centimeters away. Jaws at opposite end point lower-left clear of all fingers: characteristically broad rounded TRIANGULAR FENESTRATED atraumatic CLOSED jaws with an unmistakable central window; not needle tips, not scissor blades. Exactly two rings and one joint, natural small real instrument size. Left teal hand fully visible and still lower-left. No duplicate Babcock on table. Scalpel and scissors also absent. Only curved hemostat in center, empty tray and suction on right remain on table. Complete instrument within frame, no hand touches its jaws. Surgeon has not grasped yet.
+
+
+
+07 — Initial scene image
+
+Use case: ads-marketing. Edit the provided reference to make ONE separate photorealistic 16:9 START FRAME for the specified image-to-video scene. Lock the same room, surgeon identity, blue gowns, technician teal gloves covering cuffs, beige surgeon gloves, fully covered patient on right, gray wall, cool lighting and clinical photography. Strict technician's first person eye-level POV with BOTH complete technician hands clearly inside frame and natural forearms from bottom corners. Preserve upper-left clear space. No wound, tissue, blood, UI, text, numbers or logos. Keep each tool coherent and rigid. This is a single starting pose, no storyboard, no sequence montage. Scene 07, team communication and suction presentation, START before handoff. Shift the technician's head view only slightly right, keep BOTH own complete hands visible and same layout. Right teal hand holds the sterile suction handpiece by its textured cylindrical handle, raised above table, slim metal suction tip pointing diagonally LEFT away from fingers, attached transparent tubing forms a loose loop entirely over the blue sterile working surface. Surgeon offers an open empty beige gloved palm nearby on right, not yet touching. Left teal hand stays fully visible lower-left. Anesthesia staff at far right looks attentively toward blank dim monitor. Calm attentive scene. No alarm graphics or physiological values. Remove scalpel, scissors and Babcock from tabletop after prior transfers; keep curved hemostat and empty transfer tray. Do not show any recovery or exposed operation.
+
+
+
+08 — Initial scene image
+
+Use case: ads-marketing. Edit the provided reference to make ONE separate photorealistic 16:9 START FRAME for the specified image-to-video scene. Lock the same room, surgeon identity, blue gowns, technician teal gloves covering cuffs, beige surgeon gloves, fully covered patient on right, gray wall, cool lighting and clinical photography. Strict technician's first person eye-level POV with BOTH complete technician hands clearly inside frame and natural forearms from bottom corners. Preserve upper-left clear space. No wound, tissue, blood, UI, text, numbers or logos. Keep each tool coherent and rigid. This is a single starting pose, no storyboard, no sequence montage. Scene 08, closing performance summary background. Both teal gloved hands are EMPTY and relaxed symmetrically in foreground above blue sterile table. Surgeon calm with hands together, same fully draped patient visible. Keep the large upper-left and upper-middle wall empty for a performance card added later. Slightly softer background contrast and focus; hands crisp, reassuring finish. No hologram, no generated card, no text, no trophy. Table now contains only curved hemostat and empty neutral tray; previously transferred scalpel, scissors, Babcock and suction are absent. Stable camera. Same photo realism.
+
+
+
+04 — Final correction
+
+Change ONLY this: remove the duplicate scissors lying on the table at center-left, replacing it with uninterrupted blue cloth matching surrounding drape. Keep the scissors held in the right teal hand, both hands, surgeon, patient, all other tools and entire image EXACTLY unchanged. One realistic landscape image, no text.
+
+
+
+05 — Final correction
+
+Correct ONLY the right-hand reach and Babcock jaw detail. The right teal hand is reaching for the WRONG instrument: move the hand LEFT so its thumb and index are hovering above the long shaft of the SMALLER NARROW-JAWED instrument at center-left, NOT the larger ring handled instrument on right. Leave fingers OPEN and suspended above metal, not touching anything. The larger instrument to its RIGHT must stay clearly visible, unselected and untouched; give that larger Babcock CLOSED broad rounded triangular fenestrated jaws, a closed rounded window shape, not two pointed open prongs. Keep both full technician hands inside frame, same room, patient, surgeon, tray, lighting and positions of the two instruments. No text or warning graphics.
+
+
+
+06 — Final correction
+
+Correct ONLY the held Babcock's ORIENTATION and GRIP for a handle-first pass. Turn the instrument in image plane so TWO fully visible unobstructed finger rings sit at UPPER-RIGHT near the surgeon's open palm and closed broad fenestrated jaws point LOWER-LEFT toward the empty part of the table. The technician right teal hand supports the middle of the long shafts FROM UNDERNEATH, near pivot, far from ring holes and far from jaws. No fingers through or across the rings. Rings nearest surgeon, jaws away from surgeon. Both ring holes must be fully empty and clearly visible. One rigid instrument exactly two rings, long slim shafts, single pivot and short broad rounded triangular loop-like closed atraumatic jaws. Keep left full teal hand, surgeon, patient, room, other objects identical. No text.
+
+
+
+07 — Final correction
+
+Keep composition and scene. Correct ONLY these details: route ALL visible transparent suction tubing from the right-hand handle into a tidy loose loop ON TOP of table, higher up on table surface, never hanging over front edge or down out of frame. Orient suction metal tip more horizontally LEFT away from receiving palm, leaving handle accessible toward surgeon. The surgeon's other beige hand currently hanging beside thigh must instead be raised calmly near the torso above table level. The sole tool remaining on table should have thin CLOSED narrow curved hemostat jaws, not wide open prongs. Preserve both complete teal technician hands, recognizable same surgeon, draped patient, room, lighting and blank monitor. No new objects or text.

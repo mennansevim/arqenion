@@ -1,0 +1,204 @@
+<title>Arqenion Mimarisi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: tek ekran; üstte tez cümlesi, ortada 3 katmanlı akış şeması, altta "neden böyle" + durum + konuşma sırası */
+:root {
+  --bg: #f5f8f7;
+  --paper: #ffffff;
+  --ink: #12211f;
+  --muted: #566a66;
+  --line: #d3dfdc;
+  --scrub: #0f7a6c;        /* cerrahi örtü yeşili */
+  --scrub-soft: #e1f0ed;
+  --alert: #b8452f;        /* hata / komplikasyon */
+  --alert-soft: #f8e7e2;
+  --ai: #4b5bb0;           /* yapay zekâ */
+  --ai-soft: #e7e9f6;
+  --f-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --f-body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1716; --paper: #142120; --ink: #e4eeec; --muted: #94aaa5; --line: #2a3b39;
+    --scrub: #4cc1ad; --scrub-soft: #173a35; --alert: #ec8a73; --alert-soft: #3a211b;
+    --ai: #9aa6ec; --ai-soft: #22264a; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1716; --paper: #142120; --ink: #e4eeec; --muted: #94aaa5; --line: #2a3b39;
+  --scrub: #4cc1ad; --scrub-soft: #173a35; --alert: #ec8a73; --alert-soft: #3a211b;
+  --ai: #9aa6ec; --ai-soft: #22264a; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 16px; line-height: 1.5; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 32px 20px 40px; display: grid; gap: 28px; }
+
+header { display: grid; gap: 10px; }
+.eyebrow { font-family: var(--f-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--scrub); }
+h1 { font-family: var(--f-display); font-weight: 800; font-size: clamp(28px, 4.2vw, 44px); line-height: 1.08; margin: 0; text-wrap: balance; letter-spacing: -.01em; }
+h1 em { font-style: normal; color: var(--scrub); }
+h1 .ai { color: var(--ai); }
+.lede { margin: 0; max-width: 68ch; color: var(--muted); font-size: 17px; }
+
+h2 { font-family: var(--f-display); font-weight: 700; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 0 0 12px; }
+
+/* Şema */
+.flow { display: grid; grid-template-columns: 1fr auto 1.35fr auto 1fr; align-items: stretch; gap: 0; }
+.tier { background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: 18px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.tier.edge { border: 2px solid var(--scrub); }
+.tier h3 { font-family: var(--f-display); font-weight: 700; font-size: 20px; margin: 0; }
+.tier .where { font-family: var(--f-mono); font-size: 12px; color: var(--muted); }
+.tier ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+.tag { justify-self: start; font-family: var(--f-mono); font-size: 11px; letter-spacing: .04em; padding: 3px 8px; border-radius: 4px; }
+.tag.det { background: var(--scrub-soft); color: var(--scrub); }
+.tag.gen { background: var(--ai-soft); color: var(--ai); }
+.tag.cl { background: var(--bg); color: var(--muted); border: 1px solid var(--line); }
+.engines { display: grid; gap: 6px; }
+.engine { background: var(--scrub-soft); border-radius: 6px; padding: 8px 10px; }
+.engine b { display: block; font-family: var(--f-display); font-size: 15px; }
+.engine span { font-size: 14px; color: var(--muted); }
+.arrow { display: grid; place-items: center; padding: 0 8px; gap: 4px; font-family: var(--f-mono); font-size: 11px; color: var(--muted); text-align: center; }
+.arrow svg { width: 40px; height: 16px; }
+.arrow svg path { stroke: var(--muted); fill: none; stroke-width: 1.6; }
+
+.knowledge { margin-top: 12px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 24px; background: var(--paper); border: 1px dashed var(--line); border-radius: 10px; padding: 14px 18px; }
+.knowledge b { font-family: var(--f-display); }
+.stat { font-family: var(--f-mono); font-size: 14px; font-variant-numeric: tabular-nums; }
+.stat strong { color: var(--scrub); font-size: 18px; }
+
+/* Örnek senaryo */
+.trace { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.beat { padding: 14px; border-radius: 8px; background: var(--paper); border: 1px solid var(--line); display: grid; gap: 4px; align-content: start; }
+.beat .t { font-family: var(--f-mono); font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.beat b { font-family: var(--f-display); font-size: 15px; }
+.beat p { margin: 0; font-size: 14.5px; color: var(--muted); }
+.beat.err { background: var(--alert-soft); border-color: transparent; }
+.beat.err .t { color: var(--alert); }
+.beat.ai { background: var(--ai-soft); border-color: transparent; }
+.beat.ai .t { color: var(--ai); }
+
+/* Alt bölüm */
+.cols { display: grid; grid-template-columns: 1.4fr 1fr; gap: 28px; }
+.why { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 22px; }
+.why div { min-width: 0; }
+.why b { font-family: var(--f-display); display: block; font-size: 16px; margin-bottom: 2px; }
+.why p { margin: 0; font-size: 14.5px; color: var(--muted); }
+.status { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.status li { display: grid; grid-template-columns: 74px 1fr; gap: 10px; font-size: 14.5px; align-items: baseline; }
+.pill { font-family: var(--f-mono); font-size: 11px; text-align: center; padding: 2px 0; border-radius: 4px; }
+.pill.ok { background: var(--scrub-soft); color: var(--scrub); }
+.pill.next { background: var(--bg); color: var(--muted); border: 1px solid var(--line); }
+
+.script { border-top: 1px solid var(--line); padding-top: 18px; }
+.script ol { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.script li { font-size: 14px; color: var(--muted); }
+.script li .t { display: block; font-family: var(--f-mono); font-size: 12px; color: var(--ink); font-variant-numeric: tabular-nums; margin-bottom: 2px; }
+
+@media (max-width: 860px) {
+  .flow { grid-template-columns: 1fr; }
+  .arrow { padding: 6px 0; }
+  .arrow svg { transform: rotate(90deg); }
+  .trace, .script ol { grid-template-columns: 1fr 1fr; }
+  .cols { grid-template-columns: 1fr; }
+}
+@media (max-width: 520px) {
+  .trace, .script ol, .why { grid-template-columns: 1fr; }
+}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Arqenion · VR cerrahi eğitim · Açık apendektomi</div>
+    <h1>Kararı <em>kural motoru</em> verir,<br><span class="ai">yapay zekâ</span> açıklar.</h1>
+    <p class="lede">Ameliyathane teknikeri VR'da alet uzatır. Sistem bu hareketin doğru olup olmadığına milisaniyeler içinde, uzman hekim onaylı kurallarla karar verir. Yapay zekâ yalnızca hatanın klinik sonucunu ve doğru müdahaleyi anlatır.</p>
+  </header>
+
+  <section>
+    <h2>Üç katman</h2>
+    <div class="flow">
+      <div class="tier">
+        <span class="tag cl">İstemci</span>
+        <h3>VR Gözlük</h3>
+        <div class="where">OpenXR · sanal ameliyathane</div>
+        <ul>
+          <li>El takibi, alet seçimi ve teslimi</li>
+          <li>Her hareketi olay (JSON) olarak gönderir</li>
+          <li>Kalıcı veri tutmaz</li>
+        </ul>
+      </div>
+      <div class="arrow"><svg viewBox="0 0 40 16" aria-hidden="true"><path d="M2 8h34M30 3l6 5-6 5"/></svg>olay</div>
+      <div class="tier edge">
+        <span class="tag det">Deterministik · güvenlik-kritik</span>
+        <h3>Edge Cihaz</h3>
+        <div class="where">Raspberry Pi 5 · Docker · ameliyathanede</div>
+        <div class="engines">
+          <div class="engine"><b>Prosedür Motoru</b><span>Adım doğru mu, sıradaki adım ve beklenen alet ne?</span></div>
+          <div class="engine"><b>Puanlama Motoru</b><span>Doğruluk, sıra, sterilite, süre</span></div>
+          <div class="engine"><b>Komplikasyon Motoru</b><span>Yanlış seçim kanama, yırtılma gibi bir tablo açar; çözüm zinciri tamamlanmadan ilerlenemez</span></div>
+        </div>
+        <div class="where">Redis: aktif seans, olay tamponu, bekleyen senkron</div>
+      </div>
+      <div class="arrow"><svg viewBox="0 0 40 16" aria-hidden="true"><path d="M2 8h34M30 3l6 5-6 5"/></svg>senkron</div>
+      <div class="tier">
+        <span class="tag gen">Açıklama · analiz</span>
+        <h3>Bulut</h3>
+        <div class="where">Asıl kayıt burada</div>
+        <ul>
+          <li><b>PostgreSQL:</b> kullanıcı, kurum, lisans, seans geçmişi</li>
+          <li><b>Yapay zekâ (LLM + RAG):</b> pedagojik geri bildirim, kişiye göre eğitim</li>
+          <li><b>Yönetim paneli:</b> kurum ve eğitmen raporları</li>
+        </ul>
+      </div>
+    </div>
+    <div class="knowledge">
+      <b>Klinik bilgi modeli</b>
+      <span class="stat"><strong>60</strong> adım</span>
+      <span class="stat"><strong>282</strong> hata senaryosu</span>
+      <span class="stat"><strong>474</strong> RAG bilgi parçası</span>
+      <span style="color:var(--muted);font-size:14.5px">Uzman hekimle 5 turda onaylandı. Motor kuralları ve yapay zekânın kaynakları aynı modelden üretilir.</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>Bir hata anında ne olur?</h2>
+    <div class="trace">
+      <div class="beat"><span class="t">0 ms · VR</span><b>Tekniker Mayo makası uzatır</b><p>Adım: kas katmanının açılması</p></div>
+      <div class="beat err"><span class="t">~ms · Edge</span><b>"Yanlış alet" kararı</b><p>Puan düşer, ekranda uyarı çıkar</p></div>
+      <div class="beat err"><span class="t">~ms · Edge</span><b>Komplikasyon açılır</b><p>Kas yırtılması ve kanama: yıkama, aspirasyon, bipolar koter sırası beklenir</p></div>
+      <div class="beat ai"><span class="t">1–2 sn · Bulut</span><b>Yapay zekâ açıklar</b><p>Neden yanlıştı, hastaya etkisi ne, doğrusu ne. Kaynak gösterilerek.</p></div>
+    </div>
+  </section>
+
+  <section class="cols">
+    <div>
+      <h2>Neden bu tasarım?</h2>
+      <div class="why">
+        <div><b>Güvenilir</b><p>Doğru/yanlış kararını yapay zekâ vermez. Model yanılsa veya erişilemese de eğitim doğru puanlanır.</p></div>
+        <div><b>İnternetsiz çalışır</b><p>Karar ameliyathanedeki edge cihazda. Bağlantı kopsa seans sürer, sonra buluta eşitlenir.</p></div>
+        <div><b>Yeni ameliyata genişler</b><p>Prosedür bir veri dosyasıdır. Yeni ameliyat için kod değil, onaylı model eklenir.</p></div>
+        <div><b>Yerli modele geçişe hazır</b><p>Yapay zekâ tek bir arayüzün arkasında. Faz 2'de yerel açık kaynak modele (QLoRA) geçiş tek parça değişikliği.</p></div>
+      </div>
+    </div>
+    <div>
+      <h2>Bugün neredeyiz?</h2>
+      <ul class="status">
+        <li><span class="pill ok">çalışıyor</span><span>.NET 8 backend: doğrulama, puanlama, 5 komplikasyon, canlı rapor</span></li>
+        <li><span class="pill ok">çalışıyor</span><span>Web simülatörü ile uçtan uca seans</span></li>
+        <li><span class="pill ok">hazır</span><span>60 adımlı onaylı klinik model ve RAG parçaları</span></li>
+        <li><span class="pill next">sıradaki</span><span>Motorun 60 adıma geçişi, RAG indeksi, VR entegrasyonu</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="script">
+    <h2>2 dakikalık anlatım sırası</h2>
+    <ol>
+      <li><span class="t">0:00–0:20</span>Tek cümle: kararı motor verir, yapay zekâ açıklar.</li>
+      <li><span class="t">0:20–1:00</span>Üç katmanı soldan sağa göster. Vurgu: edge cihaz.</li>
+      <li><span class="t">1:00–1:30</span>Mayo makası örneğini adım adım anlat.</li>
+      <li><span class="t">1:30–2:00</span>Dört gerekçe ve bugünkü durum.</li>
+    </ol>
+  </section>
+</div>

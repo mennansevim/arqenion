@@ -1,4 +1,4 @@
-# Operion — VR Cerrahi Eğitim Simülasyonu (MVP)
+# Arqenion — VR Cerrahi Eğitim Simülasyonu (MVP)
 
 Açık apendektomi prosedüründe **ameliyathane teknikeri (scrub)** eğitimi için geliştirilen adaptif VR eğitim
 sisteminin backend + simülatör MVP'si. Sistem, kullanıcının aksiyonlarını **deterministik** olarak doğrular,
@@ -31,15 +31,16 @@ backend/
   Services/AiFeedbackService.cs        # klinik tablo + opsiyonel OpenAI
   Services/ProcedureStore.cs           # JSON konfigürasyon yükleyici
   Hubs/SimulationHub.cs                # SignalR (canlı geri bildirim)
-  Data/OperionDbContext.cs             # EF Core (5 tablo)
+  Data/ArqenionDbContext.cs             # EF Core (5 tablo)
   Models/                              # config, entity, DTO
   Procedures/
-    open-appendectomy-v1.json          # 18 adımlık prosedür (60 adımdan seçili)
+    open-appendectomy-v1.json          # 22 ana aşama / 25 adım + 5 komplikasyon + malzeme kataloğu
     scenarios.json                     # standart + yapışıklıklı vaka
     clinical-knowledge.json            # hata→komplikasyon→müdahale tablosu (RAG-lite)
 simulator/
   index.html, app.js, styles.css       # Unity olmadan tüm döngüyü test eden web arayüzü
 docker-compose.yml                     # PostgreSQL
+procedure-model/                       # 60 adımlı akış modeli v2.4 + RAG parçaları + akış motoru (bkz. procedure-model/README.md, ROADMAP.md)
 ```
 
 ## Çalıştırma
@@ -81,11 +82,38 @@ Türkçe olarak yeniden ifade eder. Anahtar boşsa doğrudan tablo içeriği kul
 
 | Uç | Açıklama |
 |---|---|
+| `GET /api/procedure` | Adım listesi + malzeme/sütür kataloğu + komplikasyon tanımları (istemci kopya tanım tutmaz) |
 | `POST /api/sessions` | Seans başlatır, ilk adımı döner |
 | `POST /api/sessions/{id}/events` | Event doğrular, anlık sonuç döner; hata varsa AI feedback SignalR ile gelir |
 | `POST /api/sessions/{id}/complete` | Seansı bitirir, rapor döner |
 | `GET /api/sessions/{id}` | Seans durumunu döner |
 | Hub `/hubs/simulation` | `JoinSession`, dinle: `AiFeedback`, `ScoreUpdate` |
+
+## Komplikasyon kurgusu
+
+Kaynak dokümanda kırmızı ile işaretlenen olaylar **komplikasyon**, yeşil ile işaretlenenler **tekniker çözümü**
+olarak modellenmiştir. Komplikasyon, belirli bir adımda belirli bir **yanlış malzeme seçimiyle** tetiklenir ve
+teknikerin **sırayla** teslim etmesi gereken bir çözüm zinciri açar. Zincir bitmeden asıl adıma dönülemez.
+
+| # | Aşama (adım) | Tetikleyici seçim | Komplikasyon | Çözüm zinciri |
+|---|---|---|---|---|
+| K1 | 1. Cilt ve Karın Duvarına Giriş (adım 1) | No:11 / No:20 / kirli uç | Ciltte penetran kanama | Monopolar koter kalemi ile hemostaz (1 basamak) |
+| K2 | 1. Cilt ve Karın Duvarına Giriş (adım 6) | Mayo makası | Kas yırtılması ve kanama | İzotonik yıkama → aspirasyon → bipolar koter (3) |
+| K3 | 3. Çekuma Ulaşılması (adım 15) | Allis dişli / Ochsner-Kocher / Pean | Çekum yırtılması, batına sızma | Atravmat klemp → Savlon → aspirasyon → sıcak izotonik → aspirasyon → 3/0 Vicryl onarım → yıkama → aspirasyon → örtü+masa değişimi (9) |
+| K4 | 10. Appendiksin Kesilmesi (adım 31) | Kullanılmış No:15 uç | Enfeksiyon riski | **Tekniker müdahalesi yok** — anestezi proflaktik antibiyotik uygular; adım yeni uçla tekrarlanır |
+| K5 | 17. Peritonun Kapatılması (adım 49) | 4/0 Vicryl (ince sütür) | Periton yırtığı | Portegü + 0 Vicryl ile onarım (1) |
+
+Zincirde yanlış malzeme verilirse `COMPLICATION_MISMANAGED` sapması üretilir ve beklenen malzeme gösterilir.
+
+## Malzeme kataloğu
+
+`instrumentCatalog`, **Karaoğlu Genel Cerrahi Apendektomi Seti**'nin 30 kalemiyle birebir eşlenmiştir
+(`setCode` = ürün kodu, `quantity` = set adedi, `inSet: true`). Sette bulunmayan sarf ve cihaz malzemeleri
+(bistüri uçları, makaslar, koter, aspiratör, enjektör, spanç, solüsyonlar) `inSet: false` ile işaretlenir.
+
+Cihazlar iki parça olarak modellenmiştir: **cihaz gövdesi steril değildir** (`Cihaz` kategorisi,
+`sterile: false`), sahaya yalnızca **steril uç** verilir (`Cihaz Ucu`) — monopolar/bipolar koter kalemi ve
+Yankauer aspiratör ucu. Steril olmayan bir malzeme cerraha verilirse `STERILE_VIOLATION` üretilir.
 
 ## Yol haritası
 
