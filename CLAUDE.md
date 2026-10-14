@@ -11,7 +11,7 @@ Açık apendektomide ameliyathane teknikeri (scrub) eğitimi için VR simülasyo
 | Klasör | Ne | Durum |
 |---|---|---|
 | `backend/` | .NET 8 API, motor, puanlama, SignalR (`ScoreUpdate`, `AiFeedback`) | 60 adımlık modelle çalışıyor (`Procedure:Model` = "v2.4"); eski 25 adımlı model ayarla seçilebilir |
-| `backend.Tests/` | xUnit: golden, rastgele eşdeğerlik, fuzz/soak, onaylı senaryo kararları, süre | 978 test geçiyor |
+| `backend.Tests/` | xUnit: golden, rastgele eşdeğerlik, fuzz/soak, onaylı senaryo kararları, süre | 1025 test geçiyor (VR kayıtları, kimlik, migration, ameliyat öncesi dahil) |
 | `simulator/` | Unity yerine geçen web simülatörü | Çalışıyor |
 | `procedure-model/` | 60 adımlık akış modeli v2.4 ve onu üreten araçlar | Bitti, açık soru yok |
 | `ai-gateway/` | Python + LangGraph AI servisi: Bul → Yaz → Kontrol → Gönder, kontrolden geçmezse hazır klinik metin | 1–6. adımlar bitti, eski modelden çeviri var, 69 test geçiyor |
@@ -54,7 +54,35 @@ Açık apendektomide ameliyathane teknikeri (scrub) eğitimi için VR simülasyo
 - **Test:** `dotnet test backend.Tests`. Uzun soak: `ARQ_SOAK=5000 dotnet test backend.Tests --filter Soak`.
 - **Yük testi:** `node scripts/load-test.mjs --url http://localhost:5080 --sessions 300 --concurrency 50`. 20 kursiyerde olay p95 ≈ 20 ms. Karar süresi p99 < 0,2 ms. Bellek içi veritabanı büyüdükçe (on binlerce olay) yavaşlar; Postgres ile ayrıca ölçülmeli.
 - **Adım 4 (Q-B2) düzeltildi (2026-10-14):** kural Roux'u da kapsıyor; kilolu hastada yalnız uzun Farabeuf/Roux, zayıf/normal hastada yalnız 15 cm Farabeuf ve 14/15 cm Roux. `validate.py` bunu denetliyor.
+- **Hataya göre dal:** `Procedures/adaptive-rules.json`. Hata, eşleştiği onaylı senaryonun "olası komplikasyonlar" listesi kuralla örtüşürse koşulu doğru yapar; dal koşulun karar adımında açılır (ör. 1. adımda 11 numara bistüri → S01-E1 "kanama" → 40'ta kanama dalı). Kurallar: görüş (4–11 → 11/12), kanama (1–39 → 40/41), bağ (26–28 → 29/28), yıkama sonrası kanama (41–42 → 43/43a); steril ihlal/alet düşmesi enfeksiyon riskini rapora yazar. Her koşul en fazla bir kez; değerlendirilmiş koşul geriye dönük değişmez; senaryonun sabitlediği koşula ve `adaptiveMode: "off"` (sınav) seansına dokunmaz.
+- **VR sözleşmesi:** `docs/vr-events.md`. Sözleşmeye uymayan olay (bilinmeyen tür/hedef, katalog dışı kod, sayımsız sayım) 400 döner, kayda ve puana girmez. `POST /api/sessions` isteğe bağlı `seed` alır (aynı seed = aynı cerrah istemleri; kayıt tekrarı için).
+- **VR kayıtları:** `scripts/vr-replay.mjs record|replay`; planlar `scripts/vr-plans/`, kayıtlar `backend.Tests/VrSessions/` (gönderilen her JSON olay + beklenen cevap). `VrReplayTests` bunları süreç içi HTTP ile (WebApplicationFactory) tekrar oynatır. Davranış bilerek değişirse kaydı yeniden üretin.
+- **Puan (kesinti modeli, 2026-10-14):** 100'den başlar; doğru adım puan eklemez, her hata `scoring.json` ağırlığında düşer (ardışık hatada artar). Son puan yapılan hataları gösterir (önceden doğru adımlar 100'e geri topluyordu). Örnek kayıtlar: 1 yanlış bistüri → 92, 1 yanlış sayım → 80.
 - **Akış şeması:** simülatörde "⑂ Akış" düğmesi; `GET /api/sessions/{id}/flow` (yürünen yol, koşul planı ve değerlendirme sayıları, cerrah istemleri) ve `/api/procedure` içindeki `graph`. Beş senaryonun simülatörde yürünen yolu Python motoruyla birebir aynı (2026-10-14).
+
+## Kimlik doğrulama
+
+- **Giriş:** `POST /api/auth/login` (kullanıcı adı + şifre) → JWT (8 saat). Her uç varsayılan olarak giriş ister; açık olanlar: `/api/auth/login`, `/api/health`, `/api/procedure`, `/sim/`. SignalR jetonu `?access_token=` ile alır.
+- **Roller:** `trainee` yalnız kendi seanslarını görür (başkasınınki 404); `instructor` kullanıcı açar, bütün seansları ve hata bildirimlerini görür. Kendi kendine kayıt yok.
+- **Şifre:** PBKDF2-SHA256 (210.000 tur, tuzlu), en az 10 karakter. Pasif yapılan kullanıcının jetonu hemen geçersiz. Girişte IP başına dakikada 10 deneme.
+- **Gizli değerler:** `backend/.env` (git dışı) ya da ortam değişkeni: `Auth__SigningKey` (≥32 bayt; üretimde yoksa backend açılmaz), `Auth__BootstrapAdmin__Username/__Password` (eğitmen yoksa ilk hesabı açar). Yerelde ilk eğitmen `egitmen`, şifresi `backend/.env` içinde.
+- **Kullanıcı yönetimi:** `node scripts/users.mjs list | add <ad> [--name …] [--role …] | reset <ad> | disable <ad>`. Betikler (`users`, `load-test`, `vr-replay`) girişi `--user/--pass`, `ARQ_USER/ARQ_PASS` ya da `backend/.env`'den alır.
+- **Kayıt:** kimlik uçlarının gövdesi loglanmaz (şifre/jeton sızmaz). Swagger yalnız Development'ta. CORS yalnız `Auth:AllowedOrigins` (geliştirmede localhost:8000).
+
+## Veritabanı
+
+- **Şema:** EF Core migrations (`backend/Data/Migrations`). Açılışta `DatabaseMigrator`: Postgres'te `Migrate()`, bellek içinde `EnsureCreated`. Migrations öncesi (EnsureCreated) kurulmuş veritabanı eksik kolonlarla temel sürüme getirilir ve `Baseline` uygulandı sayılır; veri korunur (2026-10-14'te geçici Postgres'te eski şema + veriyle denendi).
+- **Yeni alan eklerken:** `dotnet ef migrations add <Ad> --project backend --output-dir Data/Migrations -- --Database:Provider=Postgres`. Unutulursa `MigrationTests.Model_matches_the_latest_migration` kırılır.
+- **Postgres testleri:** `ARQ_PG_TEST="Host=…;Port=…;Database=…;Username=…;Password=…" dotnet test backend.Tests --filter MigrationTests` (veritabanını silip kurar; gerçek veritabanına vermeyin). Geçici sunucu: `podman run -d --rm --name arqenion-pg-test -e POSTGRES_DB=arqenion_test -e POSTGRES_USER=arqtest -e POSTGRES_PASSWORD=… -p 55433:5432 docker.io/library/postgres:16-alpine`.
+- **Postgres yük ölçümü (2026-10-14):** 20 kursiyer: olay p50 21 ms, p95 37 ms. 500 seans × 100 eşzamanlı × %30 hata: 1.088 istek/sn, p95 163 ms, hata 0. Bellek içi veritabanı büyüdükçe yavaşlar; ölçüm için Postgres kullanın.
+- **Kayıt:** EF SQL logları uyarı düzeyinde; HTTP gövdeleri yalnız Development'ta loglanır. Üretim ölçümü için `dotnet run --no-launch-profile` (launchSettings ortamı Development'a çeker).
+
+## İşletme
+
+- **Sağlık:** `/api/health` (süreç ayakta) ve `/api/health/ready` (veritabanı + migration, model, AI servisi). AI yoksa `degraded` (karar ve klinik kart çalışır), veritabanı yoksa 503.
+- **AI sınırı (`AiLimiter`, `appsettings` → `AiGateway`):** aynı seansta aynı hata önceki AI açıklamasını kullanır; seans başına `MaxPerSession` (25), sistemde dakikada `MaxPerMinute` (60), aynı anda `MaxConcurrent` (4). Sınır aşılınca çağrı yapılmaz, klinik kart gider.
+- **Eğitmen ekranı:** `/sim/egitmen.html` (simülatörde eğitmen girişinde "Eğitmen" düğmesi): kullanıcı açma (şifre tarayıcıda üretilir, bir kez gösterilir), şifre sıfırlama, pasif yapma; bütün seanslar (puan, hata, dal, yol, hatanın sonucu); açık hata bildirimleri ve kapatma.
+- **Ameliyat öncesi (PRE01–PRE09):** senaryo `includePreop: true` (`case-full-01`). Her bölüm kontrol listesi adımıdır (`checklist_confirmed` + `checkedItems`); zorunlu madde atlanırsa `CHECKLIST_INCOMPLETE` (−10), klinik kart modelin "atlanırsa riskler" metninden. Liste kaynağı: alt maddeler → yapılandırılmış hata listesi → görevler. Modelde PDF'ten gelen bozukluklar var (PRE03 görevlerinde bölünmüş cümle, PRE06 risklerinde "ise" kırpıntısı, PRE02'de büyük harfli başlık); motor bunları birleştirip atlıyor, kaynağın `model_data.py`'de temizlenmesi iyi olur. Ameliyat öncesi hatalarda AI çağrılmaz.
 
 ## ai-gateway (AI servisi)
 

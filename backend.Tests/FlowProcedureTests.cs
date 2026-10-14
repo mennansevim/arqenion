@@ -211,6 +211,17 @@ public sealed class FlowProcedureTests
     }
 
     [Fact]
+    public void Errors_stay_in_the_final_score()
+    {
+        // Kesinti modeli: doğru adımlar puanı geri toplamaz; son puan yapılan hataları gösterir.
+        var (session, service) = TestModel.StartSession("case-basic-01");
+        Assert.Equal(-8, service.Validate(session, TestModel.Deliver("ESU_MONOPOLAR_PEN")).ScoreChange);
+        TestModel.PlayCorrectly(session, service);
+        Assert.Equal(92, session.Score);
+        Assert.Equal(1, session.WrongActions);
+    }
+
+    [Fact]
     public void Hint_costs_points_and_names_what_is_expected()
     {
         var (session, service) = TestModel.StartSession("case-basic-01");
@@ -230,7 +241,7 @@ public sealed class FlowProcedureTests
         {
             var v = service.View(n.Id, state)!;
             Assert.False(string.IsNullOrWhiteSpace(v.Instruction), n.Id);
-            Assert.Contains(v.Kind, new[] { "delivery", "confirm", "count" });
+            Assert.Contains(v.Kind, new[] { "delivery", "confirm", "count", "checklist" });
         }
         Assert.Equal(60, TestModel.Model.MainStepCount);
     }

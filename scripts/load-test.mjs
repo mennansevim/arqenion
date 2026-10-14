@@ -1,6 +1,7 @@
 // Backend yük testi (60 adımlık model): eşzamanlı seanslar, rastgele hatalar, her cevapta tutarlılık denetimi.
 //
 //   node scripts/load-test.mjs [--url http://localhost:5080] [--sessions 300] [--concurrency 50] [--noise 0.15] [--seed 1]
+//                              [--user … --pass …]   (ya da ARQ_USER/ARQ_PASS; yerelde backend/.env'deki ilk eğitmen)
 //
 // Her seans bir senaryoyu baştan sona oynar: adımın StepView'ından doğru olayı üretir, araya rastgele yanlış alet,
 // yanlış olay türü, yanlış sayım, ipucu ve steril ihlal karıştırır. Denetlenen değişmezler:
@@ -9,12 +10,14 @@
 //   - seans tamamlanır ve rapor gelir; gelişen komplikasyon = yönetilen komplikasyon
 // Çıktı: gecikme p50/p95/p99/maks, saniyedeki istek, hata ve ihlal sayıları.
 
+import { login } from "./auth.mjs";
+
 const args = Object.fromEntries(process.argv.slice(2).reduce((a, x, i, all) => (x.startsWith("--") ? [...a, [x.slice(2), all[i + 1]]] : a), []));
 const URL_ = (args.url ?? "http://localhost:5080").replace(/\/$/, "");
 const SESSIONS = Number(args.sessions ?? 300);
 const CONCURRENCY = Number(args.concurrency ?? 50);
 const NOISE = Number(args.noise ?? 0.15);
-const SCENARIOS = ["case-basic-01", "case-adhesion-01", "case-bleeding-01", "case-count-01", "case-obese-01"];
+const SCENARIOS = ["case-basic-01", "case-adhesion-01", "case-bleeding-01", "case-count-01", "case-obese-01", "case-full-01"];
 
 let seed = Number(args.seed ?? 1);
 const rand = () => ((seed = (seed * 1103515245 + 12345) % 2147483648) / 2147483648);
@@ -27,7 +30,7 @@ let requests = 0, httpErrors = 0;
 async function call(kind, path, body) {
   const t0 = performance.now();
   const res = await fetch(`${URL_}${path}`, {
-    method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body ?? {}),
+    method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${TOKEN}` }, body: JSON.stringify(body ?? {}),
   });
   const ms = performance.now() - t0;
   requests++;
@@ -41,6 +44,7 @@ function correctEvent(step) {
   switch (step.expectedEvent) {
     case "step_confirmed": return { eventType: "step_confirmed" };
     case "count_confirmed": return { eventType: "count_confirmed", counts: { [step.countCategory]: step.tableCount } };
+    case "checklist_confirmed": return { eventType: "checklist_confirmed", checkedItems: (step.checklist ?? []).map((i) => i.id) };
   }
   const instrument = step.allowedInstruments?.[0] ?? step.requiredSuture;
   const ev = { eventType: "instrument_delivered", instrumentCode: instrument, target: "SURGEON" };
@@ -51,12 +55,11 @@ function correctEvent(step) {
 function noiseEvent(step, catalog) {
   const r = rand();
   if (r < 0.45) return { eventType: "instrument_delivered", instrumentCode: pick(catalog), target: "SURGEON" };
-  if (r < 0.60) return { eventType: pick(["step_confirmed", "count_confirmed", "instrument_placed"]), counts: { COMPRESS: Math.floor(rand() * 20) } };
+  if (r < 0.60) return { eventType: pick(["step_confirmed", "count_confirmed"]), counts: { COMPRESS: Math.floor(rand() * 20) } };
   if (r < 0.70) return { eventType: "hint_requested" };
   if (r < 0.80) return { eventType: "sterile_area_violated" };
   if (r < 0.88) return { eventType: "instrument_dropped", instrumentCode: pick(catalog) };
-  if (r < 0.94) return { ...correctEvent(step), target: "DIRTY_AREA" };
-  return { eventType: "bogus_event" };
+  return { ...correctEvent(step), target: "DIRTY_AREA" };
 }
 
 async function playSession(i, catalog) {
@@ -91,8 +94,10 @@ async function playSession(i, catalog) {
 const pct = (xs, p) => { if (!xs.length) return 0; const s = [...xs].sort((a, b) => a - b); return s[Math.min(s.length - 1, Math.floor(p * s.length))]; };
 const fmt = (xs) => `n=${xs.length} p50=${pct(xs, .5).toFixed(1)} p95=${pct(xs, .95).toFixed(1)} p99=${pct(xs, .99).toFixed(1)} maks=${Math.max(0, ...xs).toFixed(1)} ms`;
 
+const TOKEN = await login(URL_, process.argv.slice(2));
 const proc = await (await fetch(`${URL_}/api/procedure`)).json();
-const catalog = [...proc.instrumentCatalog.map((x) => x.code), ...proc.sutureCatalog.map((x) => x.code), "UNKNOWN_CODE"];
+// Yalnız katalogdaki kodlar: katalog dışı kod sözleşme hatasıdır (400), kursiyer hatası değil (docs/vr-events.md).
+const catalog = [...proc.instrumentCatalog.map((x) => x.code), ...proc.sutureCatalog.map((x) => x.code)];
 console.log(`hedef ${URL_} · model ${proc.procedureModel} · ${SESSIONS} seans · eşzamanlı ${CONCURRENCY} · gürültü %${NOISE * 100}`);
 
 const t0 = performance.now();

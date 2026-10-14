@@ -9,6 +9,19 @@ public sealed class User
     [Key] public string Id { get; set; } = Guid.NewGuid().ToString();
     public string Name { get; set; } = "";
     public string? Email { get; set; }
+    // Giriş: kullanıcı adı + PBKDF2 şifre özeti. Eski kayıtlarda (kimlik doğrulama öncesi) boştur; bu hesaplar giriş yapamaz.
+    public string? Username { get; set; }
+    public string? PasswordHash { get; set; }
+    public string Role { get; set; } = Roles.Trainee;
+    public bool IsActive { get; set; } = true;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+}
+
+public static class Roles
+{
+    public const string Trainee = "trainee";        // kendi seanslarını açar ve oynar
+    public const string Instructor = "instructor";  // kullanıcı açar, bütün seansları ve hata bildirimlerini görür
+    public static readonly string[] All = { Trainee, Instructor };
 }
 
 public sealed class SessionRecord

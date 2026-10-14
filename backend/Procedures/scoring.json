@@ -1,10 +1,17 @@
 {
-  "about": "60 adımlık model (v2.4) puanlaması. Puanı yalnızca motor değiştirir; AI puana dokunmaz. Eski 25 adımlı model kendi dosyasındaki puanları kullanır.",
+  "about": "60 adımlık model (v2.4) puanlaması: kesinti modeli. Kursiyer 100 ile başlar; doğru adım beklenen davranıştır ve puan eklemez. Her hata kendi ağırlığında düşer, ardışık hatalarda ceza artar; böylece son puan yapılan hataların ağırlıklı toplamını gösterir (önceki modelde doğru adımlar puanı 100'e geri topluyordu). Puanı yalnızca motor değiştirir; AI puana dokunmaz. Eski 25 adımlı model kendi dosyasındaki puanları kullanır.",
   "startingScore": 100,
-  "bounds": { "min": 0, "max": 100 },
-  "success": { "delivery": 2, "confirm": 1, "count": 2 },
-  "branchStepBonus": 1,
-  "branchResolvedBonus": 4,
+  "bounds": {
+    "min": 0,
+    "max": 100
+  },
+  "success": {
+    "delivery": 0,
+    "confirm": 0,
+    "count": 0
+  },
+  "branchStepBonus": 0,
+  "branchResolvedBonus": 0,
   "hintPenalty": 2,
   "escalationPerConsecutiveError": 3,
   "penalties": {
@@ -13,7 +20,8 @@
     "INSTRUMENT_DROPPED": 10,
     "CONTAMINATED_TOOL_REUSE": 12,
     "WRONG_INSTRUMENT": 8,
-    "WRONG_ORDER": 5
+    "WRONG_ORDER": 5,
+    "CHECKLIST_INCOMPLETE": 10
   },
   "stepOverrides": {}
 }

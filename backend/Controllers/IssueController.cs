@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Arqenion.Api.Models;
 using Arqenion.Api.Services;
@@ -50,7 +51,8 @@ public sealed class IssueController : ControllerBase
             Body = req.Body?.Trim() ?? "",
             Severity = Normalize(req.Severity),
             Area = req.Area,
-            ReportedBy = string.IsNullOrWhiteSpace(req.ReportedBy) ? "anonim" : req.ReportedBy.Trim(),
+            // Bildiren, girişi yapan kullanıcıdır.
+            ReportedBy = User.Identity?.Name ?? User.UserId() ?? "bilinmiyor",
             Context = req.Context ?? new()
         });
 
@@ -61,6 +63,7 @@ public sealed class IssueController : ControllerBase
     }
 
     // status=open | resolved | all (varsayılan: all)
+    [Authorize(Roles = Roles.Instructor)]
     [HttpGet]
     public ActionResult List([FromQuery] string status = "all")
     {
@@ -82,10 +85,12 @@ public sealed class IssueController : ControllerBase
     }
 
     // Çözülen kayıt işaretlenir; böylece aynı hata tekrar ele alınmaz.
+    [Authorize(Roles = Roles.Instructor)]
     [HttpPost("{id}/resolve")]
     public ActionResult<IssueRecord> Resolve(string id, [FromBody] ResolveIssueRequest? req)
     {
-        var issue = _store.Resolve(id, req?.Resolution, req?.ResolvedBy ?? "claude");
+        // Kapatan: istekte belirtilen ya da girişi yapan eğitmen.
+        var issue = _store.Resolve(id, req?.Resolution, req?.ResolvedBy ?? User.Identity?.Name ?? "eğitmen");
         if (issue is null) return NotFound(new { message = $"Kayıt bulunamadı: {id}" });
         _logger.LogInformation("✅ Hata #{Number} çözüldü: {Resolution}", issue.Number, issue.Resolution);
         return Ok(issue);

@@ -131,6 +131,27 @@
         ]
       },
       "description": "Kilolu hastada uzun ekartörler gerekir ve görüş yetersiz kaldığı için Roux eklenir (Adım 12). Mezappendikste küçük ve büyük iki damar vardır (mosquito + pean). Kök bağı güvenli bulunmaz ve bir kez yenilenir (29 → 28). Cilt estetik kapatılır (4/0 Monocryl). Yalnızca 60 adımlık modelde dallanır."
+    },
+    {
+      "scenarioId": "case-full-01",
+      "name": "Tam Vaka (ameliyat öncesi dahil)",
+      "difficulty": "INTERMEDIATE",
+      "procedureCode": "OPEN_APPENDECTOMY",
+      "patient": {
+        "bodyType": "NORMAL",
+        "hasAdhesion": false
+      },
+      "enabledErrors": [
+        "WRONG_INSTRUMENT",
+        "STERILE_VIOLATION",
+        "COUNT_MISMATCH",
+        "INSTRUMENT_DROPPED",
+        "CONTAMINATED_TOOL_REUSE",
+        "WRONG_ORDER"
+      ],
+      "startingScore": 100,
+      "includePreop": true,
+      "description": "Hasta doğrulamasından (kimlik, onam formları) başlangıç sayımına kadar 9 ameliyat öncesi bölüm kontrol listesi olarak oynanır, ardından standart 60 adımlık akış. Yalnızca 60 adımlık modelde."
     }
   ]
 }

@@ -18,11 +18,13 @@ public sealed class NodeExpectation
     public List<string> Sutures { get; init; } = new();     // kabul edilen iplikler; boşsa iplik verilmez
     public List<string> Companions { get; init; } = new();  // adımın destek aletleri (ör. ipliği taşıyan portegü); yanlış sayılmaz
     public string? CountCategory { get; init; }             // COMPRESS | INSTRUMENT | NEEDLE
+    public List<ChecklistItem> Checklist { get; init; } = new();   // ameliyat öncesi kontrol listesi
 
     public string ExpectedEvent => Kind switch
     {
         "delivery" => "instrument_delivered",
         "count" => "count_confirmed",
+        "checklist" => "checklist_confirmed",
         _ => "step_confirmed"
     };
 }
@@ -38,7 +40,8 @@ public sealed class FlowModelStore
     private readonly Dictionary<string, List<StepInstrument>> _instrumentUsage = new();
     private readonly Dictionary<int, MasterStep> _masterSteps;
 
-    public FlowModelStore(string modelDir, string version, string scoringPath, string? descriptorsPath = null)
+    public FlowModelStore(string modelDir, string version, string scoringPath, string? descriptorsPath = null,
+        string? adaptiveRulesPath = null)
     {
         var baseName = Path.Combine(modelDir, $"open-appendectomy-v{version}");
         Graph = Load<FlowGraphFile>($"{baseName}.graph.json");
@@ -49,15 +52,19 @@ public sealed class FlowModelStore
         Catalog = master.Catalogs.Instruments;
         if (descriptorsPath is not null && File.Exists(descriptorsPath))
             Descriptors = Load<DescriptorsFile>(descriptorsPath).Descriptors;
+        if (adaptiveRulesPath is not null && File.Exists(adaptiveRulesPath))
+            AdaptiveRules = Load<AdaptiveRulesFile>(adaptiveRulesPath).Rules;
+        BranchConditions = Graph.Nodes.SelectMany(n => n.Branches).Select(b => b.When).ToHashSet();
         _nodes = Graph.Nodes.ToDictionary(n => n.Id);
         _masterSteps = master.Steps.ToDictionary(s => s.Step);
         foreach (var s in master.Steps) _instrumentUsage[s.Step.ToString()] = s.Instruments;
         foreach (var s in master.Subflows.SelectMany(f => f.Steps)) _instrumentUsage[s.Id] = s.Instruments;
 
-        PlayableNodes = Graph.Nodes.Where(n => n.Kind != "preop")
+        Checklists = master.Preoperative.ToDictionary(p => p.GetProperty("id").GetString()!, BuildChecklist);
+        PlayableNodes = Graph.Nodes
             .OrderBy(n => MainStep(n.Id)).ThenBy(n => n.Id.Length).ThenBy(n => n.Id, StringComparer.Ordinal)
             .ToList();
-        MainStepCount = PlayableNodes.Count(n => n.SubflowId is null);
+        MainStepCount = PlayableNodes.Count(n => n.Kind is "step" or "conditional");
         PhaseNo = Graph.Phases.Select((p, i) => (p.Id, i + 1)).ToDictionary(x => x.Id, x => x.Item2);
     }
 
@@ -66,10 +73,16 @@ public sealed class FlowModelStore
     public ScoringConfig Scoring { get; }
     public Dictionary<string, CatalogInstrument> Catalog { get; }
     public Dictionary<string, List<string>> Descriptors { get; private set; } = new();
+    public List<AdaptiveRule> AdaptiveRules { get; private set; } = new();
+    // Bir dalın koşulu olanlar; diğerleri (ör. SURGICAL_SITE_INFECTION) yalnız sonuçtur, akışı değiştirmez.
+    public HashSet<string> BranchConditions { get; private set; } = new();
     public IReadOnlyList<FlowNode> PlayableNodes { get; }
     public int MainStepCount { get; }
     public Dictionary<string, int> PhaseNo { get; }
-    public string FirstNodeId => "1";   // ameliyat öncesi (PRE01–09) hazırlık bölümleri henüz oynanmıyor
+    public string FirstNodeId => "1";
+    public string PreopEntryNodeId => Graph.Entry ?? "PRE01";   // senaryo IncludePreop ise seans buradan başlar
+    public IReadOnlyDictionary<string, List<ChecklistItem>> Checklists { get; }
+    public bool IsChecklistItem(string id) => Checklists.Values.Any(l => l.Any(i => i.Id == id));
 
     public FlowNode? Node(string? id) => id is not null && _nodes.TryGetValue(id, out var n) ? n : null;
 
@@ -99,6 +112,8 @@ public sealed class FlowModelStore
     public NodeExpectation Expect(string nodeId, IReadOnlyDictionary<string, JsonElement> parameters)
     {
         var n = _nodes[nodeId];
+        if (n.Kind == "preop")
+            return new NodeExpectation { Kind = "checklist", Checklist = Checklists.GetValueOrDefault(nodeId) ?? new() };
         var accepted = new List<string>(n.Accepted);
         (string, string, List<string>)? byParameter = null;
         foreach (var rule in n.ParameterRules)
@@ -177,6 +192,63 @@ public sealed class FlowModelStore
             if (options.Count >= 2) groups.Add(options);
         }
         return groups;
+    }
+
+    // Ameliyat öncesi bölümün kontrol listesi, en temiz kaynaktan: alt maddeler (PRE01, PRE09) → yapılandırılmış hata
+    // listesi (PRE03, 07, 08) → görevler. PDF'ten bölünmüş görev satırları birleştirilir, büyük harfli başlıklar atlanır.
+    private static List<ChecklistItem> BuildChecklist(JsonElement section)
+    {
+        var id = section.GetProperty("id").GetString()!;
+        if (section.TryGetProperty("substeps", out var subs))
+            return subs.EnumerateArray().Select(s => new ChecklistItem
+            {
+                Id = s.GetProperty("id").GetString()!,
+                Name = s.GetProperty("name").GetString()!,
+                Task = s.TryGetProperty("task", out var t) ? t.GetString() : null,
+                Optional = s.TryGetProperty("isConditional", out var c) && c.ValueKind == JsonValueKind.True,
+                // Riskler yalnız "atlanırsa" alanlarından (görev metni risk değildir).
+                Risks = new[] { "omissionRisks", "forms" }.Where(k => s.TryGetProperty(k, out _))
+                    .SelectMany(k => Strings(s.GetProperty(k))).Take(6).ToList()
+            }).ToList();
+
+        if (section.TryGetProperty("errorChecklist", out var checks))
+            return checks.EnumerateArray().Select((e, i) => new ChecklistItem
+            {
+                Id = $"{id}.{i + 1}",
+                Name = e.GetProperty("task").GetString()!,
+                Risks = Strings(e).Skip(1).Take(6).ToList()   // ilk metin görevin kendisi
+            }).ToList();
+
+        var risks = section.TryGetProperty("omissionRisks", out var r) ? Strings(r).Take(6).ToList() : new List<string>();
+        var tasks = new List<string>();
+        foreach (var line in section.GetProperty("tasks").EnumerateArray().Select(x => x.GetString()!.Trim()))
+        {
+            if (line.Length > 3 && line.Any(char.IsLetter) && line == line.ToUpper(Tr)) continue;   // "GENEL ANESTEZİ UYGULAMASINDA"
+            if (tasks.Count > 0 && line.Length > 0 && char.IsLower(line[0]) && !tasks[^1].EndsWith('.')) tasks[^1] += " " + line;
+            else tasks.Add(line);
+        }
+        return tasks.Select((t, i) => new ChecklistItem { Id = $"{id}.{i + 1}", Name = t, Risks = risks }).ToList();
+    }
+
+    private static readonly System.Globalization.CultureInfo Tr = new("tr-TR");
+
+    // Risk metinlerini iç içe yapıdan düz listeye çıkarır (dizgiler; nesnelerde item/form/error ve alt listeler).
+    private static IEnumerable<string> Strings(JsonElement e)
+    {
+        switch (e.ValueKind)
+        {
+            case JsonValueKind.String:
+                var s = e.GetString()!.Trim();
+                if (s.Length >= 4) yield return s;   // PDF kırpıntıları ("ise") atlanır
+                break;
+            case JsonValueKind.Array:
+                foreach (var x in e.EnumerateArray()) foreach (var y in Strings(x)) yield return y;
+                break;
+            case JsonValueKind.Object:
+                foreach (var key in new[] { "task", "item", "form", "error", "omissionRisks", "consequences", "complications", "items", "forms", "errors" })
+                    if (e.TryGetProperty(key, out var v)) foreach (var y in Strings(v)) yield return y;
+                break;
+        }
     }
 
     private static string? CountCategoryOf(string label)

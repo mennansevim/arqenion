@@ -13,13 +13,13 @@ public sealed class FlowStressTests
 
     private static readonly string[] EventTypes =
     {
-        "instrument_delivered", "instrument_placed", "step_confirmed", "count_confirmed", "hint_requested",
+        "instrument_delivered", "instrument_placed", "step_confirmed", "count_confirmed", "checklist_confirmed", "hint_requested",
         "sterile_area_violated", "instrument_dropped", "bogus_event", ""
     };
 
     private static readonly HashSet<string> DeviationTypes = new()
     {
-        "WRONG_INSTRUMENT", "WRONG_ORDER", "STERILE_VIOLATION", "COUNT_MISMATCH", "INSTRUMENT_DROPPED"
+        "WRONG_INSTRUMENT", "WRONG_ORDER", "STERILE_VIOLATION", "COUNT_MISMATCH", "INSTRUMENT_DROPPED", "CHECKLIST_INCOMPLETE"
     };
 
     private static readonly HashSet<string> Severities = new() { "LOW", "MEDIUM", "HIGH", "CRITICAL" };
@@ -76,7 +76,9 @@ public sealed class FlowStressTests
             Conditions = conditions.ToDictionary(c => c.Key, c => JsonSerializer.SerializeToElement(c.Value)),
             Parameters = parameters.Where(p => p.Key != "PATIENT_BODY_TYPE").ToDictionary(p => p.Key, p => p.Value),
             Counts = new() { ["COMPRESS"] = rnd.Next(1, 15), ["INSTRUMENT"] = rnd.Next(5, 40), ["NEEDLE"] = rnd.Next(1, 6) },
-            MissingItem = new[] { "COMPRESS", "INSTRUMENT", "NEEDLE" }[rnd.Next(3)]
+            MissingItem = new[] { "COMPRESS", "INSTRUMENT", "NEEDLE" }[rnd.Next(3)],
+            // Çift vakalarda sınav modu: hatalar dal açmaz, yol Python'unkiyle aynı olmalı.
+            AdaptiveMode = i % 2 == 0 ? "off" : "errors"
         };
         var session = new SessionRecord { Score = 100, RawScore = 100 };
         service.Start(session, scenario);
@@ -124,9 +126,11 @@ public sealed class FlowStressTests
             }
         }
 
-        Assert.Equal(path, FlowProcedureService.Load(session).Path);
+        var final = FlowProcedureService.Load(session);
+        if (final.AdaptiveMode == "off") Assert.Equal(path, final.Path);
+        else Assert.Equal(ReferencePath(final), final.Path);   // hataların açtığı koşullar dahil, aynı planla motorun yolu
         Assert.Equal(session.ComplicationsTriggered, session.ComplicationsResolved);
-        Assert.True(correctCount >= path.Count, $"doğru olay {correctCount} < yol {path.Count}");
+        Assert.True(correctCount >= final.Path.Count - 0 || final.AdaptiveDecisions.Count > 0, $"doğru olay {correctCount} < yol {final.Path.Count}");
     }
 
     // 3) Uzun soak: C# tarafında üretilen rastgele planlar (ARQ_SOAK=5000 ile çalışır; varsayılan 300).
@@ -139,6 +143,7 @@ public sealed class FlowStressTests
         var conds = model.Graph.Conditions.Where(c => c.Value.Source != "OUTCOME").Select(c => c.Key).ToArray();
         var choices = new List<bool>?[] { null, new() { true }, new() { false }, new() { true, false }, new() { true, true }, new() { false, true } };
         var codes = model.Catalog.Keys.Append("UNKNOWN_CODE").ToArray();
+        var adaptiveSessions = 0;
         for (var seed = 1000; seed < 1000 + count; seed++)
         {
             var rnd = new Random(seed);
@@ -151,7 +156,7 @@ public sealed class FlowStressTests
                 ("MESO_VESSELS", Enumerable.Range(0, rnd.Next(0, 5)).Select(_ => new { caliber = new[] { "SMALL", "MEDIUM", "LARGE" }[rnd.Next(3)] }).ToArray()));
 
             var engine = new Arqenion.Api.Services.FlowEngine(model);
-            var reference = engine.Start(new(plan), new(parameters));
+            var reference = engine.Start(new(plan), new(parameters), includePreop: seed % 4 == 0);
             for (var node = reference.Path[0]; node is not null; node = engine.Advance(reference, node).Next) { }
 
             var service = TestModel.Service();
@@ -162,7 +167,8 @@ public sealed class FlowStressTests
                 Patient = new PatientProfile { BodyType = parameters["PATIENT_BODY_TYPE"].GetString()! },
                 Conditions = plan.ToDictionary(c => c.Key, c => JsonSerializer.SerializeToElement(c.Value)),
                 Parameters = parameters.Where(p => p.Key != "PATIENT_BODY_TYPE").ToDictionary(p => p.Key, p => p.Value),
-                SurgeonRequestMode = rnd.NextDouble() < 0.8 ? "random" : "off"
+                SurgeonRequestMode = rnd.NextDouble() < 0.8 ? "random" : "off",
+                IncludePreop = seed % 4 == 0
             });
             for (var guard = 0; session.CurrentNodeId is not null; guard++)
             {
@@ -186,9 +192,23 @@ public sealed class FlowStressTests
                     Assert.True(o.Success, $"seed {seed}: doğru olay reddedildi: {o.Message}");
                 }
             }
-            Assert.Equal(reference.Path, FlowProcedureService.Load(session).Path);
+            var final = FlowProcedureService.Load(session);
+            Assert.Equal(ReferencePath(final), final.Path);
+            if (final.AdaptiveDecisions.Count == 0) Assert.Equal(reference.Path, final.Path);
+            else adaptiveSessions++;
             Assert.Equal(session.ComplicationsTriggered, session.ComplicationsResolved);
         }
+        Assert.True(adaptiveSessions > count / 10, $"hataya göre dal yalnız {adaptiveSessions}/{count} seansta açıldı");
+    }
+
+    // Seansın son koşul planıyla (senaryo + hataların açtığı koşullar) gürültüsüz motor yolu.
+    private static List<string> ReferencePath(FlowState final)
+    {
+        var engine = new Arqenion.Api.Services.FlowEngine(TestModel.Model);
+        var reference = engine.Start(final.Conditions.ToDictionary(c => c.Key, c => c.Value.ToList()), new(final.Parameters),
+            includePreop: final.Path[0].StartsWith("PRE"));
+        for (var node = reference.Path[0]; node is not null; node = engine.Advance(reference, node).Next) { }
+        return reference.Path;
     }
 
     private static void AssertInvariants(SessionRecord session, ValidationOutcome o)
@@ -217,6 +237,8 @@ public sealed class FlowStressTests
             SutureCode = rnd.NextDouble() < 0.5 ? null : Pick(x.Sutures),
             Target = rnd.NextDouble() < 0.8 ? "SURGEON" : rnd.NextDouble() < 0.5 ? null : "DIRTY_AREA"
         };
+        if (type == "checklist_confirmed" && x.Checklist.Count > 0)
+            ev.CheckedItems = x.Checklist.Where(_ => rnd.NextDouble() < 0.8).Select(i => i.Id).ToList();
         if (type == "count_confirmed" && rnd.NextDouble() < 0.9)
         {
             ev.Counts = new();
@@ -235,6 +257,9 @@ public sealed class FlowStressTests
         var delivering = ev.EventType is "instrument_delivered" or "instrument_placed";
         switch (x.Kind)
         {
+            case "checklist":
+                return ev.EventType == "checklist_confirmed"
+                       && x.Checklist.Where(i => !i.Optional).All(i => ev.CheckedItems?.Contains(i.Id) == true);
             case "confirm": return ev.EventType == "step_confirmed";
             case "count":
                 return ev.EventType == "count_confirmed" && ev.Counts is not null

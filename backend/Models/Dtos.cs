@@ -6,6 +6,8 @@ public sealed class StartSessionRequest
 {
     public string UserId { get; set; } = "";
     public string ScenarioId { get; set; } = "";
+    // İsteğe bağlı: aynı seed aynı cerrah istemlerini verir (kayıtlı VR olaylarını tekrar oynatmak için).
+    public string? Seed { get; set; }
 }
 
 public sealed class StepView
@@ -34,6 +36,7 @@ public sealed class StepView
     public string? Instruction { get; set; }
     public string? ClinicalNote { get; set; }
     public string? SurgeonRequest { get; set; }             // hekim tercihine bırakılan adımda cerrahın istemi
+    public List<ChecklistItem>? Checklist { get; set; }      // ameliyat öncesi kontrol listesi (kind: checklist)
 }
 
 // Açık bir komplikasyonun anlık durumu: ne oldu, çözüm zincirinde nerede kalındı, şimdi ne bekleniyor.
@@ -86,6 +89,8 @@ public sealed class EventRequest
     public string? SutureCode { get; set; }
     public string? Target { get; set; }
     public Dictionary<string, int>? Counts { get; set; }
+    // Ameliyat öncesi kontrol listesinde işaretlenen madde kimlikleri (ör. "PRE01.1").
+    public List<string>? CheckedItems { get; set; }
     public DateTime? Timestamp { get; set; }
 }
 
@@ -118,6 +123,8 @@ public sealed class ValidationResponse
     public string? CurrentNodeId { get; set; }
     public string? NextNodeId { get; set; }
     public FlowBranchDto? Branch { get; set; }
+    // Bu hata bir koşulu doğru yaptı: dal ileride (karar adımında) açılacak ya da sonuç kayda geçti.
+    public List<AdaptiveTriggerDto>? Adaptive { get; set; }
 }
 
 public sealed class ComplicationItemDto

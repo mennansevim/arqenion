@@ -1,0 +1,19 @@
+{
+ "name": "hata-kanamaya-yol-acar",
+ "description": "Standart vaka; 1. adımda 11 numara bistüri (S01-E1, kontrolsüz kanama) → 40. adımda kanama dalı açılır.",
+ "start": {
+  "scenarioId": "case-basic-01",
+  "userId": "vr-test",
+  "seed": "vr-adaptif"
+ },
+ "inject": [
+  {
+   "at": "1",
+   "send": {
+    "eventType": "instrument_delivered",
+    "instrumentCode": "SCALPEL_BLADE_11",
+    "target": "SURGEON"
+   }
+  }
+ ]
+}

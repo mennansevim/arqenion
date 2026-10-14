@@ -1,0 +1,39 @@
+{
+  "about": "Kursiyerin hatasına göre dal açılması (adaptif koşullar). Deterministik: bir hata kuralı sağlarsa koşul doğru olur ve motor dalı koşulun karar adımında açar. Kural, hatanın eşleştiği onaylı senaryonun 'olası komplikasyonlar' listesine bakar; yani hangi hatanın neye yol açtığı klinik ekibin onayladığı metinden gelir. Senaryo koşulu kendisi sabitlediyse (sınav modu) ya da 'adaptiveMode': 'off' ise hata dal açmaz. Koşul daha önce değerlendirildiyse geriye dönük değişmez.",
+  "rules": [
+    {
+      "condition": "EXPOSURE_INSUFFICIENT",
+      "deviationTypes": ["WRONG_INSTRUMENT"],
+      "fromStep": 4, "toStep": 11,
+      "complication": "görüş|görünürlü",
+      "message": "Uygunsuz ekartasyon cerrahi görüşü bozdu; ek ekartasyon (Roux) gerekecek."
+    },
+    {
+      "condition": "BLEEDING_DETECTED",
+      "deviationTypes": ["WRONG_INSTRUMENT"],
+      "fromStep": 1, "toStep": 39,
+      "complication": "kanama",
+      "message": "Bu hata dokuda kanamaya yol açabilir; sahanın kanama kontrolünde hemostaz gerekecek."
+    },
+    {
+      "condition": "LIGATURE_NOT_SECURE",
+      "deviationTypes": ["WRONG_INSTRUMENT"],
+      "fromStep": 26, "toStep": 28,
+      "complication": "\\bbağ",
+      "message": "Uygun olmayan materyal bağın güvenliğini bozdu; kök bağı yenilenecek."
+    },
+    {
+      "condition": "BLEEDING_AFTER_IRRIGATION",
+      "deviationTypes": ["WRONG_INSTRUMENT"],
+      "fromStep": 41, "toStep": 42,
+      "complication": "kanama",
+      "message": "Hemostaz yetersiz kaldı; yıkamadan sonra kanama yeniden görülecek."
+    },
+    {
+      "condition": "SURGICAL_SITE_INFECTION",
+      "deviationTypes": ["STERILE_VIOLATION", "INSTRUMENT_DROPPED"],
+      "fromStep": 1, "toStep": 60,
+      "message": "Steril alan bozuldu; cerrahi alan enfeksiyonu riski kayda geçti (akışı değiştirmez, raporda görünür)."
+    }
+  ]
+}

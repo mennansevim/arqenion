@@ -26,7 +26,7 @@ public sealed class FlowProcedureService
 
     // ----- Seans başlangıcı: senaryodan koşul planı, hasta parametreleri ve masadaki sayılar -----
 
-    public FlowState Start(SessionRecord session, Scenario scenario)
+    public FlowState Start(SessionRecord session, Scenario scenario, string? seed = null)
     {
         var conditions = new Dictionary<string, List<bool>>();
         if (scenario.Patient.HasAdhesion) conditions["ADHESIONS_PRESENT"] = new() { true };
@@ -37,28 +37,30 @@ public sealed class FlowProcedureService
         {
             ["PATIENT_BODY_TYPE"] = JsonSerializer.SerializeToElement(scenario.Patient.BodyType)
         };
-        var state = _engine.Start(conditions, parameters);
+        var state = _engine.Start(conditions, parameters, scenario.IncludePreop);
         state.RecordedCounts = new(scenario.Counts ?? DefaultCounts);
         state.Counts = new(state.RecordedCounts);
         if (conditions.TryGetValue("COUNT_MISMATCH", out var mismatch) && mismatch.FirstOrDefault()
             && state.Counts.TryGetValue(scenario.MissingItem, out var n) && n > 0)
             state.Counts[scenario.MissingItem] = n - 1;   // senaryo bir malzemeyi eksik bıraktı
 
-        state.Requests = SurgeonRequests(session, scenario, state);
+        state.Requests = SurgeonRequests(seed ?? session.Id, scenario, state);
+        state.AdaptiveMode = scenario.AdaptiveMode;
+        state.FixedConditions = conditions.Keys.ToList();
 
         session.ProcedureModel = ModelKey;
-        session.CurrentNodeId = _model.FirstNodeId;
-        session.CurrentStepId = FlowModelStore.MainStep(_model.FirstNodeId);
+        session.CurrentNodeId = state.Path[0];
+        session.CurrentStepId = FlowModelStore.MainStep(state.Path[0]);
         Save(session, state);
         return state;
     }
 
     // Hekim tercihine bırakılan adımlarda cerrahın istemi seans başında belirlenir ve kayda geçer (tekrar oynatılabilir).
-    private Dictionary<string, List<string>> SurgeonRequests(SessionRecord session, Scenario scenario, FlowState state)
+    private Dictionary<string, List<string>> SurgeonRequests(string seed, Scenario scenario, FlowState state)
     {
         var requests = new Dictionary<string, List<string>>();
         if (scenario.SurgeonRequestMode == "off") return requests;
-        var rnd = new Random(StableHash(session.Id));
+        var rnd = new Random(StableHash(seed));
         foreach (var n in _model.PlayableNodes)
         {
             var groups = _model.ChoiceGroups(n.Id, _model.Expect(n.Id, state.Parameters));
@@ -88,6 +90,45 @@ public sealed class FlowProcedureService
         if (requested.Count == 0) return (x.Deliverable, x.Sutures, requested);
         var excluded = _model.ChoiceGroups(nodeId, x).SelectMany(g => g.SelectMany(o => o)).Except(requested).ToHashSet();
         return (x.Deliverable.Where(c => !excluded.Contains(c)).ToList(), x.Sutures.Where(c => !excluded.Contains(c)).ToList(), requested);
+    }
+
+    // ----- VR olay sözleşmesi (docs/vr-events.md) -----
+    // Sözleşmeye uymayan olay (bilinmeyen tür, katalogda olmayan kod, sayısız sayım) entegrasyon hatasıdır:
+    // kursiyerin hatası sayılmaz, puanı etkilemez; çağıran 400 alır.
+    public static readonly string[] EventTypes =
+        { "instrument_delivered", "instrument_placed", "step_confirmed", "count_confirmed", "checklist_confirmed",
+          "hint_requested", "sterile_area_violated", "instrument_dropped" };
+    public static readonly string[] Targets = { "SURGEON", "DIRTY_AREA", "PATHOLOGY_CONTAINER" };
+    public static readonly string[] CountCategories = { "COMPRESS", "INSTRUMENT", "NEEDLE" };
+
+    public (string Field, string Message, IEnumerable<string>? Allowed)? ContractError(EventRequest ev)
+    {
+        if (!EventTypes.Contains(ev.EventType))
+            return ("eventType", $"Bilinmeyen olay türü: '{ev.EventType}'.", EventTypes);
+        if (!string.IsNullOrEmpty(ev.Target) && !Targets.Contains(ev.Target))
+            return ("target", $"Bilinmeyen hedef: '{ev.Target}'.", Targets);
+        foreach (var (field, code) in new[] { ("instrumentCode", ev.InstrumentCode), ("sutureCode", ev.SutureCode) })
+            if (code is not null && !_model.Catalog.ContainsKey(code))
+                return (field, $"Katalogda olmayan kod: '{code}'. Katalog: GET /api/procedure (instrumentCatalog, sutureCatalog).", null);
+        if (ev.EventType is "instrument_delivered" or "instrument_placed" && ev.InstrumentCode is null && ev.SutureCode is null)
+            return ("instrumentCode", "Teslim olayında instrumentCode ya da sutureCode gerekir.", null);
+        if (ev.EventType == "checklist_confirmed")
+        {
+            if (ev.CheckedItems is null)
+                return ("checkedItems", "Kontrol listesi olayında checkedItems gerekir (işaretlenen madde kimlikleri, ör. [\"PRE01.1\"]).", null);
+            if (ev.CheckedItems.FirstOrDefault(i => !_model.IsChecklistItem(i)) is { } unknown)
+                return ("checkedItems", $"Bilinmeyen kontrol listesi maddesi: '{unknown}'. Maddeler: adım görünümündeki checklist.", null);
+        }
+        if (ev.EventType == "count_confirmed")
+        {
+            if (ev.Counts is null || ev.Counts.Count == 0)
+                return ("counts", "Sayım olayında counts gerekir (ör. {\"COMPRESS\": 10}).", CountCategories);
+            if (ev.Counts.Keys.FirstOrDefault(k => !CountCategories.Contains(k)) is { } bad)
+                return ("counts", $"Bilinmeyen sayım kategorisi: '{bad}'.", CountCategories);
+            if (ev.Counts.Values.Any(v => v < 0))
+                return ("counts", "Sayım negatif olamaz.", null);
+        }
+        return null;
     }
 
     public static FlowState Load(SessionRecord session)
@@ -141,6 +182,21 @@ public sealed class FlowProcedureService
                         "Bu adımda yeni alet verilmez; cerrahı izleyip adımı onaylayın.");
                 if (ev.EventType != "step_confirmed")
                     return Deviate(session, state, node, x, "WRONG_ORDER", x.ExpectedEvent, ev.EventType, "Bu adımda beklenen işlem: adımı onaylamak.");
+                return Complete(session, state, node, x);
+
+            case "checklist":
+                if (ev.EventType != "checklist_confirmed")
+                    return Deviate(session, state, node, x, "WRONG_ORDER", x.ExpectedEvent, ev.EventType,
+                        "Ameliyat öncesi bu bölümün kontrol listesi onaylanmalıdır.");
+                var checkedItems = (ev.CheckedItems ?? new()).ToHashSet();
+                var missing = x.Checklist.Where(i => !i.Optional && !checkedItems.Contains(i.Id)).ToList();
+                if (missing.Count > 0)
+                {
+                    var required = x.Checklist.Count(i => !i.Optional);
+                    return Deviate(session, state, node, x, "CHECKLIST_INCOMPLETE", string.Join(" / ", missing.Select(i => i.Id)),
+                        $"{required - missing.Count}/{required}",
+                        $"Kontrol listesinde eksik: {string.Join("; ", missing.Select(i => i.Name))}.");
+                }
                 return Complete(session, state, node, x);
 
             case "count":
@@ -277,8 +333,10 @@ public sealed class FlowProcedureService
         _scoring.Apply(session, -penalty, s.Bounds);
 
         var allowed = Allowed(node.Id, x, state);
-        var wanted = x.Sutures.Count > 0 && _model.IsSuture(actual) ? allowed.Sutures : allowed.Deliverable;
+        IReadOnlyCollection<string> wanted = type == "CHECKLIST_INCOMPLETE" ? (expected ?? "").Split(" / ")
+            : x.Sutures.Count > 0 && _model.IsSuture(actual) ? allowed.Sutures : allowed.Deliverable;
         var severity = Escalate(_text.Entry(node.Id, type, actual, wanted).Severity, session.ConsecutiveErrors);
+        var adaptive = ApplyAdaptiveRules(state, node, type, actual, wanted);
         return new ValidationOutcome
         {
             Success = false,
@@ -289,8 +347,49 @@ public sealed class FlowProcedureService
             Message = message,
             AllowRetry = true,
             ScoreChange = -penalty,
-            NextStep = View(node.Id, state)
+            NextStep = View(node.Id, state),
+            Adaptive = adaptive.Count > 0 ? adaptive : null
         };
+    }
+
+    // Hataya göre dal (Procedures/adaptive-rules.json): hata, eşleştiği onaylı senaryonun komplikasyonu kuralla örtüşüyorsa
+    // koşulu doğru yapar. Dal hemen açılmaz; motor onu koşulun karar adımında açar (ör. kanama → Adım 40).
+    private List<AdaptiveTriggerDto> ApplyAdaptiveRules(FlowState state, FlowNode node, string type, string? actual, IReadOnlyCollection<string> wanted)
+    {
+        var fired = new List<AdaptiveTriggerDto>();
+        if (state.AdaptiveMode == "off") return fired;
+        var step = FlowModelStore.MainStep(node.Id);
+        ErrorScenario? scenario = null;
+        var matched = false;
+        foreach (var rule in _model.AdaptiveRules)
+        {
+            if (!rule.DeviationTypes.Contains(type) || step < rule.FromStep || step > rule.ToStep) continue;
+            if (state.FixedConditions.Contains(rule.Condition) || state.AdaptiveDecisions.Any(d => d.Condition == rule.Condition)) continue;
+            if (!_model.Graph.Conditions.TryGetValue(rule.Condition, out var condition)) continue;
+            var outcome = !_model.BranchConditions.Contains(rule.Condition);
+            // Koşul karar adımında zaten değerlendirildiyse geriye dönük değişmez.
+            if (!outcome && state.Evaluations.Any(e => e.Key.EndsWith("|" + rule.Condition))) continue;
+            if (rule.Complication is not null)
+            {
+                if (!matched) { scenario = _text.Match(node.Id, actual, wanted); matched = true; }
+                if (scenario is null || !System.Text.RegularExpressions.Regex.IsMatch(
+                        string.Join(" ", scenario.PossibleComplications).ToLower(new System.Globalization.CultureInfo("tr-TR")), rule.Complication))
+                    continue;
+            }
+
+            if (!outcome) state.Conditions[rule.Condition] = new() { true };
+            state.AdaptiveDecisions.Add(new AdaptiveDecision
+            {
+                Condition = rule.Condition, AtNode = node.Id, DeviationType = type, ScenarioId = scenario?.Id,
+                Outcome = outcome, Message = rule.Message
+            });
+            fired.Add(new AdaptiveTriggerDto
+            {
+                Condition = rule.Condition, Title = condition.Description, Message = rule.Message,
+                EvaluatedAt = outcome ? null : condition.EvaluatedAt, Outcome = outcome, ScenarioId = scenario?.Id
+            });
+        }
+        return fired;
     }
 
     private ValidationOutcome Stay(FlowNode node, FlowState state, string message, int scoreChange, bool success = false)
@@ -347,7 +446,7 @@ public sealed class FlowProcedureService
             StepId = FlowModelStore.MainStep(node.Id),
             NodeId = node.Id,
             PhaseNo = node.PhaseId is not null ? _model.PhaseNo.GetValueOrDefault(node.PhaseId) : 0,
-            Phase = _model.PhaseName(node),
+            Phase = node.Kind == "preop" ? "Ameliyat öncesi" : _model.PhaseName(node),
             Title = node.Label,
             ExpectedEvent = x.ExpectedEvent,
             Kind = x.Kind,
@@ -364,7 +463,8 @@ public sealed class FlowProcedureService
             ConditionText = condition is not null ? _model.Graph.Conditions.GetValueOrDefault(condition)?.Description : null,
             IsBranch = node.Kind != "step" || state.OpenBranch is not null,
             Instruction = Instruction(node, x, state),
-            ClinicalNote = dot < 0 ? practice : practice[..(dot + 1)]
+            ClinicalNote = node.Kind == "preop" ? "Ameliyat öncesi hazırlık" : dot < 0 ? practice : practice[..(dot + 1)],
+            Checklist = x.Kind == "checklist" ? x.Checklist : null
         };
     }
 
@@ -372,6 +472,10 @@ public sealed class FlowProcedureService
     {
         switch (x.Kind)
         {
+            case "checklist":
+                var required = x.Checklist.Count(i => !i.Optional);
+                return $"Ameliyat öncesi kontrol listesi: {required} maddeyi kontrol edip onaylayın" +
+                       (x.Checklist.Count > required ? " (koşullu maddeler gerekiyorsa)." : ".");
             case "count":
                 var c = x.CountCategory!;
                 return $"Sayım: {CountNames[c]} — masadakileri sirküleyle birlikte sayıp sonucu girin (başlangıç kaydı {state.RecordedCounts.GetValueOrDefault(c)}).";

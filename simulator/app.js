@@ -135,7 +135,9 @@ const monitor = {
 // ---- DOM kısayolları ----
 const $ = (id) => document.getElementById(id);
 const els = {
-  baseUrl: $("baseUrl"), scenario: $("scenario"), userId: $("userId"),
+  baseUrl: $("baseUrl"), scenario: $("scenario"), userId: $("userId"), logoutBtn: $("logoutBtn"),
+  loginModal: $("loginModal"), loginForm: $("loginForm"), loginUser: $("loginUser"), loginPass: $("loginPass"),
+  loginError: $("loginError"), loginBtn: $("loginBtn"),
   startBtn: $("startBtn"), endBtn: $("endBtn"), helpBtn: $("helpBtn"),
   scoreValue: $("scoreValue"), progressBar: $("progressBar"), progressLabel: $("progressLabel"), connState: $("connState"),
   toast: $("toast"),
@@ -149,6 +151,7 @@ const els = {
   handHolding: $("handHolding"), sutureWrap: $("sutureWrap"), sutureSelect: $("sutureSelect"),
   autoBtn: $("autoBtn"), releaseBtn: $("releaseBtn"), confirmBtn: $("confirmBtn"),
   countMode: $("countMode"), countSendBtn: $("countSendBtn"), countHelp: $("countHelp"),
+  checklistMode: $("checklistMode"), checklistItems: $("checklistItems"), checklistSendBtn: $("checklistSendBtn"),
   cntCompress: $("cntCompress"), cntInstrument: $("cntInstrument"), cntNeedle: $("cntNeedle"),
   trayWrap: $("trayWrap"), instrumentGrid: $("instrumentGrid"),
   trayChips: $("trayChips"), traySearch: $("traySearch"), trayExpectedBtn: $("trayExpectedBtn"),
@@ -246,14 +249,78 @@ function log(kind, tag, content) {
   els.log.scrollTop = els.log.scrollHeight;
 }
 
+// ---- Kimlik: giriş jetonu (JWT) her isteğe ve SignalR bağlantısına eklenir ----
+const TOKEN_KEY = "arqenion.token";
+const auth = { token: null, user: null };
+try { auth.token = localStorage.getItem(TOKEN_KEY); } catch { /* gizli pencere: her açılışta giriş */ }
+
+const authHeaders = () => (auth.token ? { Authorization: `Bearer ${auth.token}` } : {});
+
+function setAuth(token, user) {
+  auth.token = token; auth.user = user;
+  try { token ? localStorage.setItem(TOKEN_KEY, token) : localStorage.removeItem(TOKEN_KEY); } catch {}
+  els.userId.value = user ? `${user.name || user.username}${user.role === "instructor" ? " (eğitmen)" : ""}` : "";
+  els.logoutBtn.classList.toggle("hidden", !user);
+  document.getElementById("adminLink")?.classList.toggle("hidden", user?.role !== "instructor");
+}
+
+function showLogin(message) {
+  els.loginError.textContent = message || "";
+  els.loginError.classList.toggle("hidden", !message);
+  els.loginModal.classList.remove("hidden");
+  setTimeout(() => (els.loginUser.value ? els.loginPass : els.loginUser).focus(), 0);
+}
+
+async function login(e) {
+  e.preventDefault();
+  els.loginBtn.disabled = true;
+  try {
+    const res = await fetch(`${baseUrl()}/api/auth/login`, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username: els.loginUser.value.trim(), password: els.loginPass.value }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      showLogin(res.status === 429 ? "Çok fazla deneme. Bir dakika sonra tekrar deneyin." : (data.message || "Giriş yapılamadı."));
+      return;
+    }
+    setAuth(data.token, data.user);
+    els.loginPass.value = "";
+    els.loginModal.classList.add("hidden");
+    toast("good", `Hoş geldiniz, ${data.user.name || data.user.username}.`);
+  } catch {
+    showLogin("Sunucuya ulaşılamadı. Backend adresini kontrol edin.");
+  } finally {
+    els.loginBtn.disabled = false;
+  }
+}
+
+async function restoreAuth() {
+  if (!auth.token) { setAuth(null, null); showLogin(); return; }
+  try {
+    const res = await fetch(`${baseUrl()}/api/auth/me`, { headers: authHeaders() });
+    if (!res.ok) throw new Error();
+    setAuth(auth.token, await res.json());
+  } catch {
+    setAuth(null, null);
+    showLogin("Oturum süreniz doldu; yeniden giriş yapın.");
+  }
+}
+
+function onUnauthorized() {
+  setAuth(null, null);
+  showLogin("Oturum süreniz doldu; yeniden giriş yapın.");
+}
+
 // ---- Backend çağrıları ----
 async function postJson(path, body) {
   traffic("req", "VR·SİM", "src-sim", "→", `POST ${path}`, briefReq(body));
   const res = await fetch(`${baseUrl()}${path}`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...authHeaders() },
     body: JSON.stringify(body),
   });
+  if (res.status === 401) onUnauthorized();
   const text = await res.text();
   let data;
   try { data = text ? JSON.parse(text) : {}; } catch { data = { raw: text }; }
@@ -265,8 +332,10 @@ async function postJson(path, body) {
 
 async function getJson(path) {
   traffic("req", "VR·SİM", "src-sim", "→", `GET ${path}`, "");
-  const res = await fetch(`${baseUrl()}${path}`);
+  const res = await fetch(`${baseUrl()}${path}`, { headers: authHeaders() });
+  if (res.status === 401) onUnauthorized();
   const data = await res.json();
+  if (!res.ok) { const e = new Error(`HTTP ${res.status}`); e.data = data; throw e; }
   traffic("res", "BACKEND", "src-backend", "←", `${res.status} ${path}`,
     Array.isArray(data) ? `${data.length} kayıt` : "");
   return data;
@@ -274,7 +343,8 @@ async function getJson(path) {
 
 // ---- Seans yaşam döngüsü ----
 async function startSession() {
-  const body = { userId: els.userId.value.trim() || "u1", scenarioId: els.scenario.value };
+  if (!auth.token) { showLogin(); return; }
+  const body = { scenarioId: els.scenario.value };
   resetCounters();
   log("info", "→ Seans Başlat", body);
   try {
@@ -358,6 +428,7 @@ function handleResponse(sentType, data) {
 
   // 60 adımlık model: karar noktasında dala girildi ya da daldan ana akışa dönüldü.
   if (data.branch && !replay) handleBranch(data.branch);
+
   if (data.success && data.currentNodeId && !replay && data.nextNodeId !== data.currentNodeId) state.visited.add(data.currentNodeId);
 
   if (data.deviation) {
@@ -398,6 +469,21 @@ function handleResponse(sentType, data) {
     relaxMonitor();
   }
   updateCounters();
+
+  // Hatanın sonucu: bir koşul doğru oldu; dal ileride (karar adımında) açılacak ya da sonuç rapora yazıldı.
+  // Sapma bildiriminden sonra gösterilir ki onun altında kalmasın; panoda dal açılana kadar durur.
+  for (const a of (!replay && data.adaptive) || []) {
+    const when = a.outcome ? "raporda görünecek" : `Adım ${a.evaluatedAt}'da akış dallanacak`;
+    toast("bad", `Hatanın sonucu: ${a.title} — ${when}`);
+    log("error", `⚠ Hatanın sonucu: ${a.title}`, `${a.message}${a.scenarioId ? `\nOnaylı senaryo: ${a.scenarioId}` : ""}\n${when}`);
+    traffic("ai", "MOTOR", "src-aitable", "⚠", `Hata → ${a.condition}`, when);
+    boardActive =
+      `<div class="rx-card open sev-HIGH"><div class="rx-head"><span class="rx-badge">HATANIN SONUCU</span>` +
+      `<span class="rx-sev">${escapeHtml(a.scenarioId ?? a.condition)}</span></div>` +
+      `<div class="rx-title-main">${escapeHtml(a.title)}</div>` +
+      `<div class="rx-narrative">${escapeHtml(a.message)}</div><div class="rx-note warn">${escapeHtml(when)}</div></div>`;
+    paintBoard();
+  }
 
   if (!replay) recordTimeline(sentType, data);
 
@@ -492,7 +578,8 @@ function renderBranch(b) {
 async function connectHub() {
   try {
     const conn = new signalR.HubConnectionBuilder()
-      .withUrl(`${baseUrl()}/hubs/simulation`).withAutomaticReconnect().build();
+      .withUrl(`${baseUrl()}/hubs/simulation`, { accessTokenFactory: () => auth.token })
+      .withAutomaticReconnect().build();
     conn.on("AiFeedback", (fb) => {
       traffic(
         "ai",
@@ -621,6 +708,11 @@ function autoDeliver() {
     return;
   }
   if ((step.expectedEvent ?? meta?.event) === "step_confirmed") { sendEvent({ eventType: "step_confirmed" }); return; }
+  if (step.expectedEvent === "checklist_confirmed") {
+    els.checklistItems.querySelectorAll("input").forEach((c) => { c.checked = true; });
+    sendChecklist();
+    return;
+  }
   // İpliğin tek başına hazırlandığı adımda (ör. 3/0 ipek) iplik doğrudan uzatılır.
   const code = (step.allowedInstruments?.length ? step.allowedInstruments : meta?.allowed || [])[0] ?? (isFlowModel() ? step.requiredSuture : undefined);
   if (!code) { toast("bad", "Bu adımda izinli alet yok."); return; }
@@ -630,6 +722,21 @@ function autoDeliver() {
   if (suture && suture !== code) fields.sutureCode = suture;
   sendEvent(fields);
   release();
+}
+
+// Ameliyat öncesi kontrol listesi: işaretlenen madde kimlikleri gönderilir.
+function sendChecklist() {
+  const checkedItems = [...els.checklistItems.querySelectorAll("input:checked")].map((c) => c.value);
+  sendEvent({ eventType: "checklist_confirmed", checkedItems });
+}
+
+function renderChecklist(step) {
+  if (els.checklistItems.dataset.node === keyOf(step)) return;   // aynı adımda işaretler korunur
+  els.checklistItems.dataset.node = keyOf(step);
+  els.checklistItems.innerHTML = (step.checklist || []).map((i) =>
+    `<label><input type="checkbox" value="${escapeHtml(i.id)}" />` +
+    `<span><span class="ci-name">${escapeHtml(i.name)}</span>${i.optional ? `<span class="ci-opt">gerekiyorsa</span>` : ""}` +
+    `${i.task ? `<br><span class="ci-task">${escapeHtml(i.task)}</span>` : ""}</span></label>`).join("");
 }
 
 const COUNT_INPUT = () => ({ COMPRESS: els.cntCompress, INSTRUMENT: els.cntInstrument, NEEDLE: els.cntNeedle });
@@ -730,8 +837,11 @@ function updateSceneMode(step) {
   const event = step?.expectedEvent ?? meta?.event;
   const isCount = !act && event === "count_confirmed";
   const isConfirm = !act && event === "step_confirmed";
+  const isChecklist = !act && event === "checklist_confirmed";
+  els.checklistMode.classList.toggle("hidden", !isChecklist);
+  if (isChecklist) renderChecklist(step);
   els.countMode.classList.toggle("hidden", !isCount);
-  els.trayWrap.classList.toggle("dim", isCount || isConfirm);
+  els.trayWrap.classList.toggle("dim", isCount || isConfirm || isChecklist);
   els.confirmBtn.classList.toggle("hidden", !isFlowModel() || !step);
   els.confirmBtn.classList.toggle("btn-primary", isConfirm);
   els.confirmBtn.classList.toggle("btn-ghost", !isConfirm);
@@ -765,7 +875,7 @@ function updateSceneMode(step) {
   // Beklenen bölge vurgusu.
   const zone = act ? (act.target || "SURGEON") : (meta?.target || "SURGEON");
   document.querySelectorAll(".zone").forEach((z) =>
-    z.classList.toggle("expected", !isCount && !isConfirm && z.dataset.zone === zone));
+    z.classList.toggle("expected", !isCount && !isConfirm && !isChecklist && z.dataset.zone === zone));
 }
 
 function setVerdict(kind, text) {
@@ -1011,9 +1121,10 @@ function buildStepList() {
     if (phaseKey !== lastPhase) {
       lastPhase = phaseKey;
       const head = document.createElement("li");
-      head.className = "phase-head" + (s.phaseNo ? "" : " branch");
+      const preop = s.kind === "checklist";
+      head.className = "phase-head" + (s.phaseNo || preop ? "" : " branch");
       head.dataset.phase = s.phaseNo;
-      head.innerHTML = `<span class="phase-no">${s.phaseNo || "⑂"}</span><span class="phase-nm">${escapeHtml(s.phase)}</span>`;
+      head.innerHTML = `<span class="phase-no">${s.phaseNo || (preop ? "Ö" : "⑂")}</span><span class="phase-nm">${escapeHtml(s.phase)}</span>`;
       els.stepList.appendChild(head);
     }
     const multi = STEPS.filter((x) => x.phaseNo === s.phaseNo).length > 1;
@@ -1089,7 +1200,7 @@ function markAllStepsDone() {
 
 // ---- Rapor ----
 function showReport(report, events) {
-  els.reportUser.textContent = `— kullanıcı: ${els.userId.value.trim() || "u1"}`;
+  els.reportUser.textContent = `— kullanıcı: ${auth.user?.username ?? "-"}`;
   const rows = [
     ["Skor", `${report.score}/100`],
     ["Başarı Oranı", report.successRate != null ? `%${report.successRate}` : "-"],
@@ -1450,7 +1561,7 @@ async function sendBugReport() {
       body,
       severity: els.bugSeverity.value,
       area: els.bugArea.value || null,
-      reportedBy: els.bugReporter.value.trim() || els.userId.value.trim(),
+      reportedBy: els.bugReporter.value.trim() || auth.user?.username,
       context: bugContext(),
     });
     els.bugResult.className = "bug-result ok";
@@ -1524,6 +1635,7 @@ function bindEvents() {
   els.releaseBtn.addEventListener("click", release);
   els.countSendBtn.addEventListener("click", sendCount);
   els.confirmBtn.addEventListener("click", () => sendEvent({ eventType: "step_confirmed" }));
+  els.checklistSendBtn.addEventListener("click", sendChecklist);
   els.clearLogBtn.addEventListener("click", () => (els.log.innerHTML = ""));
   els.trafficClear.addEventListener("click", () => { els.traffic.innerHTML = ""; trafficCount = 0; els.trafficCount.textContent = "0 istek"; });
   els.audioToggle.addEventListener("click", toggleAudio);
@@ -1552,6 +1664,8 @@ function bindEvents() {
   });
   els.closeReportBtn.addEventListener("click", () => els.reportModal.classList.add("hidden"));
   els.flowBtn.addEventListener("click", openFlow);
+  els.loginForm.addEventListener("submit", login);
+  els.logoutBtn.addEventListener("click", async () => { if (state.sessionId) await endSession(); setAuth(null, null); showLogin(); });
   els.closeFlowBtn.addEventListener("click", () => { els.flowModal.classList.add("hidden"); renderFlowDiagram.scrolled = false; });
   document.querySelectorAll("button[data-evt]").forEach((btn) =>
     btn.addEventListener("click", () => sendEvent({ eventType: btn.dataset.evt })));
@@ -1572,6 +1686,7 @@ startMonitor();
 (async function boot() {
   try {
     const p = await loadProcedure();
+    await restoreAuth();
     buildTrayChips();
     buildTray();
     bindTrayTools();

@@ -17,5 +17,6 @@ public sealed class ArqenionDbContext : DbContext
         b.Entity<SessionEventRecord>().HasIndex(e => new { e.SessionId, e.EventId }).IsUnique();
         b.Entity<SessionEventRecord>().HasIndex(e => e.SessionId);
         b.Entity<AiFeedbackRecord>().HasIndex(e => e.SessionId);
+        b.Entity<User>().HasIndex(u => u.Username).IsUnique();
     }
 }

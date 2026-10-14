@@ -30,12 +30,14 @@ public sealed class FlowGoldenTests
 
         var model = TestModel.Model;
         var engine = new FlowEngine(model);
-        var state = engine.Start(conditions, parameters);
+        var includePreop = c.TryGetProperty("includePreop", out var ip) && ip.GetBoolean();
+        var state = engine.Start(conditions, parameters, includePreop);
         var node = state.Path[0];
         for (var guard = 0; node is not null; guard++)
         {
             Assert.True(guard < 500, "akış bitmedi");
-            AssertSameInstruments(caseId, node, expected.GetProperty(node), model.Expect(node, state.Parameters));
+            if (expected.TryGetProperty(node, out var golden))   // ameliyat öncesi düğümlerin alet listesi yok
+                AssertSameInstruments(caseId, node, golden, model.Expect(node, state.Parameters));
             node = engine.Advance(state, node).Next;
         }
 

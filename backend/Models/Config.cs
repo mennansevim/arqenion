@@ -125,10 +125,14 @@ public sealed class Scenario
     // Başlangıç sayım kaydı; COUNT_MISMATCH planlıysa MissingItem kategorisinden bir adet masada eksik olur.
     public Dictionary<string, int>? Counts { get; set; }
     public string MissingItem { get; set; } = "COMPRESS";
+    // Hataya göre dal: "errors" (varsayılan; Procedures/adaptive-rules.json) ya da "off" (sınav modu, yalnız senaryo planı).
+    public string AdaptiveMode { get; set; } = "errors";
     // Cerrah istemi: "random" (varsayılan; seans başında belirlenir) ya da "off" (her kabul edilen alternatif doğru sayılır).
     public string SurgeonRequestMode { get; set; } = "random";
     // Belirli düğümlerde cerrahın istemini sabitler (ör. "51": "CLAMP_OCHSNER_KOCHER_CURVED_20").
     public Dictionary<string, string> SurgeonRequests { get; set; } = new();
+    // Seans ameliyat öncesi bölümlerle (PRE01–PRE09 kontrol listeleri) başlar.
+    public bool IncludePreop { get; set; }
 }
 
 public sealed class PatientProfile

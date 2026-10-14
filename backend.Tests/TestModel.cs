@@ -15,7 +15,8 @@ public static class TestModel
     public static readonly string Backend = Path.Combine(Repo, "backend");
 
     public static readonly FlowModelStore Model =
-        new(Dist, "2.4", Path.Combine(Backend, "Procedures", "scoring.json"), Path.Combine(Backend, "Procedures", "instrument-descriptors.json"));
+        new(Dist, "2.4", Path.Combine(Backend, "Procedures", "scoring.json"), Path.Combine(Backend, "Procedures", "instrument-descriptors.json"),
+            Path.Combine(Backend, "Procedures", "adaptive-rules.json"));
 
     public static readonly ProcedureStore Store = new(new Env(Backend), NullLogger<ProcedureStore>.Instance);
 
@@ -43,6 +44,9 @@ public static class TestModel
         {
             case "confirm":
                 yield return new EventRequest { EventType = "step_confirmed" };
+                yield break;
+            case "checklist":
+                yield return new EventRequest { EventType = "checklist_confirmed", CheckedItems = x.Checklist.Select(i => i.Id).ToList() };
                 yield break;
             case "count":
                 var c = x.CountCategory!;

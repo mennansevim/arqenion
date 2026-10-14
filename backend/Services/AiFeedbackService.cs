@@ -43,10 +43,12 @@ public sealed class AiFeedbackService : IAiFeedbackService
     private readonly IHttpClientFactory _httpFactory;
     private readonly IConfiguration _config;
     private readonly ILogger<AiFeedbackService> _logger;
+    private readonly AiLimiter _limiter;
 
     public AiFeedbackService(ProcedureStore store, IHttpClientFactory httpFactory,
-        IConfiguration config, ILogger<AiFeedbackService> logger)
+        IConfiguration config, ILogger<AiFeedbackService> logger, AiLimiter limiter)
     {
+        _limiter = limiter;
         _store = store;
         _httpFactory = httpFactory;
         _config = config;
@@ -79,6 +81,29 @@ public sealed class AiFeedbackService : IAiFeedbackService
         if (string.IsNullOrWhiteSpace(baseUrl))
             return fallback;
 
+        // Aynı seansta aynı hata: önceki AI açıklaması (yeni çağrı ve maliyet yok).
+        if (_limiter.Cached(request) is { } cached)
+            return cached;
+        if (_limiter.TryAcquire(request.SessionId) is { } limit)
+        {
+            _logger.LogInformation("AI çağrısı yapılmadı ({Limit}); klinik tablo kullanılıyor (session={SessionId}).", limit, request.SessionId);
+            return fallback;
+        }
+        try
+        {
+            var result = await CallGatewayAsync(request, baseUrl, requestJson, fallback, ct);
+            _limiter.Remember(request, result);
+            return result;
+        }
+        finally
+        {
+            _limiter.Release();
+        }
+    }
+
+    private async Task<AiFeedbackResult> CallGatewayAsync(AiFeedbackRequest request, string baseUrl, string requestJson,
+        AiFeedbackResult fallback, CancellationToken ct)
+    {
         var timeout = TimeSpan.FromMilliseconds(_config.GetValue("AiGateway:TimeoutMs", 8000));
 
         try

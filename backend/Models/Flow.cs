@@ -89,6 +89,18 @@ public sealed class MasterModelFile
     public MasterCatalogs Catalogs { get; set; } = new();
     public List<MasterStep> Steps { get; set; } = new();
     public List<MasterSubflow> Subflows { get; set; } = new();
+    // Ameliyat öncesi 9 bölüm (PRE01–PRE09); yapıları farklı olduğu için ham okunur (FlowModelStore.BuildChecklist).
+    public List<JsonElement> Preoperative { get; set; } = new();
+}
+
+// Ameliyat öncesi kontrol listesi maddesi. Optional: koşullu madde (ör. taraf cerrahisi ise taraf işaretlemesi).
+public sealed class ChecklistItem
+{
+    public string Id { get; set; } = "";
+    public string Name { get; set; } = "";
+    public string? Task { get; set; }
+    public bool Optional { get; set; }
+    public List<string> Risks { get; set; } = new();   // atlanırsa riskler (modelden)
 }
 
 public sealed class MasterCatalogs
@@ -203,6 +215,47 @@ public sealed class FlowState
     public OpenBranch? OpenBranch { get; set; }
     // Cerrah istemi: hekim tercihine bırakılan adımlarda cerrahın istediği alet/iplik (düğüm → kodlar, grup başına bir).
     public Dictionary<string, List<string>> Requests { get; set; } = new();
+    // Hataya göre dal: "errors" (varsayılan) ya da "off" (sınav modu). Senaryonun kendisi sabitlediği koşullara hata dokunmaz.
+    public string AdaptiveMode { get; set; } = "errors";
+    public List<string> FixedConditions { get; set; } = new();
+    public List<AdaptiveDecision> AdaptiveDecisions { get; set; } = new();
+}
+
+// Kursiyerin hatasıyla doğru yapılan koşul (kayda geçer; akış şemasında ve raporda görünür).
+public sealed class AdaptiveDecision
+{
+    public string Condition { get; set; } = "";
+    public string AtNode { get; set; } = "";
+    public string DeviationType { get; set; } = "";
+    public string? ScenarioId { get; set; }
+    public bool Outcome { get; set; }          // akışı değiştirmeyen sonuç (ör. enfeksiyon riski)
+    public string Message { get; set; } = "";
+}
+
+public sealed class AdaptiveRulesFile
+{
+    public List<AdaptiveRule> Rules { get; set; } = new();
+}
+
+public sealed class AdaptiveRule
+{
+    public string Condition { get; set; } = "";
+    public List<string> DeviationTypes { get; set; } = new();
+    public int FromStep { get; set; } = 1;
+    public int ToStep { get; set; } = 60;
+    // Hatanın eşleştiği onaylı senaryonun "olası komplikasyonlar" listesinde aranır (düzenli ifade); boşsa aranmaz.
+    public string? Complication { get; set; }
+    public string Message { get; set; } = "";
+}
+
+public sealed class AdaptiveTriggerDto
+{
+    public string Condition { get; set; } = "";
+    public string Title { get; set; } = "";
+    public string Message { get; set; } = "";
+    public string? EvaluatedAt { get; set; }
+    public bool Outcome { get; set; }
+    public string? ScenarioId { get; set; }
 }
 
 public sealed class OpenBranch

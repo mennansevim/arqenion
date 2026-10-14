@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
@@ -50,6 +51,7 @@ public sealed class SessionController : ControllerBase
 
     // Simülatör/VR istemcisi adım listesini ve malzeme kataloğunu buradan okur; kopya tanım tutmaz.
     // ?model=v1 ya da ?model=v2.4 ile belirli bir model istenebilir; verilmezse yeni seansların modeli döner.
+    [AllowAnonymous]
     [HttpGet("/api/procedure")]
     public ActionResult GetProcedure([FromQuery] string? model = null)
     {
@@ -109,10 +111,37 @@ public sealed class SessionController : ControllerBase
         };
     }
 
+    // Kursiyer yalnız kendi seansını görür; eğitmen hepsini. Başkasının seansı için "bulunamadı" (var olduğu sızmaz).
+    private async Task<SessionRecord?> FindOwnedAsync(string sessionId)
+    {
+        var session = await _db.Sessions.FindAsync(sessionId);
+        return session is not null && (session.UserId == User.UserId() || User.IsInstructor()) ? session : null;
+    }
+
     private StepView? CurrentView(SessionRecord session)
         => IsFlow(session)
             ? _flow.View(session.CurrentNodeId, FlowProcedureService.Load(session))
             : ProcedureService.MapStep(_store.GetStep(session.CurrentStepId));
+
+    // Seans listesi: eğitmen hepsini, kursiyer kendi seanslarını görür (en yeni önce, en fazla 200).
+    [HttpGet]
+    public async Task<ActionResult> List([FromQuery] int take = 200)
+    {
+        var me = User.UserId();
+        var query = _db.Sessions.AsQueryable();
+        if (!User.IsInstructor()) query = query.Where(s => s.UserId == me);
+        var rows = await query.OrderByDescending(s => s.StartedAt).Take(Math.Clamp(take, 1, 500))
+            .GroupJoin(_db.Users, s => s.UserId, u => u.Id, (s, u) => new { s, u })
+            .SelectMany(x => x.u.DefaultIfEmpty(), (x, u) => new
+            {
+                x.s.Id, x.s.UserId, Username = u != null ? u.Username ?? u.Name : x.s.UserId, x.s.ScenarioId,
+                ProcedureModel = x.s.ProcedureModel ?? "v1", x.s.Status, x.s.Score, x.s.CorrectActions, x.s.WrongActions,
+                x.s.SterileViolations, x.s.HintsUsed, x.s.ComplicationsTriggered, x.s.ComplicationsResolved,
+                x.s.CurrentNodeId, x.s.CurrentStepId, x.s.StartedAt, x.s.CompletedAt
+            })
+            .ToListAsync();
+        return Ok(rows);
+    }
 
     [HttpPost]
     public async Task<ActionResult<StartSessionResponse>> Start([FromBody] StartSessionRequest req)
@@ -125,9 +154,8 @@ public sealed class SessionController : ControllerBase
         if (first is null)
             return StatusCode(500, new { message = "Prosedür adımı tanımlı değil." });
 
-        var userId = string.IsNullOrWhiteSpace(req.UserId) ? Guid.NewGuid().ToString() : req.UserId;
-        if (!await _db.Users.AnyAsync(u => u.Id == userId))
-            _db.Users.Add(new User { Id = userId, Name = userId });
+        // Seans, girişi yapan kullanıcıya aittir; istekteki userId yok sayılır (başkası adına seans açılamaz).
+        var userId = User.UserId()!;
 
         var session = new SessionRecord
         {
@@ -141,7 +169,7 @@ public sealed class SessionController : ControllerBase
             ProcedureModel = "v1"
         };
         if (IsFlowModel(ActiveModel))
-            _flow.Start(session, scenario);
+            _flow.Start(session, scenario, req.Seed);
         _db.Sessions.Add(session);
         await _db.SaveChangesAsync();
 
@@ -160,7 +188,7 @@ public sealed class SessionController : ControllerBase
     [HttpPost("{sessionId}/events")]
     public async Task<ActionResult<ValidationResponse>> PostEvent(string sessionId, [FromBody] EventRequest ev)
     {
-        var session = await _db.Sessions.FindAsync(sessionId);
+        var session = await FindOwnedAsync(sessionId);
         if (session is null)
             return NotFound(new { message = "Seans bulunamadı." });
         if (session.Status != "IN_PROGRESS")
@@ -185,6 +213,10 @@ public sealed class SessionController : ControllerBase
 
         _logger.LogInformation("VR→REST | session={SessionId} event={Type} instrument={Instrument} target={Target} suture={Suture}",
             sessionId, ev.EventType, ev.InstrumentCode ?? "-", ev.Target ?? "-", ev.SutureCode ?? "-");
+
+        // Sözleşmeye uymayan olay entegrasyon hatasıdır: kayda ve puana girmez (docs/vr-events.md).
+        if (IsFlow(session) && _flow.ContractError(ev) is { } contract)
+            return BadRequest(new { message = contract.Message, field = contract.Field, allowed = contract.Allowed });
 
         var outcome = IsFlow(session) ? _flow.Validate(session, ev) : _procedure.Validate(session, ev);
 
@@ -233,7 +265,9 @@ public sealed class SessionController : ControllerBase
                 : _complications.Build(deviations, session.ConsecutiveErrors);
 
             var patient = _store.GetScenario(session.ScenarioId)?.Patient ?? new PatientProfile();
-            QueueAiFeedback(sessionId, sessionEventId, ev.EventId, outcome.CurrentStepId, outcome.Deviation, patient,
+            // Ameliyat öncesi (ana adım 0): AI'ın kaynak parçası yok; modelin risk metni yeterli, çağrı yapılmaz.
+            if (outcome.CurrentStepId > 0)
+                QueueAiFeedback(sessionId, sessionEventId, ev.EventId, outcome.CurrentStepId, outcome.Deviation, patient,
                 outcome.ActiveComplication, session.ProcedureModel ?? "v1", table);
         }
 
@@ -253,14 +287,15 @@ public sealed class SessionController : ControllerBase
             ActiveComplication = outcome.ActiveComplication,
             CurrentNodeId = outcome.CurrentNodeId,
             NextNodeId = outcome.NextNodeId,
-            Branch = outcome.Branch
+            Branch = outcome.Branch,
+            Adaptive = outcome.Adaptive
         });
     }
 
     [HttpPost("{sessionId}/complete")]
     public async Task<ActionResult<ReportResponse>> Complete(string sessionId)
     {
-        var session = await _db.Sessions.FindAsync(sessionId);
+        var session = await FindOwnedAsync(sessionId);
         if (session is null)
             return NotFound(new { message = "Seans bulunamadı." });
 
@@ -286,14 +321,14 @@ public sealed class SessionController : ControllerBase
             HintsUsed = session.HintsUsed,
             ComplicationsTriggered = session.ComplicationsTriggered,
             ComplicationsResolved = session.ComplicationsResolved,
-            Summary = BuildSummary(session, successRate)
+            Summary = BuildSummary(session, successRate) + AdaptiveSummary(session)
         });
     }
 
     [HttpGet("{sessionId}")]
     public async Task<ActionResult<StartSessionResponse>> Get(string sessionId)
     {
-        var session = await _db.Sessions.FindAsync(sessionId);
+        var session = await FindOwnedAsync(sessionId);
         if (session is null)
             return NotFound(new { message = "Seans bulunamadı." });
 
@@ -315,7 +350,7 @@ public sealed class SessionController : ControllerBase
     [HttpGet("{sessionId}/flow")]
     public async Task<ActionResult> GetFlow(string sessionId)
     {
-        var session = await _db.Sessions.FindAsync(sessionId);
+        var session = await FindOwnedAsync(sessionId);
         if (session is null)
             return NotFound(new { message = "Seans bulunamadı." });
         if (!IsFlow(session))
@@ -339,13 +374,18 @@ public sealed class SessionController : ControllerBase
             }),
             Parameters = state.Parameters,
             Counts = new { Recorded = state.RecordedCounts, Table = state.Counts },
-            Requests = state.Requests.ToDictionary(r => r.Key, r => r.Value.Select(_flowModel.InstrumentName).ToList())
+            Requests = state.Requests.ToDictionary(r => r.Key, r => r.Value.Select(_flowModel.InstrumentName).ToList()),
+            state.AdaptiveMode,
+            state.FixedConditions,
+            state.AdaptiveDecisions
         });
     }
 
     [HttpGet("{sessionId}/events")]
     public async Task<ActionResult> GetEvents(string sessionId)
     {
+        if (await FindOwnedAsync(sessionId) is null)
+            return NotFound(new { message = "Seans bulunamadı." });
         var events = await _db.SessionEvents
             .Where(e => e.SessionId == sessionId)
             .OrderBy(e => e.CreatedAt)
@@ -361,6 +401,8 @@ public sealed class SessionController : ControllerBase
     [HttpGet("{sessionId}/feedbacks")]
     public async Task<ActionResult> GetFeedbacks(string sessionId)
     {
+        if (await FindOwnedAsync(sessionId) is null)
+            return NotFound(new { message = "Seans bulunamadı." });
         var feedbacks = await _db.AiFeedbacks
             .Where(f => f.SessionId == sessionId)
             .OrderBy(f => f.CreatedAt)
@@ -379,6 +421,8 @@ public sealed class SessionController : ControllerBase
     {
         if (!IsFlow(session))
             return _store.GetClinicalEntry(stepId, dev.DeviationType);
+        if (dev.DeviationType == "CHECKLIST_INCOMPLETE")
+            return _flowText.Entry(nodeId ?? "", dev.DeviationType, dev.Actual, (dev.Expected ?? "").Split(" / "));
         var wanted = (dev.Expected ?? "").Split(" / ", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
             .Where(_flowModel.Catalog.ContainsKey).ToList();
         return _flowText.Entry(nodeId ?? stepId.ToString(), dev.DeviationType, dev.Actual, wanted);
@@ -398,6 +442,17 @@ public sealed class SessionController : ControllerBase
             Severity = dev.Severity,
             Source = "table"
         };
+    }
+
+    // Hatanın yol açtığı durumlar (60 adımlık model): debrief için rapora eklenir.
+    private string AdaptiveSummary(SessionRecord s)
+    {
+        if (!IsFlow(s)) return "";
+        var decisions = FlowProcedureService.Load(s).AdaptiveDecisions;
+        if (decisions.Count == 0) return "";
+        var parts = decisions.Select(d =>
+            $"{_flowModel.Graph.Conditions.GetValueOrDefault(d.Condition)?.Description ?? d.Condition} (Adım {d.AtNode}{(d.ScenarioId is null ? "" : ", " + d.ScenarioId)})");
+        return $" Hatalarınızın sonucu: {string.Join("; ", parts)}.";
     }
 
     private static string BuildSummary(SessionRecord s, int successRate)

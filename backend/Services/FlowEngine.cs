@@ -11,14 +11,17 @@ public sealed class FlowEngine
 
     public FlowEngine(FlowModelStore model) => _model = model;
 
-    public FlowState Start(Dictionary<string, List<bool>> conditions, Dictionary<string, System.Text.Json.JsonElement> parameters)
+    public FlowState Start(Dictionary<string, List<bool>> conditions, Dictionary<string, System.Text.Json.JsonElement> parameters,
+        bool includePreop = false)
     {
         foreach (var c in conditions.Keys)
             if (!_model.Graph.Conditions.ContainsKey(c))
                 throw new ArgumentException($"Bilinmeyen koşul: {c}");
         var p = _model.DefaultParameters();
         foreach (var (k, v) in parameters) p[k] = v;
-        return new FlowState { Conditions = conditions, Parameters = p, Path = new() { _model.FirstNodeId } };
+        // walk(include_preop=…) ile aynı: ameliyat öncesi istenirse giriş düğümünden (PRE01) başlar.
+        return new FlowState { Conditions = conditions, Parameters = p,
+                               Path = new() { includePreop ? _model.PreopEntryNodeId : _model.FirstNodeId } };
     }
 
     // Düğümün karar noktalarını sırayla değerlendirir; ilk doğru koşulun dalına gider, yoksa düz devam eder.

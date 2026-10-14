@@ -33,6 +33,7 @@ CASES = [
       "MESO_VESSELS": [{"caliber": "SMALL"}, {"caliber": "LARGE"}]}),
     ("thin-large-vessels", {}, {"PATIENT_BODY_TYPE": "THIN",
                                 "MESO_VESSELS": [{"caliber": "LARGE"}, {"caliber": "LARGE"}, {"caliber": "LARGE"}]}),
+    ("with-preop", {"BLEEDING_DETECTED": True}, {}, True),
     ("everything", {"EXPOSURE_INSUFFICIENT": True, "ADHESIONS_PRESENT": True, "LIGATURE_NOT_SECURE": True,
                     "BLEEDING_DETECTED": True, "BLEEDING_AFTER_IRRIGATION": [True, True],
                     "COUNT_MISMATCH": True, "ITEM_FOUND_ON_IMAGING": True},
@@ -68,10 +69,12 @@ def random_cases(fe):
 def main():
     fe = FlowEngine(DIST / f"open-appendectomy-v{VERSION}.graph.json")
     out = []
-    for case_id, conditions, parameters in CASES:
-        r = fe.walk(conditions, parameters)
+    for case_id, conditions, parameters, *preop in CASES:
+        include_preop = bool(preop and preop[0])
+        r = fe.walk(conditions, parameters, include_preop=include_preop)
         out.append({
             "id": case_id,
+            "includePreop": include_preop,
             "conditions": {k: (v if isinstance(v, list) else [v]) for k, v in conditions.items()},
             "parameters": r["parameters"],
             "path": [str(x) for x in r["path"]],

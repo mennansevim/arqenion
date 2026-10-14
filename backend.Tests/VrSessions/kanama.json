@@ -1,0 +1,1214 @@
+{
+ "name": "kanama",
+ "description": "Kanamalı vaka: 40 → 41 hemostaz, 43 → 43a ara hemostaz ve tekrar yıkama.",
+ "start": {
+  "scenarioId": "case-bleeding-01",
+  "userId": "vr-test",
+  "seed": "vr-kanama"
+ },
+ "events": [
+  {
+   "send": {
+    "eventId": "kanama-001",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "SCALPEL_BLADE_15",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "1",
+    "nextNodeId": "2",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-002",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "ESU_MONOPOLAR_PEN",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "2",
+    "nextNodeId": "3",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-003",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "FORCEPS_STILLE_NON_TOOTHED_15",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "3",
+    "nextNodeId": "4",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-004",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "RETRACTOR_ROUX_15",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "4",
+    "nextNodeId": "5",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-005",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "SCALPEL_BLADE_15",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "5",
+    "nextNodeId": "6",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-006",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "CLAMP_CRILE_STRAIGHT_14",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "6",
+    "nextNodeId": "7",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-007",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "CLAMP_CRILE_CURVED_14",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "7",
+    "nextNodeId": "8",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-008",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "CLAMP_CRILE_CURVED_14",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "8",
+    "nextNodeId": "9",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-009",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "SCALPEL_BLADE_15",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "9",
+    "nextNodeId": "10",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-010",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "SCISSORS_METZENBAUM",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "10",
+    "nextNodeId": "11",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-011",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "RETRACTOR_FARABEUF_15_SET",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "11",
+    "nextNodeId": "13",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-012",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "step_confirmed"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "13",
+    "nextNodeId": "14",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-013",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "step_confirmed"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "14",
+    "nextNodeId": "15",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-014",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "CLAMP_BABCOCK_16",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "15",
+    "nextNodeId": "16",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-015",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "step_confirmed"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "16",
+    "nextNodeId": "17",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-016",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "step_confirmed"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "17",
+    "nextNodeId": "18",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-017",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "step_confirmed"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "18",
+    "nextNodeId": "19",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-018",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "step_confirmed"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "19",
+    "nextNodeId": "22",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-019",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "step_confirmed"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "22",
+    "nextNodeId": "23",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-020",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "CLAMP_CRILE_CURVED_14",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "23",
+    "nextNodeId": "23",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-021",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "CLAMP_CRILE_CURVED_14",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "23",
+    "nextNodeId": "24",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-022",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "SCISSORS_METZENBAUM_CURVED",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "24",
+    "nextNodeId": "25",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-023",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "step_confirmed"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "25",
+    "nextNodeId": "26",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-024",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "SUTURE_SILK_3_0",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "26",
+    "nextNodeId": "27",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-025",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "NEEDLE_HOLDER_DEBAKEY_18",
+    "target": "SURGEON",
+    "sutureCode": "SUTURE_SILK_3_0"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "27",
+    "nextNodeId": "28",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-026",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "NEEDLE_HOLDER_DEBAKEY_18",
+    "target": "SURGEON",
+    "sutureCode": "SUTURE_POLYGLACTIN_2_0"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "28",
+    "nextNodeId": "29",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-027",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "step_confirmed"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "29",
+    "nextNodeId": "30",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-028",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "CLAMP_CRILE_STRAIGHT_14",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "30",
+    "nextNodeId": "31",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-029",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "SCALPEL_BLADE_15",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "31",
+    "nextNodeId": "32",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-030",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "step_confirmed"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "32",
+    "nextNodeId": "33",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-031",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "CLAMP_FOERSTER_CURVED_24",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "33",
+    "nextNodeId": "34",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-032",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "SCALPEL_BLADE_15",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "34",
+    "nextNodeId": "35",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-033",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "step_confirmed"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "35",
+    "nextNodeId": "36",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-034",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "CLAMP_CRILE_STRAIGHT_14",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "36",
+    "nextNodeId": "37",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-035",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "step_confirmed"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "37",
+    "nextNodeId": "38",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-036",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "step_confirmed"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "38",
+    "nextNodeId": "39",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-037",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "step_confirmed"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "39",
+    "nextNodeId": "40",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-038",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "step_confirmed"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "40",
+    "nextNodeId": "41",
+    "deviationType": null,
+    "score": 100,
+    "branch": "BLEEDING_DETECTED",
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-039",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "CLAMP_MOSQUITO",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "41",
+    "nextNodeId": "42",
+    "deviationType": null,
+    "score": 100,
+    "branch": "BLEEDING_DETECTED:resolved",
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-040",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "ISOTONIC_SALINE",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "42",
+    "nextNodeId": "43",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-041",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "SUCTION_TIP_YANKAUER",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "43",
+    "nextNodeId": "43a",
+    "deviationType": null,
+    "score": 100,
+    "branch": "BLEEDING_AFTER_IRRIGATION",
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-042",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "ESU_MONOPOLAR_PEN",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "43a",
+    "nextNodeId": "42",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-043",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "ISOTONIC_SALINE",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "42",
+    "nextNodeId": "43",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-044",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "SUCTION_TIP_YANKAUER",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "43",
+    "nextNodeId": "44",
+    "deviationType": null,
+    "score": 100,
+    "branch": "BLEEDING_AFTER_IRRIGATION:resolved",
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-045",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "count_confirmed",
+    "counts": {
+     "COMPRESS": 10
+    }
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "44",
+    "nextNodeId": "45",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-046",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "count_confirmed",
+    "counts": {
+     "INSTRUMENT": 20
+    }
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "45",
+    "nextNodeId": "46",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-047",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "count_confirmed",
+    "counts": {
+     "NEEDLE": 3
+    }
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "46",
+    "nextNodeId": "47",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-048",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "step_confirmed"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "47",
+    "nextNodeId": "48",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-049",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "CLAMP_CRILE_CURVED_14",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "48",
+    "nextNodeId": "49",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-050",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "NEEDLE_HOLDER_DEBAKEY_18",
+    "target": "SURGEON",
+    "sutureCode": "SUTURE_POLYGLACTIN_1"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "49",
+    "nextNodeId": "50",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-051",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "NEEDLE_HOLDER_DEBAKEY_18",
+    "target": "SURGEON",
+    "sutureCode": "SUTURE_POLYGLACTIN_1"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "50",
+    "nextNodeId": "51",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-052",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "CLAMP_ALLIS_ATRAUMATIC_19",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "51",
+    "nextNodeId": "52",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-053",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "NEEDLE_HOLDER_DEBAKEY_18",
+    "target": "SURGEON",
+    "sutureCode": "SUTURE_POLYGLACTIN_0"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "52",
+    "nextNodeId": "53",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-054",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "ISOTONIC_SALINE",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "53",
+    "nextNodeId": "54",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-055",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "NEEDLE_HOLDER_DEBAKEY_18",
+    "target": "SURGEON",
+    "sutureCode": "SUTURE_POLYGLACTIN_2_0"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "54",
+    "nextNodeId": "55",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-056",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "FORCEPS_STILLE_NON_TOOTHED_15",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "55",
+    "nextNodeId": "56",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-057",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "NEEDLE_HOLDER_DEBAKEY_18",
+    "target": "SURGEON",
+    "sutureCode": "SUTURE_POLYPROPYLENE_3_0"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "56",
+    "nextNodeId": "57",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-058",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "STERILE_GAUZE_SPONGE",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "57",
+    "nextNodeId": "58",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-059",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "DRESSING_GAUZE_10X10",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "58",
+    "nextNodeId": "59",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-060",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "instrument_delivered",
+    "instrumentCode": "TAPE_WATERPROOF",
+    "target": "SURGEON"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "59",
+    "nextNodeId": "60",
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": false
+   }
+  },
+  {
+   "send": {
+    "eventId": "kanama-061",
+    "timestamp": "2026-10-14T09:00:00.000Z",
+    "eventType": "step_confirmed"
+   },
+   "expect": {
+    "status": 200,
+    "success": true,
+    "currentNodeId": "60",
+    "nextNodeId": null,
+    "deviationType": null,
+    "score": 100,
+    "branch": null,
+    "adaptive": [],
+    "completed": true
+   }
+  }
+ ],
+ "report": {
+  "score": 100,
+  "wrongActions": 0,
+  "correctActions": 61,
+  "complicationsTriggered": 2,
+  "complicationsResolved": 2
+ }
+}

@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Arqenion — Ameliyathane Simülasyonu</title>
-  <link rel="stylesheet" href="styles.css?v=flow1" />
+  <link rel="stylesheet" href="styles.css?v=preop1" />
 </head>
 <body>
   <!-- Üst Bar -->
@@ -26,14 +26,17 @@
           <option value="case-bleeding-01">Kanamalı Vaka (60 adım)</option>
           <option value="case-count-01">Sayım Uyuşmazlığı (60 adım)</option>
           <option value="case-obese-01">Kilolu Hasta, Estetik Kapatma (60 adım)</option>
+          <option value="case-full-01">Tam Vaka: ameliyat öncesi dahil (60 adım)</option>
         </select>
       </label>
       <label class="field">
         <span>Kullanıcı</span>
-        <input id="userId" type="text" value="u1" />
+        <input id="userId" type="text" readonly placeholder="giriş yapılmadı" />
       </label>
+      <button id="logoutBtn" class="btn btn-ghost" title="Oturumu kapat">Çıkış</button>
       <button id="startBtn" class="btn btn-primary">▶ Seansı Başlat</button>
       <button id="endBtn" class="btn btn-danger" disabled>■ Bitir & Rapor</button>
+      <a id="adminLink" class="btn btn-ghost hidden" href="egitmen.html" title="Kullanıcılar, seanslar, hata bildirimleri">Eğitmen</a>
       <button id="flowBtn" class="btn btn-ghost" title="Motorun bu seansta yürüdüğü akış (60 adımlık model)">⑂ Akış</button>
       <button id="helpBtn" class="btn btn-ghost" title="Nasıl kullanılır?">?</button>
       <button id="bugBtn" class="btn btn-bug" title="Bir hata veya eksik gördüyseniz bildirin">🐞 Hata Bildir</button>
@@ -147,6 +150,13 @@
           <button id="releaseBtn" class="btn btn-mini btn-ghost" disabled>Bırak</button>
         </div>
 
+        <!-- Kontrol listesi (ameliyat öncesi bölümler) -->
+        <div id="checklistMode" class="count-mode checklist-mode hidden">
+          <p class="count-help">Ameliyat öncesi kontrol listesi. Yapılan her maddeyi işaretleyin; atlanan madde hata sayılır.</p>
+          <div id="checklistItems" class="checklist-items"></div>
+          <button id="checklistSendBtn" class="btn btn-primary" type="button">✔ Kontrol listesini onayla</button>
+        </div>
+
         <!-- Sayım modu (yalnızca sayım adımında) -->
         <div id="countMode" class="count-mode hidden">
           <p id="countHelp" class="count-help">Kapanış öncesi sayım. Değerler beklenenle eşleşmezse <b>COUNT_MISMATCH</b> sapması oluşur.</p>
@@ -233,6 +243,17 @@
   </div>
 
   <!-- Yardım Modalı -->
+  <div id="loginModal" class="modal hidden">
+    <form id="loginForm" class="modal-card login-card" autocomplete="on">
+      <h2>Giriş</h2>
+      <p class="muted">Hesabınızı eğitmeniniz açar. Kullanıcı adınız ve şifrenizle girin.</p>
+      <label class="field"><span>Kullanıcı adı</span><input id="loginUser" name="username" type="text" autocomplete="username" required /></label>
+      <label class="field"><span>Şifre</span><input id="loginPass" name="password" type="password" autocomplete="current-password" required /></label>
+      <p id="loginError" class="login-error hidden" role="alert"></p>
+      <button id="loginBtn" type="submit" class="btn btn-primary">Giriş yap</button>
+    </form>
+  </div>
+
   <div id="flowModal" class="modal hidden">
     <div class="modal-card modal-flow">
       <div class="flow-head">
@@ -266,6 +287,7 @@
         <li>Tepsiden bir aleti <b>sürükleyip</b> doğru bölgeye (🩺 Cerrah / 🗑️ Kirli Alan / 🧪 Patoloji) bırakın — ya da alete tıklayıp sonra bölgeye tıklayın.</li>
         <li>Sütür gereken adımlarda <b>Sütür</b> menüsü otomatik açılır ve doğru sütür seçilir; test için değiştirebilirsiniz.</li>
         <li>Sayım adımında değerleri girip <b>Sayımı Onayla</b>'ya basın. 60 adımlık modelde her sayım (kompres, alet, iğne) ayrı adımdır; kutu başlangıç kaydıyla gelir, masadaki gerçek sayıyı girin.</li>
+        <li><b>Tam Vaka</b> ameliyat öncesi 9 bölümle başlar: her bölümde yapılan maddeleri işaretleyip <b>Kontrol listesini onayla</b>'ya basın. Zorunlu madde atlanırsa hata sayılır; "gerekiyorsa" etiketli maddeler koşulludur.</li>
         <li>Cerrahın kendisinin yaptığı adımlarda yeni alet verilmez: <b>✔ Adımı onayla</b>'ya basın. Bu adımlarda alet uzatmak hata sayılır.</li>
         <li>Senaryoya göre akış dallanabilir (kanama, yapışıklık, sayım uyuşmazlığı…). Dal başlayınca komplikasyon panosunda görünür; ana akışa dönülünce "yönetildi" olur.</li>
         <li>Yanlış alet, yanlış sütür, steril ihlali gibi durumlarda üstte <span class="hl-r">kırmızı</span> afiş çıkar ve <b>AI Geri Bildirim</b> paneli klinik açıklamayı gösterir.</li>
@@ -330,6 +352,6 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
-  <script src="app.js?v=flow1"></script>
+  <script src="app.js?v=preop1"></script>
 </body>
 </html>

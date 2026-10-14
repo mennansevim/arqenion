@@ -18,6 +18,7 @@ public sealed class ValidationOutcome
     public string? CurrentNodeId { get; set; }
     public string? NextNodeId { get; set; }
     public FlowBranchDto? Branch { get; set; }
+    public List<AdaptiveTriggerDto>? Adaptive { get; set; }
 }
 
 // Deterministic, fully explainable procedure validation. This is the safety-critical layer:

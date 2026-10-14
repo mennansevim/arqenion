@@ -1,0 +1,68 @@
+{
+ "name": "kilolu-hatalar",
+ "description": "Kilolu hasta, karışık hatalar: kısa Farabeuf, ipucu, steril ihlal, aynı olayın tekrarı, gereksiz portegü, Prolen, cerrah istemi dışı flaster.",
+ "start": {
+  "scenarioId": "case-obese-01",
+  "userId": "vr-test",
+  "seed": "vr-kilolu"
+ },
+ "inject": [
+  {
+   "at": "5",
+   "send": {
+    "eventType": "hint_requested"
+   }
+  },
+  {
+   "at": "7",
+   "duplicateLast": true
+  },
+  {
+   "at": "11",
+   "send": {
+    "eventType": "instrument_delivered",
+    "instrumentCode": "RETRACTOR_FARABEUF_15_SET",
+    "target": "SURGEON"
+   }
+  },
+  {
+   "at": "30",
+   "send": {
+    "eventType": "sterile_area_violated"
+   }
+  },
+  {
+   "at": "35",
+   "send": {
+    "eventType": "instrument_delivered",
+    "instrumentCode": "NEEDLE_HOLDER_DEBAKEY_18",
+    "target": "SURGEON"
+   }
+  },
+  {
+   "at": "52",
+   "send": {
+    "eventType": "instrument_delivered",
+    "instrumentCode": "NEEDLE_HOLDER_DEBAKEY_18",
+    "sutureCode": "SUTURE_POLYPROPYLENE_0",
+    "target": "SURGEON"
+   }
+  },
+  {
+   "at": "59",
+   "send": {
+    "eventType": "instrument_delivered",
+    "instrumentCode": "TAPE_SILK",
+    "target": "SURGEON"
+   }
+  },
+  {
+   "at": "59",
+   "send": {
+    "eventType": "instrument_delivered",
+    "instrumentCode": "TAPE_WATERPROOF",
+    "target": "SURGEON"
+   }
+  }
+ ]
+}

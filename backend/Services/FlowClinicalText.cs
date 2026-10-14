@@ -43,6 +43,8 @@ public sealed class FlowClinicalText
 
     public ClinicalKnowledgeEntry Entry(string nodeId, string deviationType, string? actual, IReadOnlyCollection<string>? wanted = null)
     {
+        if (deviationType == "CHECKLIST_INCOMPLETE")
+            return ChecklistEntry(nodeId, wanted ?? Array.Empty<string>());
         var generic = _generic.GetClinicalEntry(0, deviationType);
         var severity = generic?.Severity ?? "MEDIUM";
         var scenario = deviationType == "WRONG_INSTRUMENT" ? Match(nodeId, actual, wanted) : null;
@@ -88,6 +90,23 @@ public sealed class FlowClinicalText
             RecommendedAction = generic?.RecommendedAction ?? FirstSentence(practice),
             Severity = severity,
             Source = generic?.Source
+        };
+    }
+
+    // Ameliyat öncesi kontrol listesinde atlanan madde: risk ve görev modelin kendi metninden.
+    private ClinicalKnowledgeEntry ChecklistEntry(string nodeId, IReadOnlyCollection<string> missingIds)
+    {
+        var items = (_model.Checklists.GetValueOrDefault(nodeId) ?? new()).Where(i => missingIds.Contains(i.Id)).ToList();
+        var first = items.FirstOrDefault();
+        return new ClinicalKnowledgeEntry
+        {
+            StepId = nodeId,
+            DeviationType = "CHECKLIST_INCOMPLETE",
+            PossibleRisk = first?.Risks.FirstOrDefault() ?? "Hazırlık eksik kalır; hasta güvenliği ve ameliyat akışı etkilenebilir.",
+            Explanation = $"Atlanan madde: {string.Join("; ", items.Select(i => i.Name))}.",
+            RecommendedAction = first?.Task ?? (first is null ? "Kontrol listesini eksiksiz tamamlayın." : $"{first.Name} yapılmadan devam edilmez."),
+            Severity = "HIGH",
+            Source = $"open-appendectomy@{_model.Version}:preoperative:{nodeId}"
         };
     }
 

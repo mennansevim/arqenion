@@ -1,0 +1,10 @@
+{
+ "name": "standart",
+ "description": "Standart vaka, hatasız: 56 adım.",
+ "start": {
+  "scenarioId": "case-basic-01",
+  "userId": "vr-test",
+  "seed": "vr-standart"
+ },
+ "inject": []
+}

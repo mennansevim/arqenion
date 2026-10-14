@@ -1,0 +1,20 @@
+{
+ "name": "sayim-hatasi",
+ "description": "Sayım uyuşmazlığı: kursiyer önce kayıttaki sayıyı onaylar (hata), sonra masadakini; doğrulamada alt akış 47a–47c.",
+ "start": {
+  "scenarioId": "case-count-01",
+  "userId": "vr-test",
+  "seed": "vr-sayim"
+ },
+ "inject": [
+  {
+   "at": "44",
+   "send": {
+    "eventType": "count_confirmed",
+    "counts": {
+     "COMPRESS": 10
+    }
+   }
+  }
+ ]
+}

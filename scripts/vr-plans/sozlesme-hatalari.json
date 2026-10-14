@@ -1,0 +1,56 @@
+{
+ "name": "sozlesme-hatalari",
+ "description": "VR sözleşme ihlalleri 400 döner, puana ve kayda girmez: bilinmeyen olay, katalog dışı kod, sayımsız sayım, bilinmeyen hedef.",
+ "start": {
+  "scenarioId": "case-basic-01",
+  "userId": "vr-test",
+  "seed": "vr-sozlesme"
+ },
+ "inject": [
+  {
+   "at": "1",
+   "send": {
+    "eventType": "instrument_give",
+    "instrumentCode": "SCALPEL_BLADE_10"
+   }
+  },
+  {
+   "at": "1",
+   "send": {
+    "eventType": "instrument_delivered",
+    "instrumentCode": "SCALPEL_NO_10",
+    "target": "SURGEON"
+   }
+  },
+  {
+   "at": "1",
+   "send": {
+    "eventType": "instrument_delivered",
+    "target": "SURGEON"
+   }
+  },
+  {
+   "at": "1",
+   "send": {
+    "eventType": "instrument_delivered",
+    "instrumentCode": "SCALPEL_BLADE_10",
+    "target": "NURSE"
+   }
+  },
+  {
+   "at": "44",
+   "send": {
+    "eventType": "count_confirmed"
+   }
+  },
+  {
+   "at": "44",
+   "send": {
+    "eventType": "count_confirmed",
+    "counts": {
+     "GAUZE": 10
+    }
+   }
+  }
+ ]
+}
