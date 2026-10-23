@@ -4,21 +4,21 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Arqenion — Ameliyathane Simülasyonu</title>
-  <link rel="stylesheet" href="styles.css?v=preop1" />
+  <link rel="stylesheet" href="styles.css?v=5" />
 </head>
 <body>
-  <!-- Üst Bar -->
+  <!-- Üst bar: kimlik, seans, skor ve hasta monitörü -->
   <header class="topbar">
     <div class="brand">
       <span class="brand-mark">⊕</span>
       <div>
         <div class="brand-title">Arqenion</div>
-        <div class="brand-sub">Açık Apendektomi — Scrub Teknikeri Simülasyonu</div>
+        <div class="brand-sub">Açık apendektomi · scrub teknikeri</div>
       </div>
     </div>
 
-    <div class="topbar-controls">
-      <label class="field">
+    <div class="tb-session">
+      <label class="field field-inline">
         <span>Senaryo</span>
         <select id="scenario">
           <option value="case-basic-01">Standart Vaka</option>
@@ -29,23 +29,38 @@
           <option value="case-full-01">Tam Vaka: ameliyat öncesi dahil (60 adım)</option>
         </select>
       </label>
-      <label class="field">
-        <span>Kullanıcı</span>
-        <input id="userId" type="text" readonly placeholder="giriş yapılmadı" />
-      </label>
-      <button id="logoutBtn" class="btn btn-ghost" title="Oturumu kapat">Çıkış</button>
-      <button id="startBtn" class="btn btn-primary">▶ Seansı Başlat</button>
-      <button id="endBtn" class="btn btn-danger" disabled>■ Bitir & Rapor</button>
-      <a id="adminLink" class="btn btn-ghost hidden" href="egitmen.html" title="Kullanıcılar, seanslar, hata bildirimleri">Eğitmen</a>
-      <button id="flowBtn" class="btn btn-ghost" title="Motorun bu seansta yürüdüğü akış (60 adımlık model)">⑂ Akış</button>
-      <button id="helpBtn" class="btn btn-ghost" title="Nasıl kullanılır?">?</button>
-      <button id="bugBtn" class="btn btn-bug" title="Bir hata veya eksik gördüyseniz bildirin">🐞 Hata Bildir</button>
+      <button id="startBtn" class="btn btn-primary">▶ Başlat</button>
+      <button id="endBtn" class="btn btn-danger" disabled>■ Bitir &amp; Rapor</button>
     </div>
 
+    <div class="tb-user">
+      <span id="connState" class="conn-badge conn-off">● Bağlı değil</span>
+      <input id="userId" class="user-pill" type="text" readonly placeholder="giriş yapılmadı" aria-label="Kullanıcı" />
+      <a class="btn btn-ghost btn-mini" href="vr.html" title="VR gözlük bağlantı testi: cihazdan gelen istekleri canlı izle">🥽 VR Test</a>
+      <a id="adminLink" class="btn btn-ghost btn-mini hidden" href="egitmen.html" title="Kullanıcılar, seanslar, hata bildirimleri">Eğitmen</a>
+      <button id="logoutBtn" class="btn btn-ghost btn-mini" title="Oturumu kapat">Çıkış</button>
+      <button id="helpBtn" class="btn btn-ghost btn-mini btn-icon" title="Nasıl kullanılır?">?</button>
+      <button id="bugBtn" class="btn btn-bug btn-mini" title="Bir hata veya eksik gördüyseniz bildirin">🐞 Hata Bildir</button>
+      <details class="settings">
+        <summary class="btn btn-ghost btn-mini btn-icon" title="Ayarlar">⚙</summary>
+        <div class="settings-pop">
+          <label class="field"><span>Backend adresi</span><input id="baseUrl" type="text" value="http://localhost:5080" /></label>
+          <label class="field"><span>Genişletilmiş akış görünümü</span>
+            <select id="flowViewSel">
+              <option value="snake">Yılan akış (adım adlarıyla)</option>
+              <option value="tree">Hiyerarşik ağaç (karar → evet / hayır)</option>
+            </select>
+          </label>
+        </div>
+      </details>
+    </div>
+  </header>
+
+  <!-- Görev şeridi: şu anki görev ve canlı değerlendirme -->
+  <div class="taskbar">
     <div id="taskCard" class="task-strip empty">
       <p class="muted">Seansı başlatın; ilk göreviniz burada görünecek.</p>
     </div>
-
     <div id="evalStrip" class="eval-strip">
       <span id="verdictBanner" class="eval-verdict ev-idle">Hazır</span>
       <div class="eval-mini">
@@ -57,11 +72,10 @@
         <span class="em ok"><b id="cntResolved">0</b><i>Çözüldü</i></span>
       </div>
     </div>
-
-    <div class="topbar-status">
-      <div class="score-ring">
+    <div class="tb-status">
+      <div class="score-ring" title="Puan: 100'den başlar, her hata düşer">
         <div id="scoreValue" class="score-value">—</div>
-        <div class="score-label">SKOR</div>
+        <div class="score-label">PUAN</div>
       </div>
       <div id="miniMonitor" class="mini-monitor stable">
         <canvas id="vitalWave" class="vital-wave" width="150" height="46"></canvas>
@@ -74,21 +88,9 @@
         <span id="pulseValue" class="hidden">74</span>
         <span id="monitorState" class="hidden">Stabil</span>
       </div>
-      <div class="progress-wrap">
-        <div class="progress-meta">
-          <span id="progressLabel">Aşama 0 / 22</span>
-          <span id="connState" class="conn-badge conn-off">● Bağlı değil</span>
-        </div>
-        <div class="progress-track">
-          <div id="progressBar" class="progress-fill" style="width:0%"></div>
-        </div>
-        <label class="field field-inline">
-          <span>Backend</span>
-          <input id="baseUrl" type="text" value="http://localhost:5080" />
-        </label>
-      </div>
     </div>
-  </header>
+
+  </div>
 
   <!-- Anlık geri bildirim afişi -->
   <div id="toast" class="toast hidden"></div>
@@ -99,7 +101,7 @@
       <section class="panel">
         <h2 class="panel-title">🩸 Komplikasyon</h2>
         <div id="compBoard" class="comp-board empty">
-          <p class="muted">Hatalar biriktikçe en olası komplikasyonlar burada (max 5) görünür.</p>
+          <p class="muted">Hatalar biriktikçe en olası komplikasyonlar burada (en fazla 5) görünür.</p>
         </div>
       </section>
 
@@ -111,7 +113,7 @@
       </section>
     </div>
 
-    <!-- ORTA: Ameliyathane Sahnesi -->
+    <!-- ORTA: Ameliyathane sahnesi -->
     <div class="col col-center">
       <section class="panel scene">
         <h2 class="panel-title">🏥 Ameliyathane Sahnesi</h2>
@@ -145,9 +147,11 @@
             <span>Sütür</span>
             <select id="sutureSelect"><option value="">(yok)</option></select>
           </label>
-          <button id="confirmBtn" class="btn btn-mini btn-primary hidden" title="Bu adımda yeni alet verilmez: cerrahı izleyip adımı onaylayın">✔ Adımı onayla (yeni alet yok)</button>
-          <button id="autoBtn" class="btn btn-mini btn-success" title="Bu adımın doğru aletini otomatik teslim et">⚡ Doğru aleti gönder</button>
-          <button id="releaseBtn" class="btn btn-mini btn-ghost" disabled>Bırak</button>
+          <div class="hand-actions">
+            <button id="confirmBtn" class="btn btn-mini btn-primary hidden" title="Bu adımda yeni alet verilmez: cerrahı izleyip adımı onaylayın">✔ Adımı onayla</button>
+            <button id="autoBtn" class="btn btn-mini btn-success" title="Bu adımın doğru aletini otomatik teslim et">⚡ Doğru aleti gönder</button>
+            <button id="releaseBtn" class="btn btn-mini btn-ghost" disabled>Bırak</button>
+          </div>
         </div>
 
         <!-- Kontrol listesi (ameliyat öncesi bölümler) -->
@@ -193,27 +197,39 @@
       </section>
     </div>
 
-    <!-- SAĞ: Prosedür adımları + geliştirici logu -->
+    <!-- SAĞ: Akış hattı (60 adımlık model) ya da adım listesi (eski model) -->
     <div class="col col-right">
-      <section class="panel">
-        <h2 class="panel-title">📋 Prosedür — 22 Aşama</h2>
-        <ol id="stepList" class="step-list"></ol>
-      </section>
-
-      <section class="panel log-panel">
-        <div class="log-header">
-          <button id="logToggle" class="log-toggle">▸ Geliştirici Günlüğü (JSON)</button>
-          <button id="clearLogBtn" class="btn btn-mini">Temizle</button>
+      <section class="panel flow-panel">
+        <div class="fp-head">
+          <h2 class="panel-title">⑂ Akış</h2>
+          <button id="flowBtn" class="btn btn-mini btn-ghost" title="Motorun bu vakadaki koşul planı ve cerrah istemleri">Vaka planı</button>
+          <button id="flowSizeBtn" class="btn btn-mini btn-ghost" title="Akışı tam ekran aç (görünüm ⚙ Ayarlar'dan seçilir)">⤢ Genişlet</button>
         </div>
-        <div id="log" class="log hidden"></div>
+        <div class="fp-progress">
+          <div class="progress-meta"><span id="progressLabel">Aşama 0 / 22</span><span id="railReach" class="muted"></span></div>
+          <div class="progress-track"><div id="progressBar" class="progress-fill" style="width:0%"></div></div>
+        </div>
+        <div id="railStats" class="rail-stats"></div>
+        <div id="flowRail" class="flow-rail"></div>
+        <ol id="stepList" class="step-list hidden"></ol>
+        <div class="rail-legend">
+          <span><i class="lg-dot ok"></i>geçildi</span>
+          <span><i class="lg-dot cur"></i>şu an</span>
+          <span><i class="lg-dot err"></i>hata</span>
+          <span><i class="lg-dot skip"></i>gerekmedi</span>
+          <span><i class="lg-line l1"></i>dal</span>
+          <span><i class="lg-line l2"></i>alt akış</span>
+          <span><i class="lg-line ret"></i>dönüş</span>
+        </div>
       </section>
     </div>
   </main>
 
-  <!-- Alt: İstek Takibi (kaynak vurgulu) -->
-  <section id="trafficBar" class="traffic-bar">
-    <div class="traffic-head">
-      <span class="traffic-title">📡 İstek Takibi</span>
+  <!-- Alt konsol: istek takibi ve geliştirici günlüğü -->
+  <section id="dock" class="dock">
+    <div class="dock-head">
+      <button class="dock-tab on" data-tab="traffic">📡 İstek Takibi <b id="trafficCount" class="dock-count">0 istek</b></button>
+      <button class="dock-tab" data-tab="log">{ } JSON Günlüğü</button>
       <span class="traffic-legend">
         <span class="src src-sim">VR·SİM</span>
         <span class="src src-backend">BACKEND</span>
@@ -221,11 +237,11 @@
         <span class="src src-aillm">AI·LLM</span>
         <span class="src src-hub">HUB</span>
       </span>
-      <span id="trafficCount" class="traffic-count">0 istek</span>
-      <button id="trafficToggle" class="btn btn-mini">Genişlet</button>
-      <button id="trafficClear" class="btn btn-mini">Temizle</button>
+      <button id="trafficToggle" class="btn btn-mini btn-ghost">Genişlet</button>
+      <button id="trafficClear" class="btn btn-mini btn-ghost">Temizle</button>
     </div>
     <div id="traffic" class="traffic-list compact"></div>
+    <div id="log" class="log traffic-list compact hidden"></div>
   </section>
 
   <!-- Rapor Modalı -->
@@ -255,25 +271,38 @@
   </div>
 
   <div id="flowModal" class="modal hidden">
-    <div class="modal-card modal-flow">
+    <div class="modal-card modal-plan">
       <div class="flow-head">
-        <h2>⑂ Akış Şeması</h2>
-        <span id="flowSummary" class="muted"></span>
-        <span class="flow-legend">
-          <span class="lg lg-done">yürünen</span><span class="lg lg-current">şu an</span>
-          <span class="lg lg-skipped">atlanan</span><span class="lg lg-pending">sırada</span>
-          <span class="lg lg-branch">- - → dal (koşul)</span>
-        </span>
+        <h2>Vaka planı</h2>
+        <span class="muted">Motorun bu seanstaki girdileri</span>
         <button id="closeFlowBtn" class="btn btn-ghost">Kapat</button>
       </div>
-      <div class="flow-body">
-        <div id="flowDiagram" class="flow-diagram"><p class="muted">Yükleniyor…</p></div>
-        <aside class="flow-side">
-          <h3>Vaka planı (motorun girdisi)</h3>
-          <div id="flowPlan"></div>
-          <h3>Cerrah istemleri</h3>
-          <div id="flowRequests"></div>
-        </aside>
+      <div class="flow-side">
+        <h3>Koşullar</h3>
+        <div id="flowPlan"></div>
+        <h3>Cerrah istemleri</h3>
+        <div id="flowRequests"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Genişletilmiş akış (tam ekran): yılan akış ya da hiyerarşik ağaç -->
+  <div id="flowXModal" class="modal fx-modal hidden">
+    <div class="fx-card">
+      <header class="fx-head">
+        <div class="fx-title">⑂ Akış <span id="fxSub" class="muted"></span></div>
+        <div id="fxStats" class="rail-stats"></div>
+        <div class="fx-tabs" role="tablist">
+          <button class="fx-tab" data-view="snake">〰 Yılan</button>
+          <button class="fx-tab" data-view="tree">🌳 Ağaç</button>
+        </div>
+        <button id="fxClose" class="btn btn-mini">⤡ Küçült</button>
+      </header>
+      <div id="fxBody" class="fx-body"></div>
+      <div class="fx-legend">
+        <span><i class="lg-dot ok"></i>geçildi</span><span><i class="lg-dot cur"></i>şu an</span><span><i class="lg-dot err"></i>hata yapıldı</span>
+        <span><i class="lg-dot"></i>sırada</span><span><i class="lg-dot skip"></i>bu vakada gerekmedi</span>
+        <span><i class="lg-line l1"></i>dal</span><span><i class="lg-line l2"></i>alt akış</span><span><i class="lg-line l3"></i>alt akış dalı</span><span><i class="lg-line ret"></i>ana hatta dönüş</span>
       </div>
     </div>
   </div>
@@ -282,7 +311,7 @@
     <div class="modal-card modal-wide">
       <h2>❓ Nasıl Kullanılır?</h2>
       <ol class="help-list">
-        <li><b>Seansı Başlat</b>'a basın. Sol üstte ilk görev, sağda 22 aşamalık kontrol listesi belirir.</li>
+        <li><b>Başlat</b>'a basın. Üstte ilk görev, sağda <b>Akış</b> hattı belirir: yeşil adımlar geçildi, mavi adım şu an; dal ve alt akışlar sağdaki şeritlere iner, ana hatta dönüş yeşil okla gösterilir.</li>
         <li><b>Görev Rehberi</b> size ne yapmanız gerektiğini düz Türkçe anlatır. Beklenen alet(ler) tepside <span class="hl-g">yeşil</span> parlar; hedef bölge de vurgulanır.</li>
         <li>Tepsiden bir aleti <b>sürükleyip</b> doğru bölgeye (🩺 Cerrah / 🗑️ Kirli Alan / 🧪 Patoloji) bırakın — ya da alete tıklayıp sonra bölgeye tıklayın.</li>
         <li>Sütür gereken adımlarda <b>Sütür</b> menüsü otomatik açılır ve doğru sütür seçilir; test için değiştirebilirsiniz.</li>
@@ -351,7 +380,9 @@
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
-  <script src="app.js?v=preop1"></script>
+  <script src="config.js?v=1"></script>
+  <script src="flow-rail.js?v=3"></script>
+  <script src="flow-views.js?v=1"></script>
+  <script src="app.js?v=4"></script>
 </body>
 </html>

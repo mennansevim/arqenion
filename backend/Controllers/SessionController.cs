@@ -25,12 +25,14 @@ public sealed class SessionController : ControllerBase
     private readonly IHubContext<SimulationHub> _hub;
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly ILogger<SessionController> _logger;
+    private readonly AssetStore _assets;
 
     public SessionController(ArqenionDbContext db, ProcedureStore store, ProcedureService procedure,
         FlowModelStore flowModel, FlowProcedureService flow, FlowClinicalText flowText, IConfiguration config,
         ComplicationEngine complications, IHubContext<SimulationHub> hub, IServiceScopeFactory scopeFactory,
-        ILogger<SessionController> logger)
+        ILogger<SessionController> logger, AssetStore assets)
     {
+        _assets = assets;
         _db = db;
         _store = store;
         _procedure = procedure;
@@ -96,9 +98,9 @@ public sealed class SessionController : ControllerBase
             // Varsayılan hasta parametreleriyle; seansın kendi beklentisi StepView'da (currentStep/nextStep) gelir.
             Steps = m.PlayableNodes.Select(n => _flow.View(n.Id, preview)),
             InstrumentCatalog = m.Catalog.Where(c => c.Value.Category != "suture")
-                .Select(c => new { Code = c.Key, c.Value.Name, c.Value.Category, Sterile = true }),
+                .Select(c => new { Code = c.Key, c.Value.Name, c.Value.Category, Sterile = true, Asset = AssetRef(c.Key) }),
             SutureCatalog = m.Catalog.Where(c => c.Value.Category == "suture")
-                .Select(c => new { Code = c.Key, c.Value.Name }),
+                .Select(c => new { Code = c.Key, c.Value.Name, Asset = AssetRef(c.Key) }),
             Conditions = m.Graph.Conditions.Values.Where(c => c.Source != "OUTCOME")
                 .Select(c => new { c.Code, c.Description, c.Source, c.EvaluatedAt }),
             // Akış şeması için: her düğümün düz devamı ve karar dalları (koşul → hedef, döngü sınırı).
@@ -110,6 +112,10 @@ public sealed class SessionController : ControllerBase
             Complications = Array.Empty<object>()
         };
     }
+
+    // Katalog öğesinin VR modeli (yoksa null); ayrıntı ve toplu liste: GET /api/assets/manifest.
+    private object? AssetRef(string code)
+        => _assets.For(code) is { } a ? new { a.AssetId, a.Url, a.Sha256, a.SizeBytes } : null;
 
     // Kursiyer yalnız kendi seansını görür; eğitmen hepsini. Başkasının seansı için "bulunamadı" (var olduğu sızmaz).
     private async Task<SessionRecord?> FindOwnedAsync(string sessionId)
@@ -218,6 +224,7 @@ public sealed class SessionController : ControllerBase
         if (IsFlow(session) && _flow.ContractError(ev) is { } contract)
             return BadRequest(new { message = contract.Message, field = contract.Field, allowed = contract.Allowed });
 
+        var scoreBefore = session.Score;
         var outcome = IsFlow(session) ? _flow.Validate(session, ev) : _procedure.Validate(session, ev);
 
         _db.SessionEvents.Add(new SessionEventRecord
@@ -245,8 +252,10 @@ public sealed class SessionController : ControllerBase
         _logger.LogInformation("REST→VR | session={SessionId} step={Step} success={Success} deviation={Deviation} scoreChange={Change} score={Score}",
             sessionId, outcome.CurrentStepId, outcome.Success, outcome.Deviation?.DeviationType ?? "-", outcome.ScoreChange, session.Score);
 
-        await _hub.Clients.Group(sessionId).SendAsync("ScoreUpdate",
-            new ScoreUpdateDto { SessionId = sessionId, Score = session.Score });
+        // Puan değişmediyse (doğru adım, yinelenen olay) ScoreUpdate gönderilmez; puan zaten olay cevabında var.
+        if (session.Score != scoreBefore)
+            await _hub.Clients.Group(sessionId).SendAsync("ScoreUpdate",
+                new ScoreUpdateDto { SessionId = sessionId, Score = session.Score });
 
         AiFeedbackDto? complication = null;
         CumulativeComplicationDto? cumulative = null;

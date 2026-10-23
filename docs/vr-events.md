@@ -5,11 +5,34 @@ VR gözlük ile backend arasındaki tek sözleşme budur. VR yalnızca **JSON ol
 ## Akış
 
 1. `GET /api/procedure` → katalog ve adım listesi (VR tepsisini bu katalogla kurar).
+   Modeller: `GET /api/assets/manifest` (aşağıda **Assetler**).
 2. `POST /api/sessions` → seans başlar, ilk adım (`currentStep`) gelir.
 3. SignalR: `/hubs/simulation` bağlantısı, `JoinSession(sessionId)`.
 4. Her kursiyer hareketi: `POST /api/sessions/{sessionId}/events` → cevap **hemen** gelir (karar + sıradaki adım).
 5. AI açıklaması SignalR `AiFeedback` ile **birkaç saniye sonra** gelir; puan değişince `ScoreUpdate`.
 6. Bitiş: `POST /api/sessions/{sessionId}/complete` → rapor.
+
+## Assetler (VR modelleri)
+
+Modeller API cevabına gömülmez (base64 yok). Backend bir liste verir, gözlük dosyaları ayrıca indirip saklar.
+
+1. `GET /api/assets/manifest` (giriş istemez):
+   ```json
+   { "manifestHash": "9f…", "count": 5, "totalBytes": 4408,
+     "assets": [ { "assetId": "catalog/SCALPEL_BLADE_15", "code": "SCALPEL_BLADE_15",
+                   "url": "/assets/catalog/SCALPEL_BLADE_15.glb", "sha256": "a1…", "sizeBytes": 884,
+                   "contentType": "model/gltf-binary" } ],
+     "missing": [ "CLAMP_BABCOCK_16", "…" ] }
+   ```
+2. `manifestHash` gözlükte saklı olanla aynıysa hiçbir şey indirilmez.
+3. Değilse her öğenin `sha256` değeri kendi kopyasıyla karşılaştırılır; farklı ya da yeni olanlar `url`'den indirilir. Göreli `url` aynı sunucudadır; `Assets:BaseUrl` ayarlıysa (CDN) tam adres gelir.
+4. `missing` listesindeki kodların modeli henüz yok: gözlük yer tutucu gösterir. Olay yine bu kodla gönderilir.
+
+`GET /api/procedure` kataloğunda her öğenin `asset` alanı aynı bilgiyi taşır (`assetId`, `url`, `sha256`, `sizeBytes`; model yoksa `null`).
+
+- **Dosya adı katalog kodudur:** `assets/catalog/<KOD>.glb` (ayrıca `.gltf`, `.png`, `.jpg`, `.ktx2`). Katalogda olmayan ad yayınlanmaz, açılışta uyarı loglanır.
+- **Değişiklik:** dosyayı değiştirip yeniden yayınlamak yeter; hash değişir, gözlük yalnız onu indirir.
+- **Örnek dosyalar:** `python3 scripts/make-placeholder-assets.py` gerçek boyutta renkli kutular üretir (5 kod). Gerçek modeller gelince üzerine yazılır.
 
 ## Seans başlatma
 
@@ -131,6 +154,8 @@ Yanlış türde olay (ör. onay adımında alet uzatmak) **kursiyer hatasıdır*
 - Olaylar sırayla gönderilmelidir (bir cevap gelmeden sıradakini göndermeyin): karar her olayda bir önceki duruma dayanır.
 
 ## Test
+
+- **VR Test ekranı:** `/sim/vr.html` (Vercel: `https://arqenion-sim.vercel.app/vr.html`). Sözleşme uçlarına gelen her istek (sağlık, giriş, katalog, manifest, model indirme, seans, olay, SignalR `JoinSession`, bitiş) cihaz başına canlı listelenir; ekran 12 adımlık bir kontrol listesiyle yönlendirir. Cihaz adı `X-Arqenion-Device` başlığından, yoksa User-Agent'tan okunur. Eğitmen bütün cihazları, kursiyer yalnız kendi hesabıyla gelenleri görür. Şifre ve jeton kaydedilmez; kayıt bellekte durur (sunucu yeniden başlayınca boşalır).
 
 - **Kayıtlı oturumlar:** `backend.Tests/VrSessions/*.json` — gönderilen her JSON olay ve beklenen cevap. `dotnet test backend.Tests` bunları süreç içi HTTP ile tekrar oynatır.
 - **Canlı sunucuya karşı:** `node scripts/vr-replay.mjs replay backend.Tests/VrSessions/kanama.json --url http://localhost:5080`

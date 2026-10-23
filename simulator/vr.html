@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Arqenion — VR Bağlantı Testi</title>
+  <link rel="stylesheet" href="styles.css?v=egitmen1" />
+  <style>
+    :root { color-scheme: dark; }
+    body { height: auto; min-height: 100vh; overflow: auto; display: block; }
+    .vt { max-width: 1320px; margin: 0 auto; padding: 14px 16px 40px; display: grid; gap: 14px; }
+    .vt-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .vt-head h1 { margin: 0; font-size: 19px; }
+    .vt-head .sub { color: var(--muted); font-size: 12px; }
+    .vt-head .spacer { flex: 1; }
+    .panel { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; display: grid; gap: 12px; min-width: 0; }
+    .panel h2 { margin: 0; font-size: 15px; display: flex; align-items: center; gap: 10px; }
+    .muted { color: var(--muted); }
+    .error-text { color: var(--red); font-size: 13px; }
+    .row-form { display: flex; gap: 8px; flex-wrap: wrap; align-items: end; }
+    .row-form .field { min-width: 160px; }
+    code, .mono { font-family: ui-monospace, Menlo, monospace; font-size: 12px; }
+
+    /* Sekmeler */
+    .vt-tabs { display: flex; gap: 6px; border-bottom: 1px solid var(--border); }
+    .vt-tab { background: none; border: 0; color: var(--muted); padding: 9px 14px; font: inherit; font-size: 14px; font-weight: 600;
+      border-bottom: 2px solid transparent; cursor: pointer; }
+    .vt-tab[aria-selected="true"] { color: var(--text); border-bottom-color: var(--primary); }
+    .vt-tab .count { font-weight: 500; color: var(--muted); margin-left: 4px; }
+
+    /* Sihirbaz */
+    .vt-wizard { display: grid; grid-template-columns: minmax(300px, 380px) minmax(0, 1fr); gap: 14px; align-items: start; }
+    .vt-stage { position: sticky; top: 12px; display: grid; gap: 12px; }
+    .vt-device { display: grid; justify-items: center; gap: 6px; padding: 18px 12px 14px; border-radius: 16px;
+      background: radial-gradient(260px 160px at 50% 45%, var(--glow, #3b82f622), transparent 70%), var(--bg-2); border: 1px solid var(--border);
+      transition: background .4s; }
+    .vt-device svg { width: 100%; max-width: 300px; height: auto; filter: drop-shadow(0 0 18px var(--glow, transparent)); transition: filter .4s; }
+    .vt-device.waiting { --glow: #60a5fa22; --led: #64748b; }
+    .vt-device.waiting svg { animation: vt-breathe 2.6s ease-in-out infinite; }
+    .vt-device.live { --glow: #34d39933; --led: #34d399; }
+    .vt-device.idle { --glow: #f59e0b22; --led: #f59e0b; }
+    .vt-device.flash { --glow: #60a5fa66; }
+    .vt-device.flash-bad { --glow: #f8717166; }
+    @keyframes vt-breathe { 0%, 100% { opacity: .75; transform: scale(.985); } 50% { opacity: 1; transform: scale(1); } }
+    .vt-state { font-size: 18px; font-weight: 700; text-align: center; }
+    .vt-state-sub { color: var(--muted); text-align: center; font-size: 12.5px; min-height: 18px; }
+    .vt-toast { font-size: 12px; padding: 5px 10px; border-radius: 99px; background: var(--card-2); border: 1px solid var(--border);
+      opacity: 0; transform: translateY(4px); transition: opacity .25s, transform .25s; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .vt-toast.show { opacity: 1; transform: none; }
+    .vt-toast.ok { border-color: var(--green); color: var(--green); }
+    .vt-toast.bad { border-color: var(--red); color: var(--red); }
+
+    .vt-progress { display: grid; gap: 6px; }
+    .vt-bar { height: 8px; border-radius: 99px; background: var(--bg-2); border: 1px solid var(--border); overflow: hidden; }
+    .vt-bar > i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #3b82f6, #34d399); transition: width .5s; }
+    .vt-kv { display: grid; grid-template-columns: auto 1fr; gap: 4px 10px; font-size: 12.5px; }
+    .vt-kv dt { color: var(--muted); }
+    .vt-kv dd { margin: 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .vt-copy { display: flex; gap: 6px; align-items: center; min-width: 0; }
+    .vt-copy code { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 6px 8px; border-radius: 8px;
+      background: var(--bg-2); border: 1px solid var(--border); }
+
+    .vt-steps { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
+    .vt-step { border: 1px solid var(--border); border-radius: 12px; background: var(--card); transition: border-color .3s, background .3s; }
+    .vt-step > header { display: flex; align-items: center; gap: 10px; padding: 10px 12px; cursor: pointer; }
+    .vt-num { width: 28px; height: 28px; flex: none; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: 13px;
+      background: var(--bg-2); border: 1px solid var(--border); color: var(--muted); }
+    .vt-step .t { font-weight: 650; font-size: 14px; flex: 1; min-width: 0; }
+    .vt-step .t small { display: block; font-weight: 400; color: var(--muted); font-size: 12px; margin-top: 1px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .chip { font-size: 11px; padding: 2px 8px; border-radius: 99px; border: 1px solid var(--border); color: var(--muted); white-space: nowrap; }
+    .chip.now { color: var(--blue); border-color: var(--blue); }
+    .chip.ok { color: var(--green); border-color: var(--green); }
+    .chip.bad { color: var(--red); border-color: var(--red); }
+    .chip.opt { border-style: dashed; }
+    .vt-step.done { border-color: #34d39955; }
+    .vt-step.done .vt-num { background: #14321f; border-color: var(--green); color: var(--green); }
+    .vt-step.current { border-color: var(--primary); background: linear-gradient(180deg, #1e2d55, var(--card)); box-shadow: 0 0 0 3px #3b82f622; }
+    .vt-step.current .vt-num { background: var(--primary); border-color: var(--primary); color: #fff; animation: vt-ping 1.8s ease-out infinite; }
+    .vt-step.failed { border-color: #f8717188; }
+    .vt-step.skipped { opacity: .6; }
+    .vt-step.pop .vt-num { animation: vt-pop .6s ease-out; }
+    @keyframes vt-ping { 0% { box-shadow: 0 0 0 0 #3b82f688; } 100% { box-shadow: 0 0 0 10px #3b82f600; } }
+    @keyframes vt-pop { 0% { transform: scale(.6); } 60% { transform: scale(1.25); } 100% { transform: scale(1); } }
+    .vt-body { padding: 0 12px 12px 50px; display: grid; gap: 10px; font-size: 13px; line-height: 1.5; }
+    .vt-body p { margin: 0; }
+    .vt-body ol { margin: 0; padding-left: 18px; }
+    .vt-endpoint { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .verb { font: 700 11px ui-monospace, Menlo, monospace; padding: 3px 7px; border-radius: 6px; color: #fff; }
+    .verb.GET { background: #2563eb; } .verb.POST { background: #059669; } .verb.HUB { background: #7c3aed; }
+    pre.vt-json { margin: 0; padding: 10px 12px; border-radius: 10px; background: var(--bg-2); border: 1px solid var(--border);
+      font: 12px/1.45 ui-monospace, Menlo, monospace; overflow-x: auto; white-space: pre; position: relative; }
+    .vt-json-wrap { position: relative; }
+    .vt-json-wrap .btn { position: absolute; top: 6px; right: 6px; }
+    .vt-hint { padding: 8px 10px; border-radius: 10px; border: 1px solid var(--red); background: #3a213055; color: #fecaca; }
+    .vt-got { padding: 8px 10px; border-radius: 10px; border: 1px solid #34d39966; background: #14321f55; }
+    .vt-got b { color: var(--green); }
+    details.vt-raw summary { cursor: pointer; color: var(--muted); font-size: 12px; }
+
+    /* Canlı akış */
+    .vt-log { max-height: 380px; overflow: auto; margin: 0; padding: 0; list-style: none; display: grid; }
+    .vt-log li { display: grid; gap: 3px; padding: 7px 4px; border-bottom: 1px solid var(--border); font-size: 12.5px; min-width: 0; }
+    .vt-log .req { display: flex; align-items: center; gap: 8px; min-width: 0; }
+    .vt-log .req code { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .vt-log .sum { padding-left: 64px; color: var(--text); overflow-wrap: anywhere; }
+    .vt-log li.new { animation: vt-row 1.6s ease-out; }
+    @keyframes vt-row { from { background: #3b82f633; } to { background: transparent; } }
+    .st { font-weight: 700; font-family: ui-monospace, Menlo, monospace; }
+    .st.ok { color: var(--green); } .st.bad { color: var(--red); } .st.warn { color: var(--warn); }
+
+    /* Tüm cihazlar */
+    .vt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+    .vt-card { text-align: left; font: inherit; color: inherit; cursor: pointer; display: grid; gap: 8px; padding: 14px; border-radius: 14px;
+      background: var(--card); border: 1px solid var(--border); transition: border-color .2s, transform .1s; }
+    .vt-card:hover { border-color: var(--primary); }
+    .vt-card:active { transform: translateY(1px); }
+    .vt-card .top { display: flex; align-items: center; gap: 10px; }
+    .vt-card .ico { width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; background: var(--bg-2); font-size: 20px; flex: none; }
+    .vt-card .name { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .vt-card .meta { color: var(--muted); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; background: var(--gray); flex: none; }
+    .dot.live { background: var(--green); box-shadow: 0 0 0 0 #34d39988; animation: vt-ping 1.8s ease-out infinite; }
+    .dot.idle { background: var(--warn); }
+    .vt-card.flash { border-color: var(--blue); }
+    .vt-empty { text-align: center; padding: 28px 12px; color: var(--muted); display: grid; gap: 8px; justify-items: center; }
+    .vt-toolbar { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+    .vt-toolbar label { display: flex; gap: 6px; align-items: center; color: var(--muted); font-size: 12.5px; }
+    .vt-toolbar input[type="checkbox"] { width: auto; margin: 0; }
+
+    @media (max-width: 860px) {
+      .vt-wizard { grid-template-columns: minmax(0, 1fr); }
+      .vt-stage { position: static; }
+      .vt-body { padding-left: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="vt">
+    <header class="vt-head">
+      <div class="brand">
+        <div class="brand-mark">⌬</div>
+        <div><h1>VR Bağlantı Testi</h1><div class="sub">Gözlükten gelen istekleri canlı izler, adım adım yönlendirir</div></div>
+      </div>
+      <span class="spacer"></span>
+      <span id="liveBadge" class="conn-badge conn-off">● Canlı bağlantı yok</span>
+      <span id="who" class="muted"></span>
+      <a id="swaggerLink" class="btn btn-ghost btn-mini" target="_blank" rel="noopener">Swagger ↗</a>
+      <a class="btn btn-ghost btn-mini" href="./">Simülatör</a>
+      <a id="adminLink" class="btn btn-ghost btn-mini hidden" href="egitmen.html">Eğitmen</a>
+      <button id="logoutBtn" class="btn btn-ghost btn-mini hidden" type="button">Çıkış</button>
+    </header>
+
+    <form id="loginForm" class="panel hidden" autocomplete="on">
+      <h2>Giriş</h2>
+      <p class="muted" style="margin:0">Gözlükte kullanacağın hesapla gir: o hesabın cihazlarını görürsün. Eğitmen hesabı bütün cihazları görür.</p>
+      <div class="row-form">
+        <label class="field"><span>Kullanıcı adı</span><input id="loginUser" type="text" autocomplete="username" required /></label>
+        <label class="field"><span>Şifre</span><input id="loginPass" type="password" autocomplete="current-password" required /></label>
+        <button class="btn btn-primary" type="submit">Giriş yap</button>
+      </div>
+      <p id="loginError" class="error-text hidden" role="alert"></p>
+    </form>
+
+    <div id="app" class="hidden" style="display:grid;gap:14px">
+      <nav class="vt-tabs" role="tablist">
+        <button class="vt-tab" role="tab" id="tabWizard" aria-selected="true" type="button">🎮 Test sihirbazı</button>
+        <button class="vt-tab" role="tab" id="tabAll" aria-selected="false" type="button">📡 Tüm cihazlar<span id="allCount" class="count"></span></button>
+      </nav>
+
+      <!-- Sihirbaz -->
+      <section id="viewWizard" class="vt-wizard">
+        <aside class="vt-stage">
+          <div id="device" class="vt-device waiting">
+            <svg viewBox="0 0 320 230" role="img" aria-label="VR gözlük ve iki kumanda">
+              <defs>
+                <linearGradient id="shell" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4f6fa"/><stop offset="1" stop-color="#c7cedb"/></linearGradient>
+                <linearGradient id="face" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a3350"/><stop offset="1" stop-color="#151b2d"/></linearGradient>
+                <linearGradient id="ctl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#eef1f6"/><stop offset="1" stop-color="#b9c1d0"/></linearGradient>
+              </defs>
+              <!-- kayış -->
+              <path d="M52 92 C 40 30, 280 30, 268 92" fill="none" stroke="#39445f" stroke-width="12" stroke-linecap="round"/>
+              <path d="M52 92 C 40 30, 280 30, 268 92" fill="none" stroke="#56627f" stroke-width="3" stroke-linecap="round" opacity=".6"/>
+              <!-- gövde -->
+              <rect x="38" y="62" width="244" height="104" rx="46" fill="url(#shell)"/>
+              <rect x="38" y="62" width="244" height="104" rx="46" fill="none" stroke="#ffffff" stroke-opacity=".7" stroke-width="1.5"/>
+              <!-- ön sensörler -->
+              <rect x="76" y="96" width="16" height="40" rx="8" fill="#1b2234"/>
+              <rect x="228" y="96" width="16" height="40" rx="8" fill="#1b2234"/>
+              <rect x="140" y="104" width="40" height="22" rx="11" fill="#1b2234"/>
+              <circle cx="151" cy="115" r="4.5" fill="#3b4a72"/><circle cx="169" cy="115" r="4.5" fill="#3b4a72"/>
+              <!-- yüz minderi -->
+              <path d="M70 162 Q160 186 250 162 L246 172 Q160 196 74 172 Z" fill="url(#face)"/>
+              <!-- durum ışığı -->
+              <circle cx="262" cy="84" r="5" fill="var(--led, #64748b)"><animate attributeName="opacity" values="1;.45;1" dur="1.6s" repeatCount="indefinite"/></circle>
+              <!-- kumandalar -->
+              <g transform="translate(22 150) rotate(-14)">
+                <circle cx="34" cy="30" r="26" fill="none" stroke="url(#ctl)" stroke-width="9"/>
+                <rect x="26" y="44" width="18" height="44" rx="9" fill="url(#ctl)"/>
+                <circle cx="35" cy="40" r="4" fill="#1b2234"/>
+              </g>
+              <g transform="translate(226 136) rotate(14)">
+                <circle cx="34" cy="30" r="26" fill="none" stroke="url(#ctl)" stroke-width="9"/>
+                <rect x="26" y="44" width="18" height="44" rx="9" fill="url(#ctl)"/>
+                <circle cx="35" cy="40" r="4" fill="#1b2234"/>
+              </g>
+            </svg>
+            <div id="stateText" class="vt-state">Cihaz bekleniyor</div>
+            <div id="stateSub" class="vt-state-sub">Gözlükte uygulamayı aç; ilk istek gelince burada görünür.</div>
+            <div id="toast" class="vt-toast" role="status" aria-live="polite"></div>
+          </div>
+
+          <div class="panel">
+            <label class="field"><span>İzlenen cihaz</span><select id="devicePick"></select></label>
+            <dl id="deviceInfo" class="vt-kv"></dl>
+            <div class="vt-progress">
+              <div class="vt-kv" style="grid-template-columns:1fr auto"><span id="progressText" class="muted">0 / 0 zorunlu adım</span><span id="progressPct" class="muted"></span></div>
+              <div class="vt-bar"><i id="progressBar"></i></div>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button id="resetBtn" class="btn btn-mini" type="button" title="Adımları bu cihaz için baştan başlat (kayıtlar silinmez)">↺ Testi baştan başlat</button>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h2>Gözlükte ayarla</h2>
+            <div class="field"><span>Sunucu adresi</span>
+              <div class="vt-copy"><code id="apiBase"></code><button class="btn btn-mini" type="button" data-copy-from="apiBase">Kopyala</button></div></div>
+            <div class="field"><span>Cihaz adı başlığı (önerilir)</span>
+              <div class="vt-copy"><code>X-Arqenion-Device: Quest 3 · Ali</code></div></div>
+            <div id="ngrokNote" class="field hidden"><span>ngrok başlığı (zorunlu)</span>
+              <div class="vt-copy"><code>ngrok-skip-browser-warning: 1</code></div></div>
+          </div>
+        </aside>
+
+        <div style="display:grid;grid-template-columns:minmax(0,1fr);gap:14px;min-width:0">
+          <div id="steps" class="vt-steps"></div>
+          <section class="panel">
+            <h2>Canlı istek akışı <span id="logCount" class="muted" style="font-weight:500;font-size:12px"></span></h2>
+            <ul id="logRows" class="vt-log"></ul>
+          </section>
+        </div>
+      </section>
+
+      <!-- Tüm cihazlar -->
+      <section id="viewAll" class="panel hidden">
+        <div class="vt-toolbar">
+          <h2 style="margin-right:auto">Tüm cihazlar</h2>
+          <label><input id="showWeb" type="checkbox" /> Web tarayıcılarını da göster</label>
+        </div>
+        <p id="allNote" class="muted" style="margin:0"></p>
+        <div id="grid" class="vt-grid"></div>
+      </section>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+  <script src="config.js?v=1"></script>
+  <script src="vr.js?v=1"></script>
+</body>
+</html>
