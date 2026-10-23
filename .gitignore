@@ -30,3 +30,15 @@ node_modules/
 
 # Hata bildirimleri (yerel, sunucuya özel)
 backend/AppData/
+
+# Vercel bağlantısı ve Pi gizli değerleri
+.vercel/
+deploy/pi/.env
+deploy/vercel/site/
+
+# Repoya girmeyecek yerel dosyalar (depo herkese açık)
+tmp/
+externals/
+output/
+logo/*.mp4
+.claude/

@@ -9,9 +9,10 @@ const fmtDate = (s) => (s ? new Date(s).toLocaleString("tr-TR", { dateStyle: "sh
 const SCENARIOS = { "case-basic-01": "Standart", "case-adhesion-01": "Yapışıklık", "case-bleeding-01": "Kanama",
   "case-count-01": "Sayım uyuşmazlığı", "case-obese-01": "Kilolu hasta", "case-full-01": "Tam vaka" };
 
+const API = arqApiBase();   // config.js
 async function api(method, path, body) {
-  const res = await fetch(path, {
-    method, headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+  const res = await fetch(API + path, {
+    method, headers: { "Content-Type": "application/json", ...arqExtraHeaders(API), ...(token ? { Authorization: `Bearer ${token}` } : {}) },
     body: body === undefined ? undefined : JSON.stringify(body),
   });
   if (res.status === 401) { setToken(null); showLogin("Oturum süreniz doldu; yeniden giriş yapın."); throw new Error("401"); }
@@ -48,8 +49,8 @@ async function enter() {
 
 $("loginForm").addEventListener("submit", async (e) => {
   e.preventDefault();
-  const res = await fetch("/api/auth/login", {
-    method: "POST", headers: { "Content-Type": "application/json" },
+  const res = await fetch(`${API}/api/auth/login`, {
+    method: "POST", headers: { "Content-Type": "application/json", ...arqExtraHeaders(API) },
     body: JSON.stringify({ username: $("loginUser").value.trim(), password: $("loginPass").value }),
   });
   const data = await res.json().catch(() => ({}));

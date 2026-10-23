@@ -1,0 +1,71 @@
+# Arqenion — Raspberry Pi kurulumu: Postgres + AI servisi + backend + ngrok tüneli.
+# Gizli değerler aynı klasördeki .env dosyasında (git dışı; örnek: .env.example).
+#   cd ~/arqenion/deploy/pi && docker compose up -d --build
+name: arqenion
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: arqenion
+      POSTGRES_USER: arqenion
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U arqenion -d arqenion"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  ai-gateway:
+    build:
+      context: ../..
+      dockerfile: ai-gateway/Dockerfile
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4o-mini}
+      AI_TIMEOUT_SEC: ${AI_TIMEOUT_SEC:-6}
+    volumes:
+      - ai-logs:/app/ai-gateway/logs
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ../..
+      dockerfile: backend/Dockerfile
+    environment:
+      Database__Provider: Postgres
+      ConnectionStrings__Postgres: Host=postgres;Port=5432;Database=arqenion;Username=arqenion;Password=${POSTGRES_PASSWORD:?}
+      Auth__SigningKey: ${AUTH_SIGNING_KEY:?}
+      Auth__BootstrapAdmin__Username: ${ADMIN_USER:?}
+      Auth__BootstrapAdmin__Password: ${ADMIN_PASS:?}
+      Auth__AllowedOrigins__0: ${ALLOWED_ORIGIN:-}
+      Proxy__TrustForwardedHeaders: "true"
+      Api__Swagger: "true"   # /swagger: VR geliştiricisi için API belgesi (uçlar yine giriş ister)
+      AiGateway__BaseUrl: http://ai-gateway:8090
+    ports:
+      - "5080:8080"          # yerel ağdan doğrudan erişim: http://<pi>:5080/sim/
+    volumes:
+      - appdata:/app/backend/AppData   # hata bildirimleri
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ai-gateway:
+        condition: service_started
+    restart: unless-stopped
+
+  ngrok:
+    image: ngrok/ngrok:latest
+    command: ["http", "backend:8080", "--url=${NGROK_URL:?}", "--log=stdout"]
+    environment:
+      NGROK_AUTHTOKEN: ${NGROK_AUTHTOKEN:?}
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  ai-logs:
+  appdata:

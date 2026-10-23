@@ -2,8 +2,11 @@ using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpLogging;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.FileProviders;
 using Arqenion.Api.Data;
 using Arqenion.Api.Hubs;
@@ -17,7 +20,20 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddSignalR();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+// Swagger'da "Authorize" düğmesi: /api/auth/login'den alınan jeton yapıştırılır, sonraki denemeler onu taşır.
+builder.Services.AddSwaggerGen(o =>
+{
+    o.SwaggerDoc("v1", new OpenApiInfo { Title = "Arqenion API", Version = "v1",
+        Description = "VR olay sözleşmesi: docs/vr-events.md. Karar motorda verilir; AI yalnız hatayı açıklar." });
+    var bearer = new OpenApiSecurityScheme
+    {
+        Name = "Authorization", In = ParameterLocation.Header, Type = SecuritySchemeType.Http, Scheme = "bearer", BearerFormat = "JWT",
+        Description = "POST /api/auth/login cevabındaki token",
+        Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
+    };
+    o.AddSecurityDefinition("Bearer", bearer);
+    o.AddSecurityRequirement(new OpenApiSecurityRequirement { [bearer] = Array.Empty<string>() });
+});
 builder.Services.AddHttpClient();
 
 // REST trafiğini konsola yazar. Gövdeler (VR olayları, cevaplar) yalnız geliştirmede; üretimde yöntem, yol ve durum.
@@ -108,6 +124,15 @@ builder.Services.AddSingleton(sp =>
         Path.Combine(root, "Procedures", "instrument-descriptors.json"),
         Path.Combine(root, "Procedures", "adaptive-rules.json"));
 });
+// VR modelleri (assets/catalog/<KOD>.glb); Assets:BaseUrl doluysa url'ler CDN'i gösterir.
+builder.Services.AddSingleton(sp =>
+{
+    var root = sp.GetRequiredService<IHostEnvironment>().ContentRootPath;
+    return new AssetStore(
+        Path.GetFullPath(Path.Combine(root, builder.Configuration["Assets:Dir"] ?? "../assets")),
+        builder.Configuration["Assets:BaseUrl"],
+        sp.GetRequiredService<FlowModelStore>().Catalog.Keys);
+});
 builder.Services.AddSingleton<FlowEngine>();
 builder.Services.AddSingleton<FlowClinicalText>();
 builder.Services.AddScoped<FlowProcedureService>();
@@ -117,6 +142,8 @@ builder.Services.AddScoped<ScoringService>();
 builder.Services.AddScoped<ProcedureService>();
 builder.Services.AddScoped<IAiFeedbackService, AiFeedbackService>();
 builder.Services.AddSingleton<AiLimiter>();
+// VR bağlantı testi (simulator/vr.html): sözleşme uçlarına gelen istekleri cihaz başına bellekte tutar ve canlı yayar.
+builder.Services.AddSingleton<VrMonitor>();
 
 var app = builder.Build();
 
@@ -124,6 +151,10 @@ var app = builder.Build();
 app.Services.GetRequiredService<ProcedureStore>();
 app.Services.GetRequiredService<FlowModelStore>();
 app.Services.GetRequiredService<IssueStore>();
+var assets = app.Services.GetRequiredService<AssetStore>();
+app.Logger.LogInformation("Assetler: {Count} dosya, {Missing} katalog kodunun modeli yok", assets.All.Count, assets.Missing.Count);
+if (assets.Unmatched.Count > 0)
+    app.Logger.LogWarning("Katalogla eşleşmeyen asset dosyaları yayınlanmadı: {Files}", string.Join(", ", assets.Unmatched));
 
 using (var scope = app.Services.CreateScope())
 {
@@ -133,14 +164,27 @@ using (var scope = app.Services.CreateScope())
         .EnsureBootstrapAdminAsync(db, app.Logger);
 }
 
+// Tünel/vekil arkasında (Pi'de ngrok) gerçek istemci IP'si X-Forwarded-For'dan alınır; giriş sınırı IP başına çalışsın.
+// Yalnız Proxy:TrustForwardedHeaders açıkken; en sağdaki (vekilin eklediği) değer kullanılır.
+if (app.Configuration.GetValue("Proxy:TrustForwardedHeaders", false))
+{
+    var fwd = new ForwardedHeadersOptions { ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto, ForwardLimit = 1 };
+    fwd.KnownNetworks.Clear();
+    fwd.KnownProxies.Clear();
+    app.UseForwardedHeaders(fwd);
+}
 app.UseHttpLogging();
-// API belgesi yalnız geliştirmede açık.
-if (app.Environment.IsDevelopment())
+// API belgesi geliştirmede açık; başka ortamda Api:Swagger=true ile (Pi'de VR geliştiricisi için). Belge giriş istemez, uçlar yine ister.
+if (app.Environment.IsDevelopment() || app.Configuration.GetValue("Api:Swagger", false))
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    // Derin bağlantı: VR test ekranı her adımdan ilgili uca (#/Session/post_api_sessions) link verir.
+    app.UseSwaggerUI(o => o.EnableDeepLinking());
 }
 app.UseCors();
+// Statik dosyalardan önce: model indirmeleri (/assets/catalog) de VR testinde görünsün. Kimlik, istek bitince okunur.
+var vrMonitor = app.Services.GetRequiredService<VrMonitor>();
+app.Use((ctx, next) => vrMonitor.InvokeAsync(ctx, () => next(ctx)));
 
 var simulatorPath = Path.GetFullPath(Path.Combine(app.Environment.ContentRootPath, "..", "simulator"));
 if (Directory.Exists(simulatorPath))
@@ -163,6 +207,26 @@ if (Directory.Exists(simulatorPath))
         }
     });
 }
+
+// VR modelleri giriş istemez (gizli değil; gözlük girişten önce indirebilir).
+var assetDir = Path.Combine(assets.Root, AssetStore.Folder);
+if (Directory.Exists(assetDir))
+{
+    var types = new FileExtensionContentTypeProvider();
+    foreach (var (ext, type) in AssetStore.ContentTypes)
+        types.Mappings[ext] = type;
+    app.UseStaticFiles(new StaticFileOptions
+    {
+        FileProvider = new PhysicalFileProvider(assetDir),
+        RequestPath = $"{AssetStore.RequestPath}/{AssetStore.Folder}",
+        ContentTypeProvider = types,
+        // Dosya değişince hash değişir; gözlük manifestle karşılaştırır. Tarayıcı/vekil için bir gün önbellek + ETag.
+        OnPrepareResponse = ctx => ctx.Context.Response.Headers.CacheControl = "public, max-age=86400"
+    });
+}
+// Olmayan model dosyası giriş sormadan 404 (gözlük girişten önce de indirir).
+app.MapWhen(ctx => ctx.Request.Path.StartsWithSegments(AssetStore.RequestPath),
+    b => b.Run(ctx => { ctx.Response.StatusCode = StatusCodes.Status404NotFound; return Task.CompletedTask; }));
 
 app.UseRateLimiter();
 app.UseAuthentication();

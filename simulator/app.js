@@ -41,7 +41,8 @@ let PHASE_COUNT = 22;
 let TOTAL_STEPS = 0;
 let PROCEDURE_MODEL = "v1";
 let FLOW_GRAPH = [];        // 60 adımlık model: düğümler, düz devam ve karar dalları (akış şeması için)
-let FLOW_PHASES = {};       // aşama kimliği → "no · ad"   // "v2.4": 60 adımlık akış modeli (dallar, onay ve sayım adımları)
+let FLOW_PHASES = {};       // aşama numarası → aşama adı
+let PROCEDURE_CONDITIONS = []; // karar koşulları (kod, açıklama)
 
 // Adımın kimliği: 60 adımlık modelde düğüm ("43a"), eski modelde adım numarası.
 const keyOf = (s) => (s?.nodeId ?? s?.stepId);
@@ -73,6 +74,7 @@ async function loadProcedure() {
     }));
     TOTAL_STEPS = p.mainStepCount || 60;
     FLOW_GRAPH = p.graph || [];
+    PROCEDURE_CONDITIONS = p.conditions || [];
     FLOW_PHASES = Object.fromEntries(p.steps.filter((s) => s.phaseNo).map((s) => [s.phaseNo, s.phase]));
     return p;
   }
@@ -157,13 +159,14 @@ const els = {
   trayChips: $("trayChips"), traySearch: $("traySearch"), trayExpectedBtn: $("trayExpectedBtn"),
   trayPrev: $("trayPrev"), trayNext: $("trayNext"),
   stepList: $("stepList"),
-  log: $("log"), logToggle: $("logToggle"), clearLogBtn: $("clearLogBtn"),
+  log: $("log"),
   traffic: $("traffic"), trafficCount: $("trafficCount"), trafficClear: $("trafficClear"), trafficToggle: $("trafficToggle"),
   reportModal: $("reportModal"), reportBody: $("reportBody"), closeReportBtn: $("closeReportBtn"),
   reportUser: $("reportUser"), reportChart: $("reportChart"), reportChartLegend: $("reportChartLegend"), reportFlow: $("reportFlow"),
   helpModal: $("helpModal"), closeHelpBtn: $("closeHelpBtn"),
-  flowBtn: $("flowBtn"), flowModal: $("flowModal"), closeFlowBtn: $("closeFlowBtn"), flowDiagram: $("flowDiagram"),
-  flowPlan: $("flowPlan"), flowRequests: $("flowRequests"), flowSummary: $("flowSummary"),
+  flowBtn: $("flowBtn"), flowModal: $("flowModal"), closeFlowBtn: $("closeFlowBtn"),
+  flowPlan: $("flowPlan"), flowRequests: $("flowRequests"),
+  flowXModal: $("flowXModal"), flowViewSel: $("flowViewSel"),
   bugBtn: $("bugBtn"), bugModal: $("bugModal"), closeBugBtn: $("closeBugBtn"), bugSendBtn: $("bugSendBtn"),
   bugTitle: $("bugTitle"), bugBody: $("bugBody"), bugSeverity: $("bugSeverity"), bugArea: $("bugArea"),
   bugReporter: $("bugReporter"), bugResult: $("bugResult"),
@@ -254,7 +257,7 @@ const TOKEN_KEY = "arqenion.token";
 const auth = { token: null, user: null };
 try { auth.token = localStorage.getItem(TOKEN_KEY); } catch { /* gizli pencere: her açılışta giriş */ }
 
-const authHeaders = () => (auth.token ? { Authorization: `Bearer ${auth.token}` } : {});
+const authHeaders = () => ({ ...arqExtraHeaders(baseUrl()), ...(auth.token ? { Authorization: `Bearer ${auth.token}` } : {}) });
 
 function setAuth(token, user) {
   auth.token = token; auth.user = user;
@@ -276,7 +279,7 @@ async function login(e) {
   els.loginBtn.disabled = true;
   try {
     const res = await fetch(`${baseUrl()}/api/auth/login`, {
-      method: "POST", headers: { "Content-Type": "application/json" },
+      method: "POST", headers: { "Content-Type": "application/json", ...arqExtraHeaders(baseUrl()) },
       body: JSON.stringify({ username: els.loginUser.value.trim(), password: els.loginPass.value }),
     });
     const data = await res.json().catch(() => ({}));
@@ -358,6 +361,8 @@ async function startSession() {
     toast("info", "Seans başladı. İlk görevinizi yapın.");
     log("success", "← Seans Başladı", data);
     if (monitor.audioEnabled) { ensureAudio(); startHeartbeat(); }
+    railSession = data.sessionId;
+    refreshRail();
     await connectHub();
   } catch (e) {
     log("error", "✕ Başlatma Hatası", formatError(e));
@@ -370,6 +375,7 @@ async function endSession() {
   const sid = state.sessionId;
   try {
     const report = await postJson(`/api/sessions/${sid}/complete`, {});
+    refreshRail();
     log("success", "← Rapor", report);
     let events = [];
     try { events = await getJson(`/api/sessions/${sid}/events`); } catch {}
@@ -487,7 +493,7 @@ function handleResponse(sentType, data) {
 
   if (!replay) recordTimeline(sentType, data);
 
-  if (!els.flowModal.classList.contains("hidden")) refreshFlow();
+  refreshRail();
 
   if (data.completed) {
     setStep(null);
@@ -578,7 +584,7 @@ function renderBranch(b) {
 async function connectHub() {
   try {
     const conn = new signalR.HubConnectionBuilder()
-      .withUrl(`${baseUrl()}/hubs/simulation`, { accessTokenFactory: () => auth.token })
+      .withUrl(`${baseUrl()}/hubs/simulation`, { accessTokenFactory: () => auth.token, headers: arqExtraHeaders(baseUrl()) })
       .withAutomaticReconnect().build();
     conn.on("AiFeedback", (fb) => {
       traffic(
@@ -1400,102 +1406,91 @@ function scrollExpectedIntoView() {
   rail.scrollTo({ left: Math.max(0, left), behavior: "smooth" });
 }
 
-// ---- Akış şeması: motorun bu seansta yürüdüğü yol (60 adımlık model) ----
-// Yeşil = yürünen, mavi = şu anki adım, gri = atlanan dal, kesikli ok = karar dalı (koşul adıyla).
-let flowRenderNo = 0;
+// ---- Akış hattı: motorun bu seansta yürüdüğü yol (60 adımlık model, sağ sütun) ----
+// Çizim flow-rail.js'te; burada veri çekilir ve panel başlığındaki sayılar yazılır.
+// Seans bitince de son yol görünsün diye seans kimliği ayrıca tutulur.
+let railSession = null;
+let railBusy = false, railAgain = false;
 
-async function openFlow() {
-  if (!isFlowModel()) { toast("bad", "Akış şeması yalnızca 60 adımlık modelde var."); return; }
-  els.flowModal.classList.remove("hidden");
-  await refreshFlow();
+function initRail() {
+  const flow = isFlowModel();
+  $("flowRail").classList.toggle("hidden", !flow);
+  els.stepList.classList.toggle("hidden", flow);
+  document.querySelector(".rail-legend")?.classList.toggle("hidden", !flow);
+  els.flowBtn.classList.toggle("hidden", !flow);
+  if (!flow) return;
+  const conditions = Object.fromEntries((PROCEDURE_CONDITIONS || []).map((c) => [c.code, c.description]));
+  FlowRail.init($("flowRail"), FLOW_GRAPH, FLOW_PHASES, conditions);
+  renderRail(null, []);
 }
 
-async function refreshFlow() {
+async function refreshRail() {
+  if (!isFlowModel() || !railSession) return;
+  if (railBusy) { railAgain = true; return; }
+  railBusy = true;
+  try {
+    const sid = encodeURIComponent(railSession);
+    const opts = { headers: authHeaders() };
+    const [flow, events] = await Promise.all([
+      fetch(`${baseUrl()}/api/sessions/${sid}/flow`, opts).then((r) => (r.ok ? r.json() : null)),
+      fetch(`${baseUrl()}/api/sessions/${sid}/events`, opts).then((r) => (r.ok ? r.json() : [])),
+    ]);
+    if (flow) renderRail(flow, events);
+  } catch { /* akış hattı yardımcı görünüm; ağ hatası seansı durdurmaz */ }
+  finally {
+    railBusy = false;
+    if (railAgain) { railAgain = false; refreshRail(); }
+  }
+}
+
+function renderRail(flow, events) {
+  const A = FlowRail.render(flow, events);
+  if (!A) return;
+  const ex = A.excursions;
+  const back = ex.filter((x) => !x.open).length;
+  $("railReach").textContent = flow ? (A.completed ? "tamamlandı" : `ana hat ${A.maxMain}/60`) : "";
+  $("railStats").innerHTML = flow
+    ? `<span class="rs ok">✓ ${A.ok} doğru</span><span class="rs bad">✕ ${A.err} hata</span>` +
+      `<span class="rs br" title="Ana hattan dala ya da alt akışa iniş">↘ ${ex.length} dal</span>` +
+      `<span class="rs ret" title="Dal tamamlanıp ana hatta dönüldü">↩ ${back} dönüş</span>` +
+      (ex.some((x) => x.open) ? `<span class="rs open">● dalda</span>` : "")
+    : `<span class="muted">Seans başlayınca yürünen yol burada işlenir.</span>`;
+  if (!els.flowXModal.classList.contains("hidden")) renderFlowX();
+}
+
+// ---- Genişletilmiş akış (tam ekran): yılan akış ya da hiyerarşik ağaç (flow-views.js) ----
+const FLOW_VIEW_KEY = "arqenion.flowView";
+function flowView() {
+  try { return localStorage.getItem(FLOW_VIEW_KEY) === "tree" ? "tree" : "snake"; } catch { return "snake"; }
+}
+function setFlowView(v) {
+  try { localStorage.setItem(FLOW_VIEW_KEY, v); } catch { /* gizli pencere: yalnız bu açılışta */ }
+  els.flowViewSel.value = v;
+  if (!els.flowXModal.classList.contains("hidden")) renderFlowX();
+}
+function openFlowX() {
+  if (!isFlowModel()) { toast("bad", "Genişletilmiş akış yalnızca 60 adımlık modelde var."); return; }
+  els.flowXModal.classList.remove("hidden");
+  renderFlowX();
+}
+function renderFlowX() {
+  const v = flowView();
+  document.querySelectorAll(".fx-tab").forEach((t) => t.classList.toggle("on", t.dataset.view === v));
+  $("fxSub").textContent = `${els.scenario.selectedOptions[0]?.textContent ?? ""} · ${els.progressLabel.textContent}`;
+  $("fxStats").innerHTML = $("railStats").innerHTML;
+  FlowViews.render($("fxBody"), v);
+}
+
+// ---- Vaka planı: koşulların planı ve cerrah istemleri (motorun girdisi) ----
+async function openFlow() {
+  if (!isFlowModel()) { toast("bad", "Vaka planı yalnızca 60 adımlık modelde var."); return; }
+  els.flowModal.classList.remove("hidden");
   let flow = null;
-  if (state.sessionId) {
-    try { flow = await getJson(`/api/sessions/${state.sessionId}/flow`); } catch (e) { log("error", "✕ Akış okunamadı", formatError(e)); }
+  const sid = state.sessionId || railSession;
+  if (sid) {
+    try { flow = await getJson(`/api/sessions/${sid}/flow`); } catch (e) { log("error", "✕ Akış okunamadı", formatError(e)); }
   }
   renderFlowPlan(flow);
-  await renderFlowDiagram(flow);
-}
-
-const shortLabel = (t, n = 34) => (t.length > n ? t.slice(0, n - 1) + "…" : t).replaceAll('"', "'");
-const nid = (id) => `n${String(id).replace(/[^A-Za-z0-9]/g, "")}`;
-
-function buildMermaid(flow) {
-  const path = flow?.path || [];
-  const current = flow?.currentNodeId ?? null;
-  const visited = new Set(current ? path.slice(0, -1) : path);
-  const order = FLOW_GRAPH.map((n) => n.id);
-  const reach = current ? order.indexOf(current) : (path.length ? order.length : -1);
-  const cls = (id) => id === current ? "current" : visited.has(id) ? "done" : order.indexOf(id) < reach ? "skipped" : "pending";
-
-  const L = ["flowchart TB"];
-  // Ana akış yukarıdan aşağıya tek zincir; dallar yana açılır. Alt akışlar (43a, 47a–f) kendi kutusunda.
-  // Aşama değişen ilk düğümde aşama adı etikete eklenir.
-  let lastPhase = null;
-  const label = (n) => {
-    const ph = n.phaseId ? Number(n.phaseId.replace("PH", "")) : null;
-    const head = ph && ph !== lastPhase ? `[${ph}. ${shortLabel(FLOW_PHASES[ph] || "", 30)}] ` : "";
-    if (ph) lastPhase = ph;
-    return `${head}${n.id}. ${shortLabel(n.label, 44)}`;
-  };
-  for (const n of FLOW_GRAPH.filter((x) => !x.subflowId)) L.push(`${nid(n.id)}["${label(n)}"]:::${cls(n.id)}`);
-  for (const sf of [...new Set(FLOW_GRAPH.filter((x) => x.subflowId).map((x) => x.subflowId))]) {
-    L.push(`subgraph SF_${sf}["⑂ ${sf === "COUNT_DISCREPANCY" ? "Sayım uyuşmazlığı alt akışı" : "Yıkama sonrası kanama"}"]`);
-    for (const n of FLOW_GRAPH.filter((x) => x.subflowId === sf)) L.push(`${nid(n.id)}["${n.id}. ${shortLabel(n.label, 44)}"]:::${cls(n.id)}`);
-    L.push("end");
-  }
-  const edges = [];
-  for (const n of FLOW_GRAPH) {
-    for (const b of n.branches) edges.push({ from: n.id, to: String(b.goTo), label: b.when + (b.maxIterations ? ` ≤${b.maxIterations}` : ""), branch: true });
-    if (n.next != null) edges.push({ from: n.id, to: String(n.next), branch: false });
-  }
-  edges.forEach((e) => L.push(e.branch ? `${nid(e.from)} -.->|${e.label}| ${nid(e.to)}` : `${nid(e.from)} --> ${nid(e.to)}`));
-
-  // Yürünen kenarlar: yoldaki ardışık her çift (dal alındıysa dal kenarı, değilse düz kenar).
-  const walked = new Set();
-  for (let i = 1; i < path.length; i++) {
-    const a = path[i - 1], b = path[i];
-    const idx = edges.findIndex((e) => e.from === a && e.to === b && e.branch) >= 0 && FLOW_GRAPH.find((n) => n.id === a)?.next !== b
-      ? edges.findIndex((e) => e.from === a && e.to === b && e.branch)
-      : edges.findIndex((e) => e.from === a && e.to === b);
-    if (idx >= 0) walked.add(idx);
-  }
-  edges.forEach((e, i) => {
-    if (walked.has(i)) L.push(`linkStyle ${i} stroke:#34d399,stroke-width:3px`);
-    else if (e.branch) L.push(`linkStyle ${i} stroke:#f59e0b,stroke-width:1.5px`);
-  });
-  L.push("classDef done fill:#14532d,stroke:#34d399,color:#d1fae5",
-    "classDef current fill:#1e3a8a,stroke:#93c5fd,stroke-width:3px,color:#ffffff",
-    "classDef skipped fill:#1f2937,stroke:#4b5563,color:#6b7280,stroke-dasharray:4 3",
-    "classDef pending fill:#172036,stroke:#2a3a63,color:#cbd5e1");
-  return L.join("\n");
-}
-
-async function renderFlowDiagram(flow) {
-  if (!window.mermaid) { els.flowDiagram.innerHTML = `<p class="muted">Mermaid yüklenemedi (internet bağlantısı?).</p>`; return; }
-  if (!renderFlowDiagram.ready) {
-    mermaid.initialize({ startOnLoad: false, theme: "dark", securityLevel: "strict", maxTextSize: 200000,
-      flowchart: { curve: "basis", nodeSpacing: 30, rankSpacing: 26, htmlLabels: false, useMaxWidth: false } });
-    renderFlowDiagram.ready = true;
-  }
-  const keep = { left: els.flowDiagram.scrollLeft, top: els.flowDiagram.scrollTop };
-  try {
-    const { svg } = await mermaid.render(`flowSvg${++flowRenderNo}`, buildMermaid(flow));
-    els.flowDiagram.innerHTML = svg;
-    const cur = els.flowDiagram.querySelector("g.node.current");
-    if (cur && !renderFlowDiagram.scrolled) {
-      cur.scrollIntoView({ block: "center", inline: "center" });
-      renderFlowDiagram.scrolled = true;
-    } else els.flowDiagram.scrollTo(keep.left, keep.top);
-  } catch (e) {
-    els.flowDiagram.innerHTML = `<pre class="muted">${escapeHtml(String(e?.message || e))}</pre>`;
-  }
-  const path = flow?.path || [];
-  els.flowSummary.textContent = flow
-    ? `${flow.scenarioId} · ${path.length} adım yüründü · şu an: ${flow.currentNodeId ?? "bitti"}`
-    : "Seans yok — yalnızca model gösteriliyor";
 }
 
 function renderFlowPlan(flow) {
@@ -1636,19 +1631,21 @@ function bindEvents() {
   els.countSendBtn.addEventListener("click", sendCount);
   els.confirmBtn.addEventListener("click", () => sendEvent({ eventType: "step_confirmed" }));
   els.checklistSendBtn.addEventListener("click", sendChecklist);
-  els.clearLogBtn.addEventListener("click", () => (els.log.innerHTML = ""));
-  els.trafficClear.addEventListener("click", () => { els.traffic.innerHTML = ""; trafficCount = 0; els.trafficCount.textContent = "0 istek"; });
+  els.trafficClear.addEventListener("click", () => {
+    if (!els.log.classList.contains("hidden")) { els.log.innerHTML = ""; return; }
+    els.traffic.innerHTML = ""; trafficCount = 0; els.trafficCount.textContent = "0 istek";
+  });
+  // Alt konsol sekmeleri: istek takibi / JSON günlüğü.
+  document.querySelectorAll(".dock-tab").forEach((tab) => tab.addEventListener("click", () => {
+    document.querySelectorAll(".dock-tab").forEach((t) => t.classList.toggle("on", t === tab));
+    els.traffic.classList.toggle("hidden", tab.dataset.tab !== "traffic");
+    els.log.classList.toggle("hidden", tab.dataset.tab !== "log");
+  }));
   els.audioToggle.addEventListener("click", toggleAudio);
   els.trafficToggle.addEventListener("click", () => {
     const expanded = !els.traffic.classList.contains("expanded");
-    els.traffic.classList.toggle("expanded", expanded);
-    els.traffic.classList.toggle("compact", !expanded);
+    for (const box of [els.traffic, els.log]) { box.classList.toggle("expanded", expanded); box.classList.toggle("compact", !expanded); }
     els.trafficToggle.textContent = expanded ? "Daralt" : "Genişlet";
-  });
-  els.logToggle.addEventListener("click", () => {
-    els.log.classList.toggle("hidden");
-    els.logToggle.textContent = els.log.classList.contains("hidden")
-      ? "▸ Geliştirici Günlüğü (JSON)" : "▾ Geliştirici Günlüğü (JSON)";
   });
   els.helpBtn.addEventListener("click", () => els.helpModal.classList.remove("hidden"));
   els.closeHelpBtn.addEventListener("click", () => els.helpModal.classList.add("hidden"));
@@ -1660,21 +1657,31 @@ function bindEvents() {
     if ((e.metaKey || e.ctrlKey) && e.key === "Enter") sendBugReport();
   });
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") { els.bugModal.classList.add("hidden"); els.flowModal.classList.add("hidden"); }
+    if (e.key === "Escape") { els.bugModal.classList.add("hidden"); els.flowModal.classList.add("hidden"); els.flowXModal.classList.add("hidden"); }
   });
   els.closeReportBtn.addEventListener("click", () => els.reportModal.classList.add("hidden"));
   els.flowBtn.addEventListener("click", openFlow);
+  // Genişletilmiş akış: görünüm ⚙ Ayarlar'dan (varsayılan yılan), pencere içindeki sekmelerle de değişir.
+  els.flowViewSel.value = flowView();
+  els.flowViewSel.addEventListener("change", () => setFlowView(els.flowViewSel.value));
+  $("flowSizeBtn").addEventListener("click", openFlowX);
+  $("fxClose").addEventListener("click", () => els.flowXModal.classList.add("hidden"));
+  document.querySelectorAll(".fx-tab").forEach((t) => t.addEventListener("click", () => setFlowView(t.dataset.view)));
+  window.addEventListener("resize", () => { if (!els.flowXModal.classList.contains("hidden")) renderFlowX(); });
   els.loginForm.addEventListener("submit", login);
-  els.logoutBtn.addEventListener("click", async () => { if (state.sessionId) await endSession(); setAuth(null, null); showLogin(); });
-  els.closeFlowBtn.addEventListener("click", () => { els.flowModal.classList.add("hidden"); renderFlowDiagram.scrolled = false; });
+  els.logoutBtn.addEventListener("click", async () => {
+    if (state.sessionId) await endSession();
+    railSession = null;
+    if (isFlowModel()) renderRail(null, []);
+    setAuth(null, null); showLogin();
+  });
+  els.closeFlowBtn.addEventListener("click", () => els.flowModal.classList.add("hidden"));
   document.querySelectorAll("button[data-evt]").forEach((btn) =>
     btn.addEventListener("click", () => sendEvent({ eventType: btn.dataset.evt })));
 }
 
 // ---- Başlangıç ----
-if (location.hostname !== "localhost" && location.hostname !== "127.0.0.1") {
-  els.baseUrl.value = location.origin;
-}
+els.baseUrl.value = arqApiBase();   // config.js: /sim → aynı köken, yerel → 5080, Vercel → Pi (ngrok)
 bindZones();
 bindEvents();
 setConn(false);
@@ -1692,6 +1699,7 @@ startMonitor();
     bindTrayTools();
     buildSutures();
     buildStepList();
+    initRail();
     els.progressLabel.textContent = `Aşama 0 / ${PHASE_COUNT}`;
     log("info", "⚙ Prosedür yüklendi",
       `${p.title}\nModel: ${PROCEDURE_MODEL} · Aşama: ${PHASE_COUNT} · Adım: ${TOTAL_STEPS} · Alet: ${INSTRUMENT_CATALOG.length}` +
